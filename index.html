@@ -1,62 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ur">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AlphaMed Clinical Laboratory</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      background-color: #eaf6ff;
+      font-family: sans-serif;
+      text-align: center;
+      padding: 60px 20px;
+      direction: rtl;
+    }
+
+    .logo {
+      width: 120px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    h3 {
+      font-weight: normal;
+      margin-bottom: 30px;
+      color: #003366;
+    }
+
+    .btn {
+      background-color: #003366;
+      color: white;
+      padding: 12px 25px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background-color: #002244;
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <img src="logo.png" alt="AlphaMed Logo" class="logo" />
-    <h1>AlphaMed Clinical Laboratory</h1>
-    <p class="tagline">Quality Assurance Through Advance Technology</p>
-  </header>
 
-  <main>
-    <section id="add-patient">
-      <h2>نیا مریض شامل کریں</h2>
-      <form id="patientForm">
-        <input type="text" placeholder="مریض کا پورا نام" required id="fullName" />
-        <input type="text" placeholder="شناختی کارڈ نمبر (CNIC)" required id="cnic" />
-        <input type="text" placeholder="فون نمبر" required id="phone" />
+  <img src="logo.png" class="logo" alt="AlphaMed Logo" />
+  <h1>AlphaMed Clinical Laboratory</h1>
+  <h3>جدید ٹیکنالوجی کے ساتھ معیار کی ضمانت</h3>
 
-        <label for="section">سیکشن منتخب کریں:</label>
-        <select id="testType" required>
-          <option value="">-- سیکشن منتخب کریں --</option>
-          <option value="Hematology">Hematology</option>
-          <option value="Serology">Serology</option>
-          <option value="Biochemistry">Biochemistry</option>
-          <option value="Urine">Urine</option>
-          <option value="Hormones">Hormones</option>
-          <option value="HIV">HIV</option>
-          <option value="PCR">PCR</option>
-          <option value="Culture">Culture</option>
-          <option value="Others">Others</option>
-        </select>
+  <a href="login.html" class="btn">لاگ ان کریں</a>
 
-        <button type="submit">MRN بنائیں اور شامل کریں</button>
-      </form>
-    </section>
-
-    <section id="patient-list">
-      <h2>تمام مریضوں کی فہرست</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>MRN</th>
-            <th>نام</th>
-            <th>سیکشن</th>
-            <th>بار کوڈ</th>
-            <th>رپورٹ</th>
-          </tr>
-        </thead>
-        <tbody id="patientTable"></tbody>
-      </table>
-    </section>
-  </main>
-
-  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-  <script src="script.js"></script>
 </body>
 </html>
