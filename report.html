@@ -2,99 +2,107 @@
 <html lang="ur">
 <head>
   <meta charset="UTF-8" />
-  <title>Login - AlphaMed Lab</title>
+  <title>Patient Report - AlphaMed</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
   <style>
     body {
-      background-color: #f0f8ff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      direction: rtl;
+      background: url('logo.png') center center no-repeat;
+      background-size: 200px;
+      opacity: 0.98;
       font-family: sans-serif;
+      padding: 30px;
+      direction: rtl;
     }
 
-    .login-box {
+    .report {
+      max-width: 800px;
+      margin: auto;
       background: white;
       padding: 30px;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.2);
-      width: 350px;
+      position: relative;
     }
 
-    .login-box h2 {
+    h2 {
       text-align: center;
       margin-bottom: 20px;
     }
 
-    .login-box input {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
+    .info, .result {
+      margin-bottom: 20px;
     }
 
-    .login-box button {
-      width: 100%;
-      padding: 10px;
+    .info p, .result p {
+      margin: 5px 0;
+    }
+
+    #barcode {
+      display: block;
+      margin: 20px auto;
+    }
+
+    button {
+      padding: 10px 20px;
       background-color: #003366;
       color: white;
       border: none;
       border-radius: 5px;
-      cursor: pointer;
       font-weight: bold;
-    }
-
-    .error {
-      color: red;
-      text-align: center;
-      margin-bottom: 10px;
+      cursor: pointer;
+      display: block;
+      margin: 20px auto;
     }
   </style>
 </head>
 <body>
-  <div class="login-box">
-    <h2>AlphaMed Lab لاگ ان</h2>
-    <div class="error" id="errorMsg"></div>
-    <input type="text" id="cnic" placeholder="شناختی کارڈ نمبر (CNIC)" required />
-    <input type="password" id="password" placeholder="پاس ورڈ" required />
-    <button onclick="login()">لاگ ان کریں</button>
+  <div class="report">
+    <h2>AlphaMed Clinical Laboratory</h2>
+
+    <div class="info">
+      <p><strong>MRN:</strong> <span id="mrn"></span></p>
+      <p><strong>نام:</strong> <span id="pName"></span></p>
+      <p><strong>CNIC:</strong> <span id="pCnic"></span></p>
+      <p><strong>فون:</strong> <span id="pPhone"></span></p>
+      <p><strong>سیکشن:</strong> <span id="pSection"></span></p>
+    </div>
+
+    <svg id="barcode"></svg>
+
+    <div class="result">
+      <h3>رزلٹ:</h3>
+      <pre id="resultText" style="background:#f9f9f9; padding:15px; border-radius:10px;"></pre>
+    </div>
+
+    <button onclick="window.print()">پرنٹ کریں</button>
   </div>
 
   <script>
-    // Predefined users (can be expanded from admin dashboard later)
-    let users = JSON.parse(localStorage.getItem("users")) || [
-      {
-        role: "admin",
-        cnic: "34501-8971113-7",
-        password: "Asad@2723"
-      }
-    ];
+    const params = new URLSearchParams(window.location.search);
+    const mrn = params.get("mrn");
 
-    function login() {
-      const cnic = document.getElementById("cnic").value.trim();
-      const password = document.getElementById("password").value.trim();
-      const errorBox = document.getElementById("errorMsg");
+    const patients = JSON.parse(localStorage.getItem("patientList") || "[]");
+    const results = JSON.parse(localStorage.getItem("reportResults") || "{}");
 
-      const user = users.find(
-        (u) => u.cnic === cnic && u.password === password
-      );
+    const patient = patients.find(p => p.mrn === mrn);
+    const resultText = results[mrn] || "نتیجہ ابھی شامل نہیں کیا گیا";
 
-      if (user) {
-        sessionStorage.setItem("loggedInUser", JSON.stringify(user));
-        // Redirect based on role
-        if (user.role === "admin") {
-          window.location.href = "admin-dashboard.html";
-        } else if (user.role === "technician") {
-          window.location.href = "technician.html";
-        } else if (user.role === "reception") {
-          window.location.href = "reception.html";
-        }
-      } else {
-        errorBox.textContent = "غلط CNIC یا پاس ورڈ";
-      }
+    if (patient) {
+      document.getElementById("mrn").textContent = patient.mrn;
+      document.getElementById("pName").textContent = patient.fullName;
+      document.getElementById("pCnic").textContent = patient.cnic;
+      document.getElementById("pPhone").textContent = patient.phone;
+      document.getElementById("pSection").textContent = patient.testType;
+      document.getElementById("resultText").textContent = resultText;
+
+      JsBarcode("#barcode", patient.mrn, {
+        format: "CODE128",
+        width: 2,
+        height: 40
+      });
+    } else {
+      document.querySelector(".report").innerHTML = "<h3>مریض کی رپورٹ نہیں ملی</h3>";
     }
   </script>
 </body>
