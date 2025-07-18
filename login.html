@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+  <meta charset="UTF-8" />
+  <title>لاگ ان - AlphaMed</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      background-color: #eaf4ff;
+      direction: rtl;
+      font-family: sans-serif;
+      text-align: center;
+      padding: 50px 20px;
+    }
+
+    .login-box {
+      background: white;
+      max-width: 400px;
+      margin: auto;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #003366;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: #003366;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-box">
+    <h2>لاگ ان کریں</h2>
+    <input type="text" id="cnic" placeholder="شناختی کارڈ نمبر (CNIC)" required />
+    <input type="password" id="password" placeholder="پاس ورڈ" required />
+    <button onclick="login()">لاگ ان</button>
+  </div>
+
+  <script>
+    const users = JSON.parse(localStorage.getItem("users") || "[]");
+
+    // Default admin (hardcoded)
+    const defaultAdmin = {
+      cnic: "34501-8971113-7",
+      password: "Asad@2723",
+      role: "admin"
+    };
+
+    if (!users.find(u => u.cnic === defaultAdmin.cnic)) {
+      users.push(defaultAdmin);
+      localStorage.setItem("users", JSON.stringify(users));
+    }
+
+    function login() {
+      const cnic = document.getElementById("cnic").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      const user = users.find(u => u.cnic === cnic && u.password === password);
+
+      if (user) {
+        sessionStorage.setItem("loggedInUser", JSON.stringify(user));
+        alert("لاگ ان کامیاب ✅");
+
+        if (user.role === "admin") window.location.href = "admin-dashboard.html";
+        else if (user.role === "reception") window.location.href = "reception.html";
+        else if (user.role === "technician") window.location.href = "technician.html";
+      } else {
+        alert("غلط CNIC یا پاس ورڈ ❌");
+      }
+    }
+  </script>
+
+</body>
+</html>
