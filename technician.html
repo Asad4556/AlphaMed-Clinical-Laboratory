@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+  <meta charset="UTF-8" />
+  <title>Technician - AlphaMed</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      background-color: #f9f9f9;
+      direction: rtl;
+      font-family: sans-serif;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    input, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #003366;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .patient-info {
+      margin-top: 20px;
+      background-color: #f1f9ff;
+      padding: 15px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>ٹیکنیشن ڈیش بورڈ</h2>
+
+    <input type="text" id="searchMrn" placeholder="MRN درج کریں (e.g. ACL-25-00001)" />
+    <button onclick="searchPatient()">مریض تلاش کریں</button>
+
+    <div class="patient-info" id="patientInfo" style="display: none;">
+      <h3>مریض کی معلومات:</h3>
+      <p><strong>نام:</strong> <span id="pName"></span></p>
+      <p><strong>CNIC:</strong> <span id="pCnic"></span></p>
+      <p><strong>فون:</strong> <span id="pPhone"></span></p>
+      <p><strong>سیکشن:</strong> <span id="pSection"></span></p>
+
+      <h3>ٹیسٹ کا نتیجہ شامل کریں:</h3>
+      <textarea id="testResult" rows="6" placeholder="مثال: Hemoglobin = 13.5 g/dL&#10;WBC = 7.2 x10⁹/L&#10;Glucose = 102 mg/dL"></textarea>
+      <button onclick="saveResult()">محفوظ کریں</button>
+    </div>
+  </div>
+
+  <script>
+    let patientList = JSON.parse(localStorage.getItem('patientList') || '[]');
+    let reportResults = JSON.parse(localStorage.getItem('reportResults') || {});
+    let currentPatient = null;
+
+    function searchPatient() {
+      const mrn = document.getElementById("searchMrn").value.trim();
+      currentPatient = patientList.find(p => p.mrn === mrn);
+
+      if (currentPatient) {
+        document.getElementById("pName").textContent = currentPatient.fullName;
+        document.getElementById("pCnic").textContent = currentPatient.cnic;
+        document.getElementById("pPhone").textContent = currentPatient.phone;
+        document.getElementById("pSection").textContent = currentPatient.testType;
+        document.getElementById("testResult").value = reportResults[mrn] || "";
+        document.getElementById("patientInfo").style.display = "block";
+      } else {
+        alert("مریض نہیں ملا");
+        document.getElementById("patientInfo").style.display = "none";
+      }
+    }
+
+    function saveResult() {
+      const resultText = document.getElementById("testResult").value.trim();
+      if (!currentPatient) return;
+
+      reportResults[currentPatient.mrn] = resultText;
+      localStorage.setItem('reportResults', JSON.stringify(reportResults));
+      alert("نتیجہ محفوظ ہو گیا ✅");
+    }
+
+    // Role check
+    const sessionUser = JSON.parse(sessionStorage.getItem("loggedInUser"));
+    if (!sessionUser || sessionUser.role !== "technician") {
+      alert("صرف ٹیکنیشن کو اجازت ہے");
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>
