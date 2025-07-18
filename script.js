@@ -9,7 +9,7 @@ document.getElementById("patientForm").addEventListener("submit", function (e) {
   const phone = document.getElementById("phone").value;
   const testType = document.getElementById("testType").value;
 
-  const year = new Date().getFullYear().toString().slice(-2); // "25" for 2025
+  const year = new Date().getFullYear().toString().slice(-2);
   const mrn = `ACL-${year}-${String(counter).padStart(5, '0')}`;
   counter++;
 
@@ -23,6 +23,7 @@ document.getElementById("patientForm").addEventListener("submit", function (e) {
 
   patientList.push(newPatient);
   addToTable(newPatient);
+  localStorage.setItem('patientList', JSON.stringify(patientList));
   document.getElementById("patientForm").reset();
 });
 
@@ -50,7 +51,11 @@ function addToTable(patient) {
   barcodeCell.appendChild(barcodeSvg);
 
   const reportCell = document.createElement("td");
-  reportCell.innerHTML = "<em>Coming soon</em>";
+  const viewLink = document.createElement("a");
+  viewLink.href = `report.html?mrn=${encodeURIComponent(patient.mrn)}`;
+  viewLink.textContent = "رپورٹ دیکھیں";
+  viewLink.target = "_blank";
+  reportCell.appendChild(viewLink);
 
   row.appendChild(mrnCell);
   row.appendChild(nameCell);
@@ -60,3 +65,13 @@ function addToTable(patient) {
 
   table.appendChild(row);
 }
+
+// Reload saved patients on refresh
+window.addEventListener("load", () => {
+  const saved = localStorage.getItem('patientList');
+  if (saved) {
+    patientList = JSON.parse(saved);
+    patientList.forEach(addToTable);
+    counter = patientList.length + 1;
+  }
+});
