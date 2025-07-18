@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+  <meta charset="UTF-8" />
+  <title>Patient Report - AlphaMed</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      background-color: white;
+      position: relative;
+    }
+
+    .report-container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      position: relative;
+    }
+
+    .watermark {
+      position: absolute;
+      top: 30%;
+      left: 25%;
+      opacity: 0.05;
+      z-index: 0;
+      width: 400px;
+    }
+
+    .report-header {
+      text-align: center;
+      z-index: 1;
+      position: relative;
+    }
+
+    .report-header img {
+      width: 80px;
+    }
+
+    table {
+      margin-top: 20px;
+    }
+
+    .barcode {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .print-btn {
+      margin-top: 30px;
+      text-align: center;
+    }
+
+    .print-btn button {
+      padding: 10px 20px;
+      background-color: #003366;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="report-container">
+    <img src="logo.png" alt="Watermark" class="watermark" />
+    <div class="report-header">
+      <img src="logo.png" alt="AlphaMed Logo" />
+      <h2>AlphaMed Clinical Laboratory</h2>
+      <p>Quality Assurance Through Advance Technology</p>
+    </div>
+
+    <div class="report-body" id="reportBody">
+      <p><strong>MRN:</strong> <span id="mrn"></span></p>
+      <p><strong>نام:</strong> <span id="fullName"></span></p>
+      <p><strong>CNIC:</strong> <span id="cnic"></span></p>
+      <p><strong>فون:</strong> <span id="phone"></span></p>
+      <p><strong>سیکشن:</strong> <span id="section"></span></p>
+
+      <div class="barcode">
+        <svg id="barcode"></svg>
+      </div>
+
+      <h3>ٹیسٹ کی تفصیل</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>ٹیسٹ</th>
+            <th>نتیجہ</th>
+            <th>نارمل ویلیو (میل)</th>
+            <th>نارمل ویلیو (فی میل)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Hemoglobin</td>
+            <td>13.5</td>
+            <td>13–17 g/dL</td>
+            <td>12–15 g/dL</td>
+          </tr>
+          <tr>
+            <td>WBC</td>
+            <td>7.2</td>
+            <td>4–11 x10⁹/L</td>
+            <td>4–11 x10⁹/L</td>
+          </tr>
+          <tr>
+            <td>Glucose (F)</td>
+            <td>102</td>
+            <td>70–110 mg/dL</td>
+            <td>70–110 mg/dL</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="print-btn">
+      <button onclick="window.print()">🖨️ پرنٹ کریں</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const mrnParam = urlParams.get("mrn");
+    const savedPatients = JSON.parse(localStorage.getItem('patientList') || '[]');
+    const patient = savedPatients.find(p => p.mrn === mrnParam);
+
+    if (patient) {
+      document.getElementById("mrn").textContent = patient.mrn;
+      document.getElementById("fullName").textContent = patient.fullName;
+      document.getElementById("cnic").textContent = patient.cnic;
+      document.getElementById("phone").textContent = patient.phone;
+      document.getElementById("section").textContent = patient.testType;
+      JsBarcode("#barcode", patient.mrn, {
+        format: "CODE128",
+        width: 2,
+        height: 50,
+        displayValue: false
+      });
+    } else {
+      document.getElementById("reportBody").innerHTML = "<p>⚠️ کوئی مریض نہیں ملا</p>";
+    }
+  </script>
+</body>
+</html>
