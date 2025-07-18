@@ -20,7 +20,21 @@
         <input type="text" placeholder="مریض کا پورا نام" required id="fullName" />
         <input type="text" placeholder="شناختی کارڈ نمبر (CNIC)" required id="cnic" />
         <input type="text" placeholder="فون نمبر" required id="phone" />
-        <input type="text" placeholder="ٹیسٹ کی قسم" required id="testType" />
+
+        <label for="section">سیکشن منتخب کریں:</label>
+        <select id="testType" required>
+          <option value="">-- سیکشن منتخب کریں --</option>
+          <option value="Hematology">Hematology</option>
+          <option value="Serology">Serology</option>
+          <option value="Biochemistry">Biochemistry</option>
+          <option value="Urine">Urine</option>
+          <option value="Hormones">Hormones</option>
+          <option value="HIV">HIV</option>
+          <option value="PCR">PCR</option>
+          <option value="Culture">Culture</option>
+          <option value="Others">Others</option>
+        </select>
+
         <button type="submit">MRN بنائیں اور شامل کریں</button>
       </form>
     </section>
@@ -32,7 +46,7 @@
           <tr>
             <th>MRN</th>
             <th>نام</th>
-            <th>ٹیسٹ</th>
+            <th>سیکشن</th>
             <th>بار کوڈ</th>
             <th>رپورٹ</th>
           </tr>
