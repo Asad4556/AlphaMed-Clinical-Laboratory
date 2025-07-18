@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard - AlphaMed</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      background-color: #f4f4f4;
+      font-family: sans-serif;
+      padding: 20px;
+      direction: rtl;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #003366;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .user-list {
+      margin-top: 30px;
+    }
+
+    .user-item {
+      background-color: #e7f1ff;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>ایڈمن ڈیش بورڈ</h2>
+
+    <h3>نیا صارف شامل کریں</h3>
+    <select id="role">
+      <option value="technician">ٹیکنیشن</option>
+      <option value="reception">ریسپشن</option>
+    </select>
+    <input type="text" id="newCnic" placeholder="نیا CNIC (e.g. 35202-xxxxxxx-x)" required />
+    <input type="password" id="newPassword" placeholder="پاس ورڈ منتخب کریں" required />
+    <button onclick="createUser()">صارف شامل کریں</button>
+
+    <div class="user-list" id="userList">
+      <h3>تمام صارفین</h3>
+      <!-- Users will appear here -->
+    </div>
+  </div>
+
+  <script>
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+
+    function createUser() {
+      const role = document.getElementById("role").value;
+      const cnic = document.getElementById("newCnic").value.trim();
+      const password = document.getElementById("newPassword").value.trim();
+
+      if (users.find((u) => u.cnic === cnic)) {
+        alert("یہ CNIC پہلے سے موجود ہے");
+        return;
+      }
+
+      users.push({ role, cnic, password });
+      localStorage.setItem("users", JSON.stringify(users));
+      document.getElementById("newCnic").value = "";
+      document.getElementById("newPassword").value = "";
+      showUsers();
+    }
+
+    function showUsers() {
+      const container = document.getElementById("userList");
+      const list = users.map(
+        (u) => `<div class="user-item"><strong>${u.role.toUpperCase()}</strong> – ${u.cnic}</div>`
+      ).join("");
+      container.innerHTML = `<h3>تمام صارفین</h3>` + list;
+    }
+
+    // Block unauthorized access
+    const sessionUser = JSON.parse(sessionStorage.getItem("loggedInUser"));
+    if (!sessionUser || sessionUser.role !== "admin") {
+      alert("صرف ایڈمن کو اجازت ہے");
+      window.location.href = "login.html";
+    } else {
+      showUsers();
+    }
+  </script>
+</body>
+</html>
