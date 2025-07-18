@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+  <meta charset="UTF-8" />
+  <title>Reception - AlphaMed</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      background-color: #f4f4f4;
+      direction: rtl;
+      font-family: sans-serif;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #003366;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .table-list {
+      margin-top: 30px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>ریسپشن ڈیش بورڈ</h2>
+
+    <form id="patientForm">
+      <input type="text" placeholder="مریض کا پورا نام" required id="fullName" />
+      <input type="text" placeholder="شناختی کارڈ نمبر (CNIC)" required id="cnic" />
+      <input type="text" placeholder="فون نمبر" required id="phone" />
+      <label for="testType">سیکشن منتخب کریں:</label>
+      <select id="testType" required>
+        <option value="">-- منتخب کریں --</option>
+        <option value="Hematology">Hematology</option>
+        <option value="Serology">Serology</option>
+        <option value="Biochemistry">Biochemistry</option>
+        <option value="Urine">Urine</option>
+        <option value="Hormones">Hormones</option>
+        <option value="HIV">HIV</option>
+        <option value="PCR">PCR</option>
+        <option value="Culture">Culture</option>
+        <option value="Others">Others</option>
+      </select>
+      <button type="submit">مریض شامل کریں</button>
+    </form>
+
+    <div class="table-list">
+      <h3>تمام مریض</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>MRN</th>
+            <th>نام</th>
+            <th>سیکشن</th>
+          </tr>
+        </thead>
+        <tbody id="patientTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    let patientList = JSON.parse(localStorage.getItem('patientList') || '[]');
+    let counter = patientList.length + 1;
+
+    function renderTable() {
+      const table = document.getElementById("patientTable");
+      table.innerHTML = "";
+      patientList.forEach(p => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${p.mrn}</td>
+          <td>${p.fullName}</td>
+          <td>${p.testType}</td>
+        `;
+        table.appendChild(row);
+      });
+    }
+
+    document.getElementById("patientForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const fullName = document.getElementById("fullName").value;
+      const cnic = document.getElementById("cnic").value;
+      const phone = document.getElementById("phone").value;
+      const testType = document.getElementById("testType").value;
+      const year = new Date().getFullYear().toString().slice(-2);
+      const mrn = `ACL-${year}-${String(counter).padStart(5, '0')}`;
+      counter++;
+
+      const newPatient = { mrn, fullName, cnic, phone, testType };
+      patientList.push(newPatient);
+      localStorage.setItem('patientList', JSON.stringify(patientList));
+
+      renderTable();
+      document.getElementById("patientForm").reset();
+    });
+
+    // Role check
+    const sessionUser = JSON.parse(sessionStorage.getItem("loggedInUser"));
+    if (!sessionUser || sessionUser.role !== "reception") {
+      alert("صرف ریسپشن کو اجازت ہے");
+      window.location.href = "login.html";
+    } else {
+      renderTable();
+    }
+  </script>
+</body>
+</html>
