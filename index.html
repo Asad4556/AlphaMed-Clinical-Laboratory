@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AlphaMed Clinical Laboratory</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <img src="logo.png" alt="AlphaMed Logo" class="logo" />
+    <h1>AlphaMed Clinical Laboratory</h1>
+    <p class="tagline">Quality Assurance Through Advance Technology</p>
+  </header>
+
+  <main>
+    <section id="add-patient">
+      <h2>نیا مریض شامل کریں</h2>
+      <form id="patientForm">
+        <input type="text" placeholder="مریض کا پورا نام" required id="fullName" />
+        <input type="text" placeholder="شناختی کارڈ نمبر (CNIC)" required id="cnic" />
+        <input type="text" placeholder="فون نمبر" required id="phone" />
+        <input type="text" placeholder="ٹیسٹ کی قسم" required id="testType" />
+        <button type="submit">MRN بنائیں اور شامل کریں</button>
+      </form>
+    </section>
+
+    <section id="patient-list">
+      <h2>تمام مریضوں کی فہرست</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>MRN</th>
+            <th>نام</th>
+            <th>ٹیسٹ</th>
+            <th>بار کوڈ</th>
+            <th>رپورٹ</th>
+          </tr>
+        </thead>
+        <tbody id="patientTable"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
