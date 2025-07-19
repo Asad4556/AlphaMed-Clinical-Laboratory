@@ -1,1 +1,193 @@
-<!-- reception.html content -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Patient Registration - Reception</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding: 30px;
+    }
+
+    h2 {
+      color: #00ffaa;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background-color: #1f1f1f;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      background-color: #2a2a2a;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+
+    button {
+      background-color: #00aaff;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .section-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .section-list label {
+      background-color: #333;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .barcode {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .watermark {
+      position: fixed;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 60px;
+      color: rgba(255, 255, 255, 0.08);
+      z-index: -1;
+      white-space: nowrap;
+    }
+
+    .logout-btn {
+      background-color: crimson;
+      padding: 10px 20px;
+      float: left;
+      margin-bottom: 10px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="watermark">AlphaMed Clinical Laboratory</div>
+
+  <button class="logout-btn" onclick="logout()">Logout</button>
+
+  <h2>Patient Registration</h2>
+
+  <div class="container">
+    <form id="patientForm">
+      <input type="text" id="fullName" placeholder="Full Name" required />
+      <input type="text" id="cnic" placeholder="CNIC (e.g. 34501-XXXXXXX-X)" required />
+      <input type="text" id="phone" placeholder="Phone Number" required />
+
+      <label>Select Sections:</label>
+      <div class="section-list">
+        <label><input type="checkbox" name="section" value="Hematology" /> Hematology</label>
+        <label><input type="checkbox" name="section" value="Serology" /> Serology</label>
+        <label><input type="checkbox" name="section" value="Biochemistry" /> Biochemistry</label>
+        <label><input type="checkbox" name="section" value="Urine" /> Urine</label>
+        <label><input type="checkbox" name="section" value="Stool" /> Stool</label>
+      </div>
+
+      <button type="submit">Register Patient</button>
+    </form>
+
+    <div class="barcode" id="barcodeArea"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+  <script>
+    const receptionUser = JSON.parse(localStorage.getItem("loggedIn"));
+    if (!receptionUser || receptionUser.role !== "Reception") {
+      window.location.href = "login.html";
+    }
+
+    let counter = parseInt(localStorage.getItem("mrnCounter") || "1");
+
+    document.getElementById("patientForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const fullName = document.getElementById("fullName").value.trim();
+      const cnic = document.getElementById("cnic").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+
+      const selectedSections = Array.from(document.querySelectorAll("input[name='section']:checked"))
+                                    .map(checkbox => checkbox.value);
+
+      if (!selectedSections.length) {
+        alert("Please select at least one section.");
+        return;
+      }
+
+      const year = new Date().getFullYear().toString().slice(-2);
+      const mrn = `ACL-${year}-${String(counter).padStart(5, '0')}`;
+      const sampleNo = `S-${year}-${String(counter).padStart(4, '0')}`;
+      counter++;
+      localStorage.setItem("mrnCounter", counter.toString());
+
+      const patient = {
+        mrn,
+        sampleNo,
+        fullName,
+        cnic,
+        phone,
+        sections: selectedSections,
+        date: new Date().toISOString()
+      };
+
+      let patients = JSON.parse(localStorage.getItem("patients") || "[]");
+      patients.push(patient);
+      localStorage.setItem("patients", JSON.stringify(patients));
+
+      // Store technician view list (limited)
+      let techView = JSON.parse(localStorage.getItem("techTests") || "{}");
+      techView[mrn] = selectedSections;
+      localStorage.setItem("techTests", JSON.stringify(techView));
+
+      showSlip(patient);
+      document.getElementById("patientForm").reset();
+    });
+
+    function showSlip(patient) {
+      const barcodeArea = document.getElementById("barcodeArea");
+      barcodeArea.innerHTML = `
+        <h3>Registration Slip</h3>
+        <p><strong>MRN:</strong> ${patient.mrn}</p>
+        <p><strong>Sample No:</strong> ${patient.sampleNo}</p>
+        <p><strong>Patient:</strong> ${patient.fullName}</p>
+        <p><strong>Sections:</strong> ${patient.sections.join(", ")}</p>
+        <svg id="barcode"></svg>
+      `;
+
+      JsBarcode("#barcode", patient.mrn, {
+        format: "CODE128",
+        width: 2,
+        height: 50,
+        displayValue: true
+      });
+    }
+
+    function logout() {
+      localStorage.removeItem("loggedIn");
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>
