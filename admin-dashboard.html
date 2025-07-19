@@ -1,114 +1,137 @@
 <!DOCTYPE html>
 <html lang="ur">
 <head>
-  <meta charset="UTF-8" />
-  <title>Admin Dashboard - AlphaMed</title>
+  <meta charset="UTF-8">
+  <title>ایڈمن ڈیش بورڈ - AlphaMed</title>
   <link rel="stylesheet" href="style.css" />
   <style>
     body {
-      background-color: #f4f4f4;
+      background-color: #f0f8ff;
       font-family: sans-serif;
-      padding: 20px;
       direction: rtl;
-    }
-
-    .container {
-      max-width: 600px;
-      margin: auto;
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
-    }
-
-    h2 {
       text-align: center;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      color: #003366;
       margin-bottom: 20px;
     }
 
-    input, select, button {
+    .btn {
+      display: inline-block;
+      margin: 10px;
+      padding: 12px 20px;
+      background-color: #003366;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background-color: #002244;
+    }
+
+    .section {
+      background: white;
+      padding: 20px;
+      margin-top: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    input {
       width: 100%;
       padding: 10px;
-      margin-top: 10px;
-      margin-bottom: 15px;
+      margin: 10px 0;
+      font-size: 16px;
       border-radius: 5px;
       border: 1px solid #ccc;
     }
 
-    button {
-      background-color: #003366;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .user-list {
-      margin-top: 30px;
-    }
-
-    .user-item {
-      background-color: #e7f1ff;
+    select {
+      width: 100%;
       padding: 10px;
+      font-size: 16px;
       border-radius: 5px;
+      border: 1px solid #ccc;
       margin-bottom: 10px;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>ایڈمن ڈیش بورڈ</h2>
 
+  <h1>ایڈمن ڈیش بورڈ</h1>
+
+  <!-- Quick Links -->
+  <a href="reception.html" class="btn">مریض رجسٹر کریں</a>
+  <a href="technician.html" class="btn">رپورٹ شامل کریں</a>
+  <button onclick="logout()" class="btn">لاگ آؤٹ</button>
+
+  <!-- User Add Section -->
+  <div class="section">
     <h3>نیا صارف شامل کریں</h3>
     <select id="role">
       <option value="technician">ٹیکنیشن</option>
       <option value="reception">ریسپشن</option>
     </select>
-    <input type="text" id="newCnic" placeholder="نیا CNIC (e.g. 35202-xxxxxxx-x)" required />
-    <input type="password" id="newPassword" placeholder="پاس ورڈ منتخب کریں" required />
-    <button onclick="createUser()">صارف شامل کریں</button>
+    <input type="text" id="cnic" placeholder="شناختی کارڈ نمبر (CNIC)" />
+    <input type="password" id="password" placeholder="پاس ورڈ" />
+    <button class="btn" onclick="addUser()">صارف شامل کریں</button>
+  </div>
 
-    <div class="user-list" id="userList">
-      <h3>تمام صارفین</h3>
-      <!-- Users will appear here -->
-    </div>
+  <div class="section">
+    <h3>تمام صارفین</h3>
+    <ul id="userList"></ul>
   </div>
 
   <script>
-    const users = JSON.parse(localStorage.getItem("users")) || [];
+    const userList = document.getElementById("userList");
+    const users = JSON.parse(localStorage.getItem("users") || "[]");
 
-    function createUser() {
+    function renderUsers() {
+      userList.innerHTML = "";
+      users.forEach(u => {
+        const li = document.createElement("li");
+        li.textContent = `${u.role.toUpperCase()} – ${u.cnic}`;
+        userList.appendChild(li);
+      });
+    }
+
+    function addUser() {
+      const cnic = document.getElementById("cnic").value.trim();
+      const password = document.getElementById("password").value.trim();
       const role = document.getElementById("role").value;
-      const cnic = document.getElementById("newCnic").value.trim();
-      const password = document.getElementById("newPassword").value.trim();
 
-      if (users.find((u) => u.cnic === cnic)) {
+      if (!cnic || !password) {
+        alert("تمام فیلڈز لازمی ہیں");
+        return;
+      }
+
+      if (users.find(u => u.cnic === cnic)) {
         alert("یہ CNIC پہلے سے موجود ہے");
         return;
       }
 
-      users.push({ role, cnic, password });
+      users.push({ cnic, password, role });
       localStorage.setItem("users", JSON.stringify(users));
-      document.getElementById("newCnic").value = "";
-      document.getElementById("newPassword").value = "";
-      showUsers();
+      alert("نیا صارف شامل ہو گیا ✅");
+      renderUsers();
     }
 
-    function showUsers() {
-      const container = document.getElementById("userList");
-      const list = users.map(
-        (u) => `<div class="user-item"><strong>${u.role.toUpperCase()}</strong> – ${u.cnic}</div>`
-      ).join("");
-      container.innerHTML = `<h3>تمام صارفین</h3>` + list;
-    }
-
-    // Block unauthorized access
-    const sessionUser = JSON.parse(sessionStorage.getItem("loggedInUser"));
-    if (!sessionUser || sessionUser.role !== "admin") {
-      alert("صرف ایڈمن کو اجازت ہے");
+    function logout() {
+      sessionStorage.removeItem("loggedInUser");
       window.location.href = "login.html";
-    } else {
-      showUsers();
     }
+
+    renderUsers();
   </script>
+
 </body>
 </html>
