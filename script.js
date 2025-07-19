@@ -1,1 +1,1 @@
-console.log('AlphaMed Lab script loaded');
+// script.js content
