@@ -76,10 +76,10 @@
   <button onclick="login()">لاگ ان</button>
 
   <script>
-    const masterAdmin = {
-      role: "Admin",
+    const defaultAdmin = {
       cnic: "34501-8971113-7",
-      password: "Asad@2723"
+      password: "Asad@2723",
+      role: "Admin"
     };
 
     function togglePassword() {
@@ -92,28 +92,28 @@
       const cnic = document.getElementById("cnic").value.trim();
       const password = document.getElementById("password").value.trim();
 
-      // First check for default admin
+      // Check for default admin
       if (
-        cnic === masterAdmin.cnic &&
-        password === masterAdmin.password &&
-        role === masterAdmin.role
+        role === defaultAdmin.role &&
+        cnic === defaultAdmin.cnic &&
+        password === defaultAdmin.password
       ) {
-        localStorage.setItem("loggedIn", JSON.stringify({ role, cnic }));
+        localStorage.setItem("loggedIn", JSON.stringify(defaultAdmin));
         window.location.href = "admin-dashboard.html";
         return;
       }
 
-      // Check in localStorage
+      // Check in saved users
       const users = JSON.parse(localStorage.getItem("users") || "[]");
-      const found = users.find(
+      const user = users.find(
         u => u.cnic === cnic && u.password === password && u.role === role
       );
 
-      if (found) {
-        localStorage.setItem("loggedIn", JSON.stringify(found));
+      if (user) {
+        localStorage.setItem("loggedIn", JSON.stringify(user));
         if (role === "Technician") window.location.href = "technician.html";
         else if (role === "Reception") window.location.href = "reception.html";
-        else window.location.href = "admin-dashboard.html";
+        else if (role === "Admin") window.location.href = "admin-dashboard.html";
       } else {
         alert("غلط CNIC یا پاسورڈ");
       }
