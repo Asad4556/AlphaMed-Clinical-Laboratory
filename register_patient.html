@@ -1,119 +1,106 @@
-<!-- register_patient.html -->
 <!DOCTYPE html>
 <html lang="ur">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>مریض رجسٹریشن - AlphaMed</title>
+  <link rel="stylesheet" href="style.css">
   <style>
-    body {
-      background: #121212;
-      color: #fff;
-      font-family: sans-serif;
-      direction: rtl;
-      padding: 40px;
+    #selected-tests ul {
+      list-style: none;
+      padding: 0;
     }
-
-    h2 {
-      color: #00ffaa;
-      text-align: center;
-    }
-
-    label {
-      display: block;
-      margin: 10px 0 5px;
-    }
-
-    input, select, button {
-      width: 100%;
-      padding: 12px;
-      margin: 5px 0 15px;
-      border: none;
-      border-radius: 6px;
+    #selected-tests li {
       background: #1e1e1e;
-      color: #fff;
-    }
-
-    button {
-      background: #00aaff;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .logout {
-      float: left;
-      background: crimson;
-      border: none;
-      padding: 8px 16px;
+      padding: 6px 10px;
+      margin: 4px 0;
       border-radius: 6px;
-      cursor: pointer;
-      margin-bottom: 20px;
+      border: 1px solid #333;
     }
   </style>
 </head>
 <body>
-
-  <button class="logout" onclick="logout()">🔒 لاگ آؤٹ</button>
-
+  <button class="logout" onclick="logout()">🔒 لاگ آوٹ</button>
   <h2>📝 مریض رجسٹریشن</h2>
 
   <label>نام</label>
-  <input type="text" id="name" placeholder="مریض کا نام" />
+  <input type="text" id="name" placeholder="مریض کا نام">
 
   <label>والد / شوہر کا نام</label>
-  <input type="text" id="fatherName" placeholder="والد/شوہر کا نام" />
+  <input type="text" id="fatherName" placeholder="والد/شوہر کا نام">
 
   <label>CNIC</label>
-  <input type="text" id="cnic" placeholder="CNIC نمبر" />
+  <input type="text" id="cnic" placeholder="CNIC نمبر">
 
   <label>فون نمبر</label>
-  <input type="text" id="phone" placeholder="فون نمبر" />
+  <input type="text" id="phone" placeholder="فون نمبر">
 
   <label>ایڈریس</label>
-  <input type="text" id="address" placeholder="ایڈریس" />
+  <input type="text" id="address" placeholder="ایڈریس">
 
-  <label>ڈپارٹمنٹ</label>
-  <select id="department" onchange="loadTests()">
-    <option value="">ڈپارٹمنٹ منتخب کریں</option>
-    <option value="Blood">بلڈ</option>
-    <option value="Urine">یورین</option>
-    <option value="XRay">ایکس رے</option>
+  <label>ڈپارٹمنٹ منتخب کریں</label>
+  <select id="departmentSelect" onchange="showTests()">
+    <option value="">-- ڈپارٹمنٹ --</option>
   </select>
 
-  <label>ٹیسٹ منتخب کریں</label>
-  <div id="tests"></div>
+  <div id="test-options"></div>
+  <div id="selected-tests">
+    <h3>منتخب شدہ ٹیسٹ:</h3>
+    <ul id="test-list"></ul>
+  </div>
 
   <button onclick="registerPatient()">رجسٹر کریں</button>
 
   <script>
-    const testsDB = {
-      Blood: [
-        { name: "CBC", param: "WBC, RBC", normal: "4.5-11" },
-        { name: "Blood Sugar", param: "Glucose", normal: "70-110" }
-      ],
-      Urine: [
-        { name: "Urine R/E", param: "Color, pH", normal: "5.5-7" },
-        { name: "Urine Culture", param: "Bacteria", normal: "No Growth" }
-      ],
-      XRay: [
-        { name: "Chest X-Ray", param: "Lungs, Heart", normal: "Normal" }
-      ]
+    const allDepartments = {
+      "Microbiology": ["Urine Culture", "Blood Culture", "Sputum Culture"],
+      "Hematology": ["CBC", "ESR", "Hemoglobin"],
+      "Biochemistry": ["Blood Sugar", "LFT", "RFT", "Cholesterol"],
+      "Immunology": ["CRP", "RF", "ANA"],
+      "Serology": ["Widal Test", "HbsAg", "HCV"],
+      "Pathology": ["Stool R/E", "Urine R/E"],
+      "Molecular Biology": ["PCR COVID", "HIV PCR"],
+      "Virology": ["Dengue NS1", "Influenza A/B"],
+      "Cytology": ["FNAC", "Pap Smear"],
+      "Histopathology": ["Biopsy", "Bone Marrow"]
     };
+
+    const selectedTests = [];
 
     function logout() {
       localStorage.removeItem("loggedIn");
       window.location.href = "login.html";
     }
 
-    function loadTests() {
-      const dept = document.getElementById("department").value;
-      const container = document.getElementById("tests");
-      container.innerHTML = "";
-      if (dept && testsDB[dept]) {
-        testsDB[dept].forEach((test, idx) => {
-          container.innerHTML += `
-            <label><input type="checkbox" value="${idx}"> ${test.name} (${test.param}) [${test.normal}]</label>
-          `;
-        });
+    function populateDepartments() {
+      const deptSelect = document.getElementById("departmentSelect");
+      Object.keys(allDepartments).forEach(dep => {
+        const opt = document.createElement("option");
+        opt.value = dep;
+        opt.innerText = dep;
+        deptSelect.appendChild(opt);
+      });
+    }
+
+    function showTests() {
+      const selectedDept = document.getElementById("departmentSelect").value;
+      const testArea = document.getElementById("test-options");
+      testArea.innerHTML = "";
+      if (!selectedDept) return;
+      allDepartments[selectedDept].forEach(test => {
+        const btn = document.createElement("button");
+        btn.innerText = test;
+        btn.onclick = () => addTest(test, selectedDept);
+        testArea.appendChild(btn);
+      });
+    }
+
+    function addTest(testName, department) {
+      const testObj = { department, name: testName };
+      if (!selectedTests.find(t => t.name === testName)) {
+        selectedTests.push(testObj);
+        const li = document.createElement("li");
+        li.innerText = `${department}: ${testName}`;
+        document.getElementById("test-list").appendChild(li);
       }
     }
 
@@ -123,28 +110,11 @@
       const cnic = document.getElementById("cnic").value.trim();
       const phone = document.getElementById("phone").value.trim();
       const address = document.getElementById("address").value.trim();
-      const dept = document.getElementById("department").value;
 
-      if (!name || !fatherName || !cnic || !phone || !address || !dept) {
-        alert("تمام خانے مکمل کریں");
+      if (!name || !fatherName || !cnic || !phone || !address || selectedTests.length === 0) {
+        alert("تمام خانے مکمل کریں ");
         return;
       }
-
-      const checkboxes = document.querySelectorAll("#tests input[type='checkbox']:checked");
-      if (checkboxes.length === 0) {
-        alert("کم از کم ایک ٹیسٹ منتخب کریں");
-        return;
-      }
-
-      const selectedTests = Array.from(checkboxes).map(cb => {
-        const test = testsDB[dept][cb.value];
-        return {
-          name: test.name,
-          param: test.param,
-          normal: test.normal,
-          result: ""
-        };
-      });
 
       const date = new Date();
       const year = date.getFullYear();
@@ -153,7 +123,6 @@
 
       const patient = {
         mrn, name, fatherName, cnic, phone, address,
-        department: dept,
         selectedTests,
         sample
       };
@@ -162,11 +131,12 @@
       patients.push(patient);
       localStorage.setItem("patientList", JSON.stringify(patients));
 
-      alert("رجسٹریشن مکمل ✅");
+      alert("رجسٹریشن مکمل �2�");
       window.open(`registration-slip.html?mrn=${mrn}`, "_blank");
       location.reload();
     }
-  </script>
 
+    window.onload = populateDepartments;
+  </script>
 </body>
 </html>
