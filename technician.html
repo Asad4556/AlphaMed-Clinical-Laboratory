@@ -1,3 +1,4 @@
+<!-- File: technician.html -->
 <!DOCTYPE html>
 <html lang="ur">
 <head>
@@ -18,7 +19,7 @@
 
   <script>
     function logout() {
-      localStorage.removeItem("loggedIn");
+      localStorage.removeItem("loggedInRole");
       window.location.href = "login.html";
     }
 
@@ -43,17 +44,19 @@
       }
 
       let html = `<h3>👤 ${patient.name}</h3>`;
-      html += `<table><tr><th>ٹیسٹ</th><th>ریزلٹ</th><th>مرد نارمل</th><th>خاتون نارمل</th></tr>`;
+      html += `<table><tr><th>ڈپارٹمنٹ</th><th>ٹیسٹ</th><th>ریزلٹ</th><th>نارمل رینج</th></tr>`;
+
       patient.selectedTests.forEach((test, index) => {
         html += `
           <tr>
+            <td>${test.department || "-"}</td>
             <td>${test.name}</td>
             <td><input type="text" id="result-${index}" placeholder="ریزلٹ لکھیں" /></td>
-            <td>${test.male}</td>
-            <td>${test.female}</td>
+            <td>${test.normal || "-"}</td>
           </tr>
         `;
       });
+
       html += `</table><br><button onclick="saveReport('${mrn}')">💾 رپورٹ محفوظ کریں</button>`;
       document.getElementById("test-area").innerHTML = html;
     }
@@ -62,15 +65,16 @@
       const patients = JSON.parse(localStorage.getItem("patientList") || "[]");
       const patient = patients.find(p => p.mrn === mrn);
       const results = patient.selectedTests.map((test, index) => ({
+        department: test.department || "-",
         test: test.name,
         result: document.getElementById(`result-${index}`).value.trim(),
-        male: test.male,
-        female: test.female
+        normal: test.normal || "-"
       }));
 
       const allReports = JSON.parse(localStorage.getItem("labReports") || "[]");
       allReports.push({
         mrn: mrn,
+        name: patient.name,
         results: results,
         date: new Date().toISOString()
       });
