@@ -1,112 +1,87 @@
 <!DOCTYPE html>
 <html lang="ur">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>ٹیسٹ رزلٹ شامل کریں - AlphaMed</title>
   <style>
     body {
-      background: #121212;
-      color: #fff;
-      font-family: sans-serif;
-      padding: 40px;
-      direction: rtl;
-      text-align: center;
+      background: #121212; color: #fff; font-family: sans-serif; padding: 40px; direction: rtl;
     }
-    h2 {
-      color: #00ffaa;
-      margin-bottom: 20px;
-    }
+    h2 { color: #00ffaa; }
     input, button {
-      width: 90%;
-      padding: 12px;
-      margin: 8px 0;
-      font-size: 16px;
-      border: none;
-      border-radius: 6px;
-      background: #1e1e1e;
-      color: #fff;
+      width: 100%; padding: 10px; border: none; border-radius: 6px; background: #1e1e1e; color: #fff; margin: 5px 0;
     }
-    button {
-      background: #00aaff;
-      cursor: pointer;
-      font-weight: bold;
-    }
+    button { background: #00aaff; cursor: pointer; }
     table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
+      width: 100%; border-collapse: collapse; margin-top: 20px;
     }
     th, td {
-      border: 1px solid #444;
-      padding: 10px;
+      border: 1px solid #444; padding: 10px; text-align: center;
     }
-    th {
-      background: #222;
-    }
-    .logout-btn {
-      float: left;
-      background: crimson;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 6px;
-      color: #fff;
-      cursor: pointer;
-    }
+    th { background: #222; }
   </style>
 </head>
 <body>
-
-  <button class="logout-btn" onclick="logout()">🔒 لاگ آؤٹ</button>
   <h2>🧬 ٹیسٹ رزلٹ شامل کریں</h2>
 
-  <input type="text" id="mrn" placeholder="MRN نمبر (مثال: MRN-25-2025-00001)">
+  <input type="text" id="mrn" placeholder="MRN نمبر">
   <button onclick="loadPatient()">لوڈ کریں</button>
 
   <div id="test-area"></div>
 
   <script>
-    function logout() {
-      localStorage.removeItem("loggedIn");
-      window.location.href = "login.html";
-    }
-
     function loadPatient() {
       const mrn = document.getElementById("mrn").value.trim();
-      if (!mrn) { alert("براہ کرم MRN درج کریں"); return; }
-
       const patients = JSON.parse(localStorage.getItem("patientList") || "[]");
-      const patient = patients.find(p => p.mrn === mrn);
+      const patient = patients.find(p => p.mrn.trim() === mrn);
 
-      if (!patient) {
-        alert("مریض نہیں ملا");
-        return;
+      if (!patient) { 
+        alert("مریض نہیں ملا"); 
+        return; 
       }
 
       if (!patient.selectedTests || patient.selectedTests.length === 0) {
-        alert("کوئی ٹیسٹ موجود نہیں");
+        alert("کوئی ٹیسٹ نہیں ملا");
         return;
       }
 
-      let html = `<table><tr><th>ٹیسٹ</th><th>ریزلٹ</th><th>پیرامیٹر</th><th>نارمل ویلیو</th></tr>`;
-      patient.selectedTests.forEach((test, i) => {
+      let html = `<table><tr><th>ٹیسٹ</th><th>ریزلٹ</th><th>مرد نارمل</th><th>خاتون نارمل</th></tr>`;
+      patient.selectedTests.forEach((test, index) => {
         html += `
           <tr>
             <td>${test.name}</td>
-            <td><input type="text" id="result-${i}" placeholder="ریزلٹ لکھیں"></td>
-            <td>${test.parameter}</td>
-            <td>${test.normal}</td>
+            <td><input type="text" id="result-${index}" placeholder="ریزلٹ لکھیں" /></td>
+            <td>${test.male}</td>
+            <td>${test.female}</td>
           </tr>
         `;
       });
-      html += `</table><br><button onclick="saveResults('${mrn}')">✅ محفوظ کریں</button>`;
+      html += `</table><br><button onclick="saveResult('${mrn}')">محفوظ کریں</button>`;
       document.getElementById("test-area").innerHTML = html;
     }
 
-    function saveResults(mrn) {
+    function saveResult(mrn) {
       const patients = JSON.parse(localStorage.getItem("patientList") || "[]");
-      const patient = patients.find(p => p.mrn === mrn);
-      const filledResults = patient.selectedTests.map((test, i) => ({
+      const patient = patients.find(p => p.mrn.trim() === mrn.trim());
+      const assignedTests = patient.selectedTests || [];
+
+      const results = assignedTests.map((test, index) => ({
         test: test.name,
-        parameter: test.parameter,
-        normal: test.normal,
-        result: document.getElementById(`result-${i}`).value.trim()
+        result: document.getElementById(`result-${index}`).value.trim(),
+        male: test.male,
+        female: test.female
+      }));
+
+      const allReports = JSON.parse(localStorage.getItem("labReports") || "[]");
+      allReports.push({
+        mrn,
+        results,
+        date: new Date().toISOString()
+      });
+      localStorage.setItem("labReports", JSON.stringify(allReports));
+      alert("رزلٹ محفوظ ہو گیا ✅");
+      location.reload();
+    }
+  </script>
+</body>
+</html>
