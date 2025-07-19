@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+  <meta charset="UTF-8">
+  <title>ریسپشن ڈیش بورڈ - AlphaMed</title>
+  <style>
+    body {
+      background: #121212; color: #fff; font-family: sans-serif;
+      padding: 40px; direction: rtl; text-align: right;
+    }
+    h2 { color: #00ffaa; }
+    button {
+      padding: 12px 20px; margin: 10px;
+      border: none; border-radius: 6px;
+      background: #00aaff; color: #fff; cursor: pointer; font-weight: bold;
+    }
+    .logout { background: crimson; }
+  </style>
+</head>
+<body>
+  <h2>💼 ریسپشن ڈیش بورڈ</h2>
+
+  <button onclick="location.href='register_patient.html'">مریض رجسٹر کریں</button>
+  <button onclick="location.href='view_reports.html'">رپورٹ دیکھیں</button>
+  <button class="logout" onclick="logout()">🔒 لاگ آؤٹ</button>
+
+  <script>
+    function logout() {
+      localStorage.removeItem("loggedIn");
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>
