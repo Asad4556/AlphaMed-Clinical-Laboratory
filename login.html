@@ -1,1 +1,110 @@
-<!-- Login -->
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+  <meta charset="UTF-8" />
+  <title>لاگ ان - AlphaMed</title>
+  <style>
+    body {
+      background: #121212; color: #fff; font-family: sans-serif;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      height: 100vh; margin: 0; text-align: center;
+    }
+    h2 {
+      color: #00ffaa; margin-bottom: 20px;
+    }
+    input {
+      padding: 12px; margin: 10px 0; width: 80%;
+      border: none; border-radius: 6px; background: #1e1e1e; color: #fff;
+    }
+    button {
+      padding: 12px 20px; margin: 10px;
+      border: none; border-radius: 6px; background: #00aaff; color: #fff;
+      cursor: pointer; font-weight: bold;
+    }
+    .toggle-pass {
+      cursor: pointer; font-size: 12px; color: #00ffaa;
+    }
+  </style>
+</head>
+<body>
+  <h2>لاگ ان کریں</h2>
+
+  <select id="role">
+    <option value="admin">ایڈمن</option>
+    <option value="reception">ریسپشن</option>
+    <option value="technician">ٹیکنیشن</option>
+  </select>
+
+  <input type="text" id="cnic" placeholder="CNIC" />
+  <input type="password" id="password" placeholder="پاس ورڈ" />
+  <div class="toggle-pass" onclick="togglePassword()">👁 پاس ورڈ دکھائیں</div>
+
+  <button onclick="login()">لاگ ان</button>
+  <button onclick="showChange()">پاس ورڈ تبدیل کریں</button>
+
+  <div id="changePassArea" style="display:none;">
+    <input type="password" id="oldPass" placeholder="پرانا پاس ورڈ" />
+    <input type="password" id="newPass" placeholder="نیا پاس ورڈ" />
+    <button onclick="changePass()">تبدیل کریں</button>
+  </div>
+
+  <script>
+    const defaultCreds = {
+      admin: { cnic: "34501-8971113-7", password: "Asad@2723" },
+      reception: { cnic: "12345-6789012-3", password: "Reception@123" },
+      technician: { cnic: "98765-4321098-7", password: "Tech@123" }
+    };
+
+    // Save once if not exists
+    if (!localStorage.getItem("logins")) {
+      localStorage.setItem("logins", JSON.stringify(defaultCreds));
+    }
+
+    function togglePassword() {
+      const pass = document.getElementById("password");
+      pass.type = pass.type === "password" ? "text" : "password";
+    }
+
+    function login() {
+      const role = document.getElementById("role").value;
+      const cnic = document.getElementById("cnic").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      const logins = JSON.parse(localStorage.getItem("logins"));
+      const creds = logins[role];
+
+      if (cnic === creds.cnic && password === creds.password) {
+        localStorage.setItem("loggedIn", role);
+        if (role === "admin") window.location.href = "admin_dashboard.html";
+        if (role === "reception") window.location.href = "reception_dashboard.html";
+        if (role === "technician") window.location.href = "technician_dashboard.html";
+      } else {
+        alert("غلط CNIC یا پاس ورڈ!");
+      }
+    }
+
+    function showChange() {
+      document.getElementById("changePassArea").style.display = "block";
+    }
+
+    function changePass() {
+      const role = document.getElementById("role").value;
+      const oldP = document.getElementById("oldPass").value.trim();
+      const newP = document.getElementById("newPass").value.trim();
+
+      const logins = JSON.parse(localStorage.getItem("logins"));
+      const creds = logins[role];
+
+      if (oldP === creds.password) {
+        creds.password = newP;
+        logins[role] = creds;
+        localStorage.setItem("logins", JSON.stringify(logins));
+        alert("پاس ورڈ تبدیل ہو گیا ✅");
+        location.reload();
+      } else {
+        alert("پرانا پاس ورڈ غلط ہے!");
+      }
+    }
+  </script>
+</body>
+</html>
