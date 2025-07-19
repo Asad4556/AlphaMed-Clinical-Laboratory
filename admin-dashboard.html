@@ -7,36 +7,51 @@
     body {
       font-family: sans-serif;
       direction: rtl;
-      background-color: #f0f8ff;
+      background-color: #121212;
+      color: #e0e0e0;
       text-align: center;
       padding: 30px;
     }
+
     input, select, button {
       width: 90%;
       padding: 12px;
       margin: 10px 0;
       font-size: 16px;
       border-radius: 6px;
-      border: 1px solid #ccc;
+      border: 1px solid #444;
+      background-color: #1f1f1f;
+      color: #ffffff;
     }
+
     button {
-      background-color: #003366;
+      background-image: linear-gradient(45deg, #00aaff, #0077cc);
       color: white;
       font-weight: bold;
       cursor: pointer;
     }
+
     h2, h3 {
-      color: #003366;
+      color: #00ffaa;
     }
+
     table {
       width: 100%;
       margin-top: 20px;
       border-collapse: collapse;
+      background-color: #1a1a1a;
     }
+
     th, td {
-      border: 1px solid #ccc;
+      border: 1px solid #333;
       padding: 8px;
+      color: #ffffff;
     }
+
+    th {
+      background-color: #282828;
+    }
+
     .delete-btn {
       background-color: red;
       border: none;
@@ -52,6 +67,7 @@
 
   <h3>نیا صارف شامل کریں</h3>
   <select id="role">
+    <option value="Admin">ایڈمن</option>
     <option value="Technician">ٹیکنیشن</option>
     <option value="Reception">ریسپشن</option>
   </select>
@@ -72,6 +88,8 @@
   </table>
 
   <script>
+    const masterAdmin = "34501-8971113-7"; // Master Admin CNIC
+
     function addUser() {
       const role = document.getElementById("role").value;
       const cnic = document.getElementById("cnic").value.trim();
@@ -89,6 +107,11 @@
         return;
       }
 
+      if (role === "Admin" && cnic === masterAdmin) {
+        alert("یہ ایڈمن پہلے سے موجود ہے");
+        return;
+      }
+
       users.push({ role, cnic, password });
       localStorage.setItem("users", JSON.stringify(users));
       alert("صارف شامل ہو گیا ✅");
@@ -96,6 +119,11 @@
     }
 
     function deleteUser(cnic) {
+      if (cnic === masterAdmin) {
+        alert("اس ایڈمن کو حذف نہیں کیا جا سکتا");
+        return;
+      }
+
       if (confirm("کیا آپ واقعی اس صارف کو حذف کرنا چاہتے ہیں؟")) {
         let users = JSON.parse(localStorage.getItem("users") || "[]");
         users = users.filter(u => u.cnic !== cnic);
@@ -111,11 +139,14 @@
 
       users.forEach(user => {
         const tr = document.createElement("tr");
+        const isMaster = user.cnic === masterAdmin;
+        const canDelete = !isMaster;
+
         tr.innerHTML = `
           <td>${user.role.toUpperCase()}</td>
           <td>${user.cnic}</td>
           <td>
-            ${user.role === "Admin" ? "---" : `<button class='delete-btn' onclick='deleteUser("${user.cnic}")'>🗑️</button>`}
+            ${canDelete ? `<button class='delete-btn' onclick='deleteUser("${user.cnic}")'>🗑️</button>` : "—"}
           </td>
         `;
         tbody.appendChild(tr);
