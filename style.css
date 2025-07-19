@@ -1,1 +1,138 @@
-/* style.css content */
+/* General Dark Theme Setup */
+body {
+  background-color: #121212;
+  color: #e0e0e0;
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 20px;
+  direction: rtl;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5 {
+  color: #00ffaa;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+/* Input Fields */
+input, select, textarea {
+  background-color: #1e1e1e;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 16px;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 15px;
+}
+
+/* Buttons */
+button {
+  background: linear-gradient(135deg, #00aaff, #0066cc);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: linear-gradient(135deg, #0099dd, #0055aa);
+}
+
+/* Table Styling */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: #1e1e1e;
+  border: 1px solid #333;
+}
+
+th, td {
+  border: 1px solid #444;
+  padding: 10px;
+  text-align: center;
+  color: #ffffff;
+}
+
+th {
+  background-color: #222;
+  color: #00ffaa;
+}
+
+tr:nth-child(even) {
+  background-color: #181818;
+}
+
+/* Form Containers */
+.form-section {
+  background-color: #1c1c1c;
+  border: 1px solid #333;
+  padding: 20px;
+  margin-bottom: 30px;
+  border-radius: 10px;
+}
+
+/* Summary Boxes */
+.summary-box {
+  display: inline-block;
+  margin: 10px;
+  padding: 15px 20px;
+  background-color: #1e1e1e;
+  border: 1px solid #444;
+  border-radius: 8px;
+  min-width: 200px;
+  text-align: center;
+}
+
+.summary-box h4 {
+  color: #00ffaa;
+  margin-bottom: 5px;
+}
+
+/* Watermark (Optional) */
+.watermark {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  font-size: 80px;
+  color: rgba(255, 255, 255, 0.05);
+  transform: translate(-50%, -50%) rotate(-30deg);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Logout Button */
+.logout-button {
+  background-color: crimson;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  float: left;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* Barcode SVG Styling */
+svg.barcode {
+  display: block;
+  margin: 20px auto;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .summary-box {
+    width: 100%;
+    margin: 10px 0;
+  }
+
+  input, select, textarea, button {
+    font-size: 15px;
+  }
+}
