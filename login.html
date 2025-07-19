@@ -1,22 +1,20 @@
 <!DOCTYPE html>
 <html lang="ur">
 <head>
-  <meta charset="UTF-8" />
-  <title>لاگ ان</title>
+  <meta charset="UTF-8">
+  <title>لاگ ان صفحہ</title>
   <style>
     body {
-      background-color: #111;
+      background-color: #121212;
       color: white;
-      font-family: sans-serif;
+      font-family: 'Noto Naskh Arabic', sans-serif;
       text-align: center;
       padding: 50px;
       direction: rtl;
     }
-
     h2 {
       color: #00ffaa;
     }
-
     input, select {
       padding: 12px;
       width: 80%;
@@ -24,25 +22,22 @@
       font-size: 16px;
       border-radius: 5px;
       border: none;
-      background-color: #222;
+      background-color: #1e1e1e;
       color: white;
     }
-
     .password-wrapper {
       position: relative;
       width: 80%;
       margin: auto;
     }
-
     .toggle-password {
       position: absolute;
       left: 10px;
       top: 50%;
       transform: translateY(-50%);
       cursor: pointer;
-      color: #aaa;
+      color: #ccc;
     }
-
     button {
       background-color: #00aaff;
       padding: 10px 20px;
@@ -53,27 +48,36 @@
       margin-top: 15px;
       border-radius: 5px;
     }
+    .login-box {
+      background-color: #1c1c1c;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
   </style>
 </head>
 <body>
-  <h2>لاگ ان کریں</h2>
+  <h2>ایلفا میڈ کلینیکل لیب</h2>
+  <p>براہ کرم اپنا رول منتخب کریں اور لاگ ان کریں</p>
 
-  <select id="role">
-    <option value="Admin">ایڈمن</option>
-    <option value="Technician">ٹیکنیشن</option>
-    <option value="Reception">ریسپشن</option>
-  </select>
-
-  <br />
-  <input type="text" id="cnic" placeholder="شناختی کارڈ نمبر (CNIC)" />
-
-  <div class="password-wrapper">
-    <input type="password" id="password" placeholder="پاسورڈ" />
-    <span class="toggle-password" onclick="togglePassword()">👁️</span>
+  <div class="login-box">
+    <h3>لاگ ان کریں</h3>
+    <select id="role">
+      <option value="Admin">ایڈمن</option>
+      <option value="Technician">ٹیکنیشن</option>
+      <option value="Reception">ریسپشن</option>
+    </select>
+    <br />
+    <input type="text" id="cnic" placeholder="شناختی کارڈ نمبر (CNIC)" />
+    <div class="password-wrapper">
+      <input type="password" id="password" placeholder="پاسورڈ" />
+      <span class="toggle-password" onclick="togglePassword()">👁️</span>
+    </div>
+    <button onclick="login()">لاگ ان</button>
   </div>
-
-  <br />
-  <button onclick="login()">لاگ ان</button>
 
   <script>
     const defaultAdmin = {
@@ -92,7 +96,7 @@
       const cnic = document.getElementById("cnic").value.trim();
       const password = document.getElementById("password").value.trim();
 
-      // Check for default admin
+      // Default admin login
       if (
         role === defaultAdmin.role &&
         cnic === defaultAdmin.cnic &&
@@ -106,14 +110,18 @@
       // Check in saved users
       const users = JSON.parse(localStorage.getItem("users") || "[]");
       const user = users.find(
-        u => u.cnic === cnic && u.password === password && u.role === role
+        u => u.role === role && u.cnic === cnic && u.password === password
       );
 
       if (user) {
         localStorage.setItem("loggedIn", JSON.stringify(user));
-        if (role === "Technician") window.location.href = "technician.html";
-        else if (role === "Reception") window.location.href = "reception.html";
-        else if (role === "Admin") window.location.href = "admin-dashboard.html";
+        if (role === "Technician") {
+          window.location.href = "technician.html";
+        } else if (role === "Reception") {
+          window.location.href = "reception.html";
+        } else {
+          window.location.href = "admin-dashboard.html";
+        }
       } else {
         alert("غلط CNIC یا پاسورڈ");
       }
