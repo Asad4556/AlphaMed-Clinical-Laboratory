@@ -1,1 +1,108 @@
-body { background: #121212; color: #e0e0e0; font-family: sans-serif; }
+/* ======= Global Reset ======= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #121212;
+  color: #e0e0e0;
+  padding: 20px;
+}
+
+/* ======= Headings ======= */
+h1, h2, h3, h4 {
+  color: #00ffaa;
+  margin-bottom: 20px;
+}
+
+/* ======= Inputs ======= */
+input, select {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background-color: #1f1f1f;
+  color: white;
+}
+
+/* ======= Buttons ======= */
+button {
+  padding: 12px 20px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  color: white;
+  background-image: linear-gradient(45deg, #00aaff, #0077cc);
+  transition: background 0.3s;
+}
+
+button:hover {
+  background-image: linear-gradient(45deg, #0077cc, #005599);
+}
+
+.logout-btn {
+  background-color: crimson;
+  padding: 8px 16px;
+  float: left;
+}
+
+/* ======= Tables ======= */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: #1a1a1a;
+}
+
+th, td {
+  padding: 12px;
+  border: 1px solid #333;
+}
+
+th {
+  background-color: #282828;
+  color: #00ffaa;
+}
+
+/* ======= Form Section ======= */
+.form-section {
+  background-color: #1e1e1e;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 30px;
+  border: 1px solid #333;
+}
+
+/* ======= Watermark ======= */
+.watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.1;
+  font-size: 60px;
+  color: #003366;
+  pointer-events: none;
+}
+
+/* ======= Barcode ======= */
+#barcode {
+  margin-top: 20px;
+}
+
+/* ======= Responsive ======= */
+@media (max-width: 600px) {
+  input, select, button {
+    font-size: 14px;
+  }
+
+  th, td {
+    font-size: 13px;
+  }
+}
