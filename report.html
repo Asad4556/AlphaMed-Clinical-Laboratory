@@ -1,97 +1,70 @@
 <!DOCTYPE html>
 <html lang="ur">
 <head>
-  <meta charset="UTF-8">
-  <title>لیب رپورٹ - AlphaMed</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    .report-logo {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    .report-logo img {
-      max-width: 180px;
-    }
-    .report-header {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .report-section {
-      background-color: #1e1e1e;
-      padding: 20px;
-      border-radius: 10px;
-      border: 1px solid #333;
-    }
-    .status-arrow {
-      font-size: 20px;
-      font-weight: bold;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <title>رپورٹ - AlphaMed</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
-<div class="container">
-  <div class="report-logo">
-    <img src="logo.png" alt="Lab Logo">
+  <div class="header">
+    <h2>🧾 مریض کی رپورٹ</h2>
+    <button class="logout-btn" onclick="logout()">🔒 لاگ آؤٹ</button>
   </div>
 
-  <div class="report-header">
-    <h2>🧾 لیبارٹری رپورٹ</h2>
-    <p id="report-date"></p>
+  <div class="form-section centered">
+    <input type="text" id="mrn" placeholder="MRN نمبر درج کریں (مثال: MRN-24-00001)" />
+    <button onclick="loadReport()">🔍 رپورٹ لوڈ کریں</button>
   </div>
 
-  <div id="report-body" class="report-section"></div>
-</div>
+  <div id="report-area" class="centered"></div>
 
-<script>
-  const urlParams = new URLSearchParams(window.location.search);
-  const mrn = urlParams.get("mrn");
-  const patients = JSON.parse(localStorage.getItem("patientList") || "[]");
-  const reports = JSON.parse(localStorage.getItem("labReports") || "[]");
+  <script>
+    function logout() {
+      localStorage.removeItem("loggedIn");
+      window.location.href = "login.html";
+    }
 
-  const patient = patients.find(p => p.mrn === mrn);
-  const report = reports.find(r => r.mrn === mrn);
+    function loadReport() {
+      const mrn = document.getElementById("mrn").value.trim();
+      if (!mrn) {
+        alert("براہ کرم MRN درج کریں");
+        return;
+      }
 
-  const container = document.getElementById("report-body");
+      const reports = JSON.parse(localStorage.getItem("labReports") || "[]");
+      const report = reports.find(r => r.mrn === mrn);
 
-  if (!patient || !report) {
-    container.innerHTML = `<p style="color: red; text-align: center;">رپورٹ دستیاب نہیں</p>`;
-  } else {
-    document.getElementById("report-date").innerText = `تاریخ: ${new Date(report.date).toLocaleDateString('ur-PK')}`;
+      if (!report) {
+        alert("رپورٹ نہیں ملی");
+        return;
+      }
 
-    let html = `
-      <p><strong>نام:</strong> ${patient.name}</p>
-      <p><strong>MRN:</strong> ${patient.mrn}</p>
-      <p><strong>سیمپل نمبر:</strong> ${patient.sample}</p>
-      <hr>
-      <table>
+      let html = `<table>
         <tr>
           <th>ٹیسٹ</th>
           <th>ریزلٹ</th>
-          <th>نارمل ویلیو</th>
-          <th>اسٹیٹس</th>
-        </tr>
-    `;
+          <th>نارمل</th>
+          <th>Status</th>
+        </tr>`;
 
-    report.results.forEach(r => {
-      let color = "lightgreen";
-      if (r.arrow === "↑") color = "red";
-      else if (r.arrow === "↓") color = "orange";
+      report.results.forEach(result => {
+        let color = "lightgreen";
+        if (result.status === "کم") color = "orange";
+        if (result.status === "زیادہ") color = "red";
 
-      html += `
-        <tr>
-          <td>${r.test}</td>
-          <td>${r.result}</td>
-          <td>${r.normal}</td>
-          <td class="status-arrow" style="color: ${color};">${r.arrow}</td>
-        </tr>
-      `;
-    });
+        html += `
+          <tr>
+            <td>${result.test}</td>
+            <td>${result.result}</td>
+            <td>${result.normal}</td>
+            <td style="color:${color}">${result.arrow} (${result.status})</td>
+          </tr>
+        `;
+      });
 
-    html += `</table>`;
-    container.innerHTML = html;
-  }
-</script>
-
+      html += `</table>`;
+      document.getElementById("report-area").innerHTML = html;
+    }
+  </script>
 </body>
 </html>
