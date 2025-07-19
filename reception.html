@@ -1,1 +1,121 @@
-<html><body><h2>Reception Module</h2><p>Patient Register Form Here</p></body></html>
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+  <meta charset="UTF-8" />
+  <title>ریسپشن - AlphaMed</title>
+  <script src="https://cdn.jsdelivr.net/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
+  <style>
+    body {
+      background: #121212;
+      color: #eee;
+      font-family: sans-serif;
+      direction: rtl;
+      padding: 30px;
+    }
+    h2 {
+      color: #00ffaa;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 6px;
+      background: #1e1e1e;
+      color: white;
+    }
+    button {
+      background: #00aaff;
+      cursor: pointer;
+    }
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #444;
+      padding: 10px;
+    }
+    .logout {
+      float: left;
+      background: crimson;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <button class="logout" onclick="logout()">🔒 لاگ آؤٹ</button>
+  <h2>مریض رجسٹریشن - ریسپشن</h2>
+  <input type="text" id="name" placeholder="نام" />
+  <input type="text" id="father" placeholder="والد/شوہر کا نام" />
+  <input type="text" id="cnic" placeholder="CNIC نمبر" />
+  <input type="text" id="phone" placeholder="فون نمبر" />
+  <input type="text" id="address" placeholder="پتہ" />
+
+  <select id="department">
+    <option value="">ڈیپارٹمنٹ منتخب کریں</option>
+    <option value="Blood">بلڈ</option>
+    <option value="Urine">یورین</option>
+    <option value="Xray">ایکس رے</option>
+  </select>
+
+  <button onclick="loadTests()">ٹیسٹ لوڈ کریں</button>
+  <div id="tests"></div>
+  <button onclick="registerPatient()">رجسٹر کریں</button>
+
+  <script>
+    let testsDB = {
+      Blood: [{name:"CBC", param:"WBC", male:"4-10", female:"4-10"},
+              {name:"RBC", param:"RBC", male:"4.5-5.5", female:"4-5"}],
+      Urine: [{name:"Urine R/E", param:"PH", male:"5-7", female:"5-7"}],
+      Xray: [{name:"Chest Xray", param:"Image", male:"N/A", female:"N/A"}]
+    };
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = "index.html";
+    }
+
+    function loadTests() {
+      const dept = document.getElementById("department").value;
+      const tests = testsDB[dept] || [];
+      let html = "";
+      tests.forEach((t, i) => {
+        html += `<label><input type="checkbox" id="t${i}"/> ${t.name} (${t.param})</label><br/>`;
+      });
+      document.getElementById("tests").innerHTML = html;
+    }
+
+    function registerPatient() {
+      const name = document.getElementById("name").value;
+      const father = document.getElementById("father").value;
+      const cnic = document.getElementById("cnic").value;
+      const phone = document.getElementById("phone").value;
+      const address = document.getElementById("address").value;
+      const dept = document.getElementById("department").value;
+      const selectedTests = [];
+      const tests = testsDB[dept] || [];
+      tests.forEach((t, i) => {
+        if (document.getElementById(`t${i}`).checked) selectedTests.push(t);
+      });
+
+      const now = new Date();
+      const mrn = `MRN-${now.getDate()}-${now.getFullYear()}-${Math.floor(Math.random()*10000)}`;
+      const sample = `AMCL-${now.getFullYear()}-${String(Math.floor(Math.random()*99999)).padStart(5,'0')}`;
+      const patient = { mrn, sample, name, father, cnic, phone, address, selectedTests };
+
+      const all = JSON.parse(localStorage.getItem("patientList") || "[]");
+      all.push(patient);
+      localStorage.setItem("patientList", JSON.stringify(all));
+
+      alert("رجسٹریشن مکمل ✅");
+      window.open(`slip.html?mrn=${mrn}`, "_blank");
+    }
+  </script>
+</body>
+</html>
