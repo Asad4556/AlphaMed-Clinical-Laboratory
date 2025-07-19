@@ -1,137 +1,128 @@
 <!DOCTYPE html>
 <html lang="ur">
 <head>
-  <meta charset="UTF-8">
-  <title>ایڈمن ڈیش بورڈ - AlphaMed</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8" />
+  <title>ایڈمن ڈیش بورڈ</title>
   <style>
     body {
-      background-color: #f0f8ff;
       font-family: sans-serif;
       direction: rtl;
+      background-color: #f0f8ff;
       text-align: center;
-      padding: 40px 20px;
+      padding: 30px;
     }
-
-    h1 {
-      color: #003366;
-      margin-bottom: 20px;
-    }
-
-    .btn {
-      display: inline-block;
-      margin: 10px;
-      padding: 12px 20px;
-      background-color: #003366;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
-      text-decoration: none;
-      cursor: pointer;
-    }
-
-    .btn:hover {
-      background-color: #002244;
-    }
-
-    .section {
-      background: white;
-      padding: 20px;
-      margin-top: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 8px rgba(0,0,0,0.1);
-      max-width: 500px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    input {
-      width: 100%;
-      padding: 10px;
+    input, select, button {
+      width: 90%;
+      padding: 12px;
       margin: 10px 0;
       font-size: 16px;
-      border-radius: 5px;
+      border-radius: 6px;
       border: 1px solid #ccc;
     }
-
-    select {
+    button {
+      background-color: #003366;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    h2, h3 {
+      color: #003366;
+    }
+    table {
       width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 5px;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+    th, td {
       border: 1px solid #ccc;
-      margin-bottom: 10px;
+      padding: 8px;
+    }
+    .delete-btn {
+      background-color: red;
+      border: none;
+      padding: 5px 10px;
+      color: white;
+      cursor: pointer;
+      border-radius: 4px;
     }
   </style>
 </head>
 <body>
+  <h2>ایڈمن ڈیش بورڈ</h2>
 
-  <h1>ایڈمن ڈیش بورڈ</h1>
+  <h3>نیا صارف شامل کریں</h3>
+  <select id="role">
+    <option value="Technician">ٹیکنیشن</option>
+    <option value="Reception">ریسپشن</option>
+  </select>
+  <input type="text" id="cnic" placeholder="شناختی کارڈ نمبر (CNIC)" />
+  <input type="password" id="password" placeholder="پاسورڈ" />
+  <button onclick="addUser()">صارف شامل کریں</button>
 
-  <!-- Quick Links -->
-  <a href="reception.html" class="btn">مریض رجسٹر کریں</a>
-  <a href="technician.html" class="btn">رپورٹ شامل کریں</a>
-  <button onclick="logout()" class="btn">لاگ آؤٹ</button>
-
-  <!-- User Add Section -->
-  <div class="section">
-    <h3>نیا صارف شامل کریں</h3>
-    <select id="role">
-      <option value="technician">ٹیکنیشن</option>
-      <option value="reception">ریسپشن</option>
-    </select>
-    <input type="text" id="cnic" placeholder="شناختی کارڈ نمبر (CNIC)" />
-    <input type="password" id="password" placeholder="پاس ورڈ" />
-    <button class="btn" onclick="addUser()">صارف شامل کریں</button>
-  </div>
-
-  <div class="section">
-    <h3>تمام صارفین</h3>
-    <ul id="userList"></ul>
-  </div>
+  <h3>تمام صارفین</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>رول</th>
+        <th>CNIC</th>
+        <th>عمل</th>
+      </tr>
+    </thead>
+    <tbody id="userTableBody"></tbody>
+  </table>
 
   <script>
-    const userList = document.getElementById("userList");
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
-
-    function renderUsers() {
-      userList.innerHTML = "";
-      users.forEach(u => {
-        const li = document.createElement("li");
-        li.textContent = `${u.role.toUpperCase()} – ${u.cnic}`;
-        userList.appendChild(li);
-      });
-    }
-
     function addUser() {
+      const role = document.getElementById("role").value;
       const cnic = document.getElementById("cnic").value.trim();
       const password = document.getElementById("password").value.trim();
-      const role = document.getElementById("role").value;
 
       if (!cnic || !password) {
         alert("تمام فیلڈز لازمی ہیں");
         return;
       }
 
+      const users = JSON.parse(localStorage.getItem("users") || "[]");
+
       if (users.find(u => u.cnic === cnic)) {
         alert("یہ CNIC پہلے سے موجود ہے");
         return;
       }
 
-      users.push({ cnic, password, role });
+      users.push({ role, cnic, password });
       localStorage.setItem("users", JSON.stringify(users));
-      alert("نیا صارف شامل ہو گیا ✅");
-      renderUsers();
+      alert("صارف شامل ہو گیا ✅");
+      loadUsers();
     }
 
-    function logout() {
-      sessionStorage.removeItem("loggedInUser");
-      window.location.href = "login.html";
+    function deleteUser(cnic) {
+      if (confirm("کیا آپ واقعی اس صارف کو حذف کرنا چاہتے ہیں؟")) {
+        let users = JSON.parse(localStorage.getItem("users") || "[]");
+        users = users.filter(u => u.cnic !== cnic);
+        localStorage.setItem("users", JSON.stringify(users));
+        loadUsers();
+      }
     }
 
-    renderUsers();
+    function loadUsers() {
+      const users = JSON.parse(localStorage.getItem("users") || "[]");
+      const tbody = document.getElementById("userTableBody");
+      tbody.innerHTML = "";
+
+      users.forEach(user => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${user.role.toUpperCase()}</td>
+          <td>${user.cnic}</td>
+          <td>
+            ${user.role === "Admin" ? "---" : `<button class='delete-btn' onclick='deleteUser("${user.cnic}")'>🗑️</button>`}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    loadUsers();
   </script>
-
 </body>
 </html>
