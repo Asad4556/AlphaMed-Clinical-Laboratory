@@ -2,150 +2,59 @@
 <html lang="ur">
 <head>
   <meta charset="UTF-8">
-  <title>رپورٹ - AlphaMed</title>
-  <script src="https://cdn.jsdelivr.net/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+  <title>رپورٹ دیکھیں</title>
   <style>
     body {
-      font-family: sans-serif;
+      background-color: #121212;
+      color: white;
       direction: rtl;
-      background-color: #f9f9f9;
+      font-family: 'Noto Naskh Arabic', sans-serif;
       padding: 30px;
-      text-align: center;
     }
-    .report {
-      max-width: 700px;
-      margin: auto;
-      background: white;
+    .report-container {
+      background-color: #1e1e1e;
       padding: 20px;
-      border: 1px solid #ccc;
-      position: relative;
-    }
-    .watermark {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 60px;
-      color: #003366;
-      opacity: 0.1;
-      z-index: 0;
-      pointer-events: none;
-    }
-    .report * {
-      z-index: 1;
-      position: relative;
-    }
-    .logo {
-      height: 60px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #00ffaa;
     }
     h2 {
-      margin: 5px 0;
-      color: #003366;
+      color: #00ffaa;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    table, th, td {
-      border: 1px solid #ccc;
-    }
-    th, td {
-      padding: 10px;
+    .note {
+      margin-top: 40px;
+      font-size: 12px;
       text-align: center;
-    }
-    #barcode {
-      margin-top: 20px;
-    }
-    button {
-      margin: 15px;
-      padding: 10px 20px;
-      background-color: #003366;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
+      color: #aaa;
     }
   </style>
 </head>
 <body>
-
-  <button onclick="downloadPDF()">📄 Download PDF</button>
-
-  <div class="report" id="report-content">
-    <div class="watermark">AlphaMed</div>
-    <img src="logo.png" class="logo" />
-    <h2>AlphaMed Clinical Laboratory</h2>
-
-    <p><strong>MRN:</strong> <span id="mrn"></span></p>
-    <p><strong>نام:</strong> <span id="name"></span></p>
-    <p><strong>CNIC:</strong> <span id="cnic"></span></p>
-    <p><strong>فون نمبر:</strong> <span id="phone"></span></p>
-    <p><strong>سیکشن:</strong> <span id="sections"></span></p>
-
-    <table id="test-table">
-      <thead>
-        <tr>
-          <th>ٹیسٹ</th>
-          <th>ریزلٹ</th>
-          <th>نارمل ویلیو</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Test rows will be added via script -->
-      </tbody>
-    </table>
-
-    <svg id="barcode"></svg>
-
-    <p style="text-align:center; font-size: 12px; color: #666; margin-top: 30px;">
-      This report is computer generated and does not require signature.
-    </p>
+  <div class="report-container">
+    <h2>مریض کی رپورٹ</h2>
+    <div id="reportContent">رپورٹ لوڈ ہو رہی ہے...</div>
+  </div>
+  <div class="note">
+    This report is computer generated and does not require signature.
   </div>
 
   <script>
-    function downloadPDF() {
-      const element = document.getElementById("report-content");
-      const opt = {
-        margin: 0.5,
-        filename: 'AlphaMed_Report.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'in', format: 'A4', orientation: 'portrait' }
-      };
-      html2pdf().set(opt).from(element).save();
-    }
-
     const urlParams = new URLSearchParams(window.location.search);
     const mrn = urlParams.get("mrn");
-    const patients = JSON.parse(localStorage.getItem("patients") || "[]");
-    const results = JSON.parse(localStorage.getItem("results") || "{}");
+    const patients = JSON.parse(localStorage.getItem("patientList") || "[]");
     const patient = patients.find(p => p.mrn === mrn);
 
     if (patient) {
-      document.getElementById("mrn").textContent = patient.mrn;
-      document.getElementById("name").textContent = patient.name;
-      document.getElementById("cnic").textContent = patient.cnic;
-      document.getElementById("phone").textContent = patient.phone;
-      document.getElementById("sections").textContent = patient.sections.join(", ");
-      JsBarcode("#barcode", patient.mrn, { format: "CODE128", width: 2, height: 50 });
-
-      const tbody = document.getElementById("test-table").querySelector("tbody");
-      const patientResults = results[patient.mrn] || [];
-
-      patientResults.forEach(test => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${test.test}</td>
-          <td>${test.result}</td>
-          <td>${test.normal}</td>
-        `;
-        tbody.appendChild(row);
-      });
+      document.getElementById("reportContent").innerHTML = `
+        <p><strong>نام:</strong> ${patient.fullName}</p>
+        <p><strong>شناختی کارڈ:</strong> ${patient.cnic}</p>
+        <p><strong>فون نمبر:</strong> ${patient.phone}</p>
+        <p><strong>MRN:</strong> ${patient.mrn}</p>
+        <p><strong>سیکشن:</strong> ${patient.testType}</p>
+        <p><strong>رپورٹ:</strong> ${patient.result || "رپورٹ ابھی شامل نہیں ہوئی"}</p>
+      `;
+    } else {
+      document.getElementById("reportContent").innerText = "رپورٹ نہیں ملی۔";
     }
   </script>
-
 </body>
 </html>
