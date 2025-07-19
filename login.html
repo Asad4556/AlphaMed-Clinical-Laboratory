@@ -2,119 +2,106 @@
 <html lang="ur">
 <head>
   <meta charset="UTF-8">
-  <title>لاگ ان - AlphaMed</title>
+  <title>لاگ ان صفحہ</title>
   <style>
     body {
-      background-color: #eef6ff;
       font-family: sans-serif;
       direction: rtl;
+      background-color: #121212;
+      color: #e0e0e0;
+      padding: 40px;
       text-align: center;
-      padding: 60px 20px;
     }
-
-    .login-box {
-      background: #fff;
+    .login-section {
+      background-color: #1f1f1f;
+      border: 1px solid #333;
+      border-radius: 10px;
+      margin: 20px auto;
+      padding: 20px;
+      width: 90%;
       max-width: 400px;
-      margin: auto;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
     }
-
+    h2 {
+      color: #00ffaa;
+      margin-bottom: 10px;
+    }
     input {
-      width: 100%;
+      width: 90%;
       padding: 12px;
       margin: 10px 0;
       font-size: 16px;
-      border: 1px solid #ccc;
       border-radius: 6px;
+      border: 1px solid #444;
+      background-color: #1f1f1f;
+      color: #fff;
     }
-
     button {
-      width: 100%;
-      padding: 12px;
-      background-color: #003366;
+      background-image: linear-gradient(45deg, #00aaff, #0077cc);
+      padding: 12px 20px;
       color: white;
-      font-size: 16px;
       font-weight: bold;
+      cursor: pointer;
       border: none;
       border-radius: 6px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #002244;
-    }
-
-    .checkbox-label {
-      font-size: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: right;
-      margin-top: -5px;
-      margin-bottom: 10px;
-    }
-
-    .checkbox-label input {
-      width: auto;
-      margin-left: 6px;
-    }
-
-    h2 {
-      color: #003366;
-      margin-bottom: 20px;
+      width: 90%;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
 
-  <div class="login-box">
-    <h2>لاگ ان کریں</h2>
-    <input type="text" id="cnic" placeholder="شناختی کارڈ نمبر (CNIC)" required />
-    <input type="password" id="password" placeholder="پاس ورڈ" required />
+  <h1>AlphaMed Clinical Laboratory</h1>
+  <p>براہ کرم اپنا رول منتخب کریں اور لاگ ان کریں</p>
 
-    <div class="checkbox-label">
-      <input type="checkbox" onclick="togglePassword()"> پاس ورڈ دکھائیں
-    </div>
+  <!-- Admin Login -->
+  <div class="login-section">
+    <h2>ایڈمن لاگ ان</h2>
+    <input type="text" id="adminCnic" placeholder="شناختی کارڈ نمبر (CNIC)">
+    <input type="password" id="adminPassword" placeholder="پاسورڈ">
+    <button onclick="login('Admin')">لاگ ان کریں</button>
+  </div>
 
-    <button onclick="login()">لاگ ان</button>
+  <!-- Reception Login -->
+  <div class="login-section">
+    <h2>ریسپشن لاگ ان</h2>
+    <input type="text" id="receptionCnic" placeholder="شناختی کارڈ نمبر (CNIC)">
+    <input type="password" id="receptionPassword" placeholder="پاسورڈ">
+    <button onclick="login('Reception')">لاگ ان کریں</button>
+  </div>
+
+  <!-- Technician Login -->
+  <div class="login-section">
+    <h2>ٹیکنیشن لاگ ان</h2>
+    <input type="text" id="technicianCnic" placeholder="شناختی کارڈ نمبر (CNIC)">
+    <input type="password" id="technicianPassword" placeholder="پاسورڈ">
+    <button onclick="login('Technician')">لاگ ان کریں</button>
   </div>
 
   <script>
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
+    function login(role) {
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      let cnic, password;
 
-    // Default admin user
-    const defaultAdmin = {
-      cnic: "34501-8971113-7",
-      password: "Asad@2723",
-      role: "admin"
-    };
+      if (role === 'Admin') {
+        cnic = document.getElementById('adminCnic').value;
+        password = document.getElementById('adminPassword').value;
+      } else if (role === 'Reception') {
+        cnic = document.getElementById('receptionCnic').value;
+        password = document.getElementById('receptionPassword').value;
+      } else if (role === 'Technician') {
+        cnic = document.getElementById('technicianCnic').value;
+        password = document.getElementById('technicianPassword').value;
+      }
 
-    if (!users.find(u => u.cnic === defaultAdmin.cnic)) {
-      users.push(defaultAdmin);
-      localStorage.setItem("users", JSON.stringify(users));
-    }
+      const matchedUser = users.find(u => u.cnic === cnic && u.password === password && u.role === role);
 
-    function togglePassword() {
-      const passField = document.getElementById("password");
-      passField.type = passField.type === "password" ? "text" : "password";
-    }
-
-    function login() {
-      const cnic = document.getElementById("cnic").value.trim();
-      const password = document.getElementById("password").value.trim();
-
-      const user = users.find(u => u.cnic === cnic && u.password === password);
-
-      if (user) {
-        sessionStorage.setItem("loggedInUser", JSON.stringify(user));
-        alert("لاگ ان کامیاب ✅");
-
-        if (user.role === "admin") window.location.href = "admin-dashboard.html";
-        else if (user.role === "reception") window.location.href = "reception.html";
-        else if (user.role === "technician") window.location.href = "technician.html";
+      if (matchedUser) {
+        localStorage.setItem('currentUser', JSON.stringify(matchedUser));
+        if (role === 'Admin') window.location.href = 'admin-dashboard.html';
+        if (role === 'Reception') window.location.href = 'reception.html';
+        if (role === 'Technician') window.location.href = 'technician.html';
       } else {
-        alert("غلط CNIC یا پاس ورڈ ❌");
+        alert('غلط CNIC یا پاسورڈ');
       }
     }
   </script>
