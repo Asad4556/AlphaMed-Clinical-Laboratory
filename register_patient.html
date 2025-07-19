@@ -1,7 +1,8 @@
+<!-- register_patient.html -->
 <!DOCTYPE html>
 <html lang="ur">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>مریض رجسٹریشن - AlphaMed</title>
   <style>
     body {
@@ -47,18 +48,12 @@
       cursor: pointer;
       margin-bottom: 20px;
     }
-
-    .test-list {
-      background-color: #1e1e1e;
-      border: 1px solid #333;
-      padding: 10px;
-      margin-top: 10px;
-      border-radius: 6px;
-    }
   </style>
 </head>
 <body>
+
   <button class="logout" onclick="logout()">🔒 لاگ آؤٹ</button>
+
   <h2>📝 مریض رجسٹریشن</h2>
 
   <label>نام</label>
@@ -76,30 +71,33 @@
   <label>ایڈریس</label>
   <input type="text" id="address" placeholder="ایڈریس" />
 
-  <label>ڈپارٹمنٹ منتخب کریں</label>
-  <select id="department">
-    <option value="">-- ڈیپارٹمنٹ --</option>
-    <option value="Pathology">پیتھالوجی</option>
-    <option value="Microbiology">مائیکروبیالوجی</option>
-    <option value="Radiology">ریڈیالوجی</option>
+  <label>ڈپارٹمنٹ</label>
+  <select id="department" onchange="loadTests()">
+    <option value="">ڈپارٹمنٹ منتخب کریں</option>
+    <option value="Blood">بلڈ</option>
+    <option value="Urine">یورین</option>
+    <option value="XRay">ایکس رے</option>
   </select>
 
-  <button onclick="loadTests()">ٹیسٹ لوڈ کریں</button>
-
-  <div id="testsArea"></div>
-  <h3>منتخب شدہ ٹیسٹ:</h3>
-  <div id="selectedTests" class="test-list"></div>
+  <label>ٹیسٹ منتخب کریں</label>
+  <div id="tests"></div>
 
   <button onclick="registerPatient()">رجسٹر کریں</button>
 
   <script>
-    const allTests = {
-      Pathology: ["CBC", "Blood Sugar", "LFT", "KFT"],
-      Microbiology: ["Urine Culture", "Sputum Culture"],
-      Radiology: ["X-Ray Chest", "MRI Brain"]
+    const testsDB = {
+      Blood: [
+        { name: "CBC", param: "WBC, RBC", normal: "4.5-11" },
+        { name: "Blood Sugar", param: "Glucose", normal: "70-110" }
+      ],
+      Urine: [
+        { name: "Urine R/E", param: "Color, pH", normal: "5.5-7" },
+        { name: "Urine Culture", param: "Bacteria", normal: "No Growth" }
+      ],
+      XRay: [
+        { name: "Chest X-Ray", param: "Lungs, Heart", normal: "Normal" }
+      ]
     };
-
-    const selectedTests = [];
 
     function logout() {
       localStorage.removeItem("loggedIn");
@@ -108,60 +106,67 @@
 
     function loadTests() {
       const dept = document.getElementById("department").value;
-      const area = document.getElementById("testsArea");
-      area.innerHTML = "";
-
-      if (dept && allTests[dept]) {
-        allTests[dept].forEach(test => {
-          const btn = document.createElement("button");
-          btn.innerText = test;
-          btn.onclick = () => addTest(dept, test);
-          area.appendChild(btn);
+      const container = document.getElementById("tests");
+      container.innerHTML = "";
+      if (dept && testsDB[dept]) {
+        testsDB[dept].forEach((test, idx) => {
+          container.innerHTML += `
+            <label><input type="checkbox" value="${idx}"> ${test.name} (${test.param}) [${test.normal}]</label>
+          `;
         });
       }
     }
 
-    function addTest(dept, test) {
-      const exists = selectedTests.find(t => t.name === test && t.department === dept);
-      if (!exists) {
-        selectedTests.push({ department: dept, name: test });
-        renderSelectedTests();
-      }
-    }
-
-    function renderSelectedTests() {
-      const div = document.getElementById("selectedTests");
-      div.innerHTML = selectedTests.map(t => `✅ ${t.department} - ${t.name}`).join("<br>");
-    }
-
     function registerPatient() {
-      const name = document.getElementById("name").value;
-      const father = document.getElementById("fatherName").value;
-      const cnic = document.getElementById("cnic").value;
-      const phone = document.getElementById("phone").value;
-      const address = document.getElementById("address").value;
+      const name = document.getElementById("name").value.trim();
+      const fatherName = document.getElementById("fatherName").value.trim();
+      const cnic = document.getElementById("cnic").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const address = document.getElementById("address").value.trim();
+      const dept = document.getElementById("department").value;
 
-      if (!name || !father || !cnic || !phone || !address || selectedTests.length === 0) {
-        alert("تمام معلومات اور کم از کم ایک ٹیسٹ ضروری ہے!");
+      if (!name || !fatherName || !cnic || !phone || !address || !dept) {
+        alert("تمام خانے مکمل کریں");
         return;
       }
 
-      const mrn = `MRN-${Date.now()}`;
-      const sample = `SMP-${Math.floor(Math.random() * 10000)}`;
+      const checkboxes = document.querySelectorAll("#tests input[type='checkbox']:checked");
+      if (checkboxes.length === 0) {
+        alert("کم از کم ایک ٹیسٹ منتخب کریں");
+        return;
+      }
+
+      const selectedTests = Array.from(checkboxes).map(cb => {
+        const test = testsDB[dept][cb.value];
+        return {
+          name: test.name,
+          param: test.param,
+          normal: test.normal,
+          result: ""
+        };
+      });
+
+      const date = new Date();
+      const year = date.getFullYear();
+      const mrn = `MRN-${date.getDate()}-${year}-${Math.floor(Math.random() * 10000)}`;
+      const sample = `AMCL-${year}-${String(Math.floor(Math.random() * 10000)).padStart(5, "0")}`;
 
       const patient = {
-        mrn, name, fatherName: father, cnic, phone, address, sample,
-        tests: selectedTests
+        mrn, name, fatherName, cnic, phone, address,
+        department: dept,
+        selectedTests,
+        sample
       };
 
-      const existing = JSON.parse(localStorage.getItem("patientList") || "[]");
-      existing.push(patient);
-      localStorage.setItem("patientList", JSON.stringify(existing));
+      const patients = JSON.parse(localStorage.getItem("patientList") || "[]");
+      patients.push(patient);
+      localStorage.setItem("patientList", JSON.stringify(patients));
 
       alert("رجسٹریشن مکمل ✅");
       window.open(`registration-slip.html?mrn=${mrn}`, "_blank");
       location.reload();
     }
   </script>
+
 </body>
 </html>
