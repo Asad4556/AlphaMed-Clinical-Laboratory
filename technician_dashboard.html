@@ -1,57 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Technician Dashboard - AlphaMed</title>
-  <link rel="stylesheet" href="style.css">
   <style>
     body {
       background-color: #121212;
       color: #ffffff;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: sans-serif;
       padding: 30px;
-      text-align: center;
+      direction: ltr;
     }
     h1 {
       color: #00ffaa;
     }
-    .dashboard-box {
+    .section {
       background-color: #1e1e1e;
       padding: 20px;
-      margin: 20px auto;
       border-radius: 10px;
-      width: 90%;
-      max-width: 500px;
-      box-shadow: 0 0 10px #00ffaa44;
+      margin-bottom: 30px;
     }
-    button {
+    .section h2 {
+      color: #00aaff;
+    }
+    .link-button {
+      display: inline-block;
       background-color: #00aaff;
-      border: none;
-      padding: 12px 20px;
       color: white;
-      font-size: 16px;
+      padding: 10px 20px;
       margin: 10px;
       border-radius: 6px;
-      cursor: pointer;
+      text-decoration: none;
+      font-weight: bold;
     }
-    button:hover {
+    .link-button:hover {
       background-color: #0088cc;
     }
-    .logout {
+    .logout-btn {
       background-color: crimson;
+      float: right;
+      padding: 10px 20px;
+      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #444;
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background-color: #222;
     }
   </style>
 </head>
 <body>
 
+  <button class="logout-btn" onclick="logout()">Logout</button>
+
   <h1>Technician Dashboard</h1>
 
-  <div class="dashboard-box">
-    <p>Welcome Technician 👨‍🔬</p>
-    <button onclick="location.href='add_test_result.html'">Add Test Results</button>
-    <button onclick="location.href='report.html'">View Reports</button>
-    <button onclick="location.href='change_password.html'">Change Password</button>
-    <button class="logout" onclick="logout()">Logout</button>
+  <div class="section">
+    <h2>Assigned Tests (From Reception)</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>MRN</th>
+          <th>Patient Name</th>
+          <th>Test Section</th>
+          <th>Tests</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="assignedTests"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>Actions</h2>
+    <a class="link-button" href="add_test_result.html">🧪 Add Test Result</a>
+    <a class="link-button" href="view_reports.html">📄 View Reports</a>
   </div>
 
   <script>
@@ -60,11 +95,24 @@
       window.location.href = "login.html";
     }
 
-    // Access check
-    const user = JSON.parse(localStorage.getItem("loggedIn"));
-    if (!user || user.role !== "Technician") {
-      window.location.href = "login.html";
+    const assignedTable = document.getElementById("assignedTests");
+
+    function loadAssignedTests() {
+      const patients = JSON.parse(localStorage.getItem("patients") || "[]");
+      const rows = patients.map(p => `
+        <tr>
+          <td>${p.mrn}</td>
+          <td>${p.fullName}</td>
+          <td>${p.section || '-'}</td>
+          <td>${(p.tests || []).join(", ")}</td>
+          <td><a class='link-button' href='add_test_result.html?mrn=${p.mrn}'>Add Result</a></td>
+        </tr>
+      `).join("");
+      assignedTable.innerHTML = rows;
     }
+
+    window.onload = loadAssignedTests;
   </script>
+
 </body>
 </html>
