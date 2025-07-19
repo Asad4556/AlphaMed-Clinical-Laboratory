@@ -1,1 +1,86 @@
-<!-- technician.html content -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Technician Panel - Add Test Results</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+</head>
+<body>
+  <h2>Technician - Enter Test Results</h2>
+
+  <input type="text" id="mrnInput" placeholder="Enter MRN (e.g. ACL-25-00001)" />
+  <button onclick="loadPatientTests()">Load Tests</button>
+
+  <div id="testResultsArea"></div>
+
+  <button onclick="saveResults()">Save Report</button>
+
+  <script>
+    function loadPatientTests() {
+      const mrn = document.getElementById("mrnInput").value.trim();
+      const patients = JSON.parse(localStorage.getItem("patients") || "[]");
+      const reports = JSON.parse(localStorage.getItem("labReports") || "[]");
+
+      const patient = patients.find(p => p.mrn === mrn);
+      const report = reports.find(r => r.mrn === mrn);
+
+      if (!patient || !report) {
+        alert("No record found for this MRN.");
+        return;
+      }
+
+      let html = `
+        <h3>Patient: ${patient.fullName}</h3>
+        <p>Section: ${report.section}</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Test</th>
+              <th>Result</th>
+              <th>Normal (Male)</th>
+              <th>Normal (Female)</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      report.results.forEach((test, index) => {
+        html += `
+          <tr>
+            <td>${test.test}</td>
+            <td><input type="text" id="result-${index}" value="${test.result || ""}" /></td>
+            <td>${test.male}</td>
+            <td>${test.female}</td>
+          </tr>
+        `;
+      });
+
+      html += `</tbody></table>`;
+      document.getElementById("testResultsArea").innerHTML = html;
+    }
+
+    function saveResults() {
+      const mrn = document.getElementById("mrnInput").value.trim();
+      let reports = JSON.parse(localStorage.getItem("labReports") || "[]");
+      const reportIndex = reports.findIndex(r => r.mrn === mrn);
+
+      if (reportIndex === -1) {
+        alert("Report not found.");
+        return;
+      }
+
+      const updatedResults = reports[reportIndex].results.map((test, i) => ({
+        ...test,
+        result: document.getElementById(`result-${i}`).value.trim()
+      }));
+
+      reports[reportIndex].results = updatedResults;
+      reports[reportIndex].updatedAt = new Date().toLocaleString();
+      localStorage.setItem("labReports", JSON.stringify(reports));
+
+      alert("Results saved successfully ✅");
+    }
+  </script>
+</body>
+</html>
