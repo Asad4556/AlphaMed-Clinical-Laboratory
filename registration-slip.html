@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+  <meta charset="UTF-8">
+  <title>رجسٹریشن سلپ</title>
+  <style>
+    body {
+      direction: rtl;
+      background: white;
+      color: black;
+      font-family: 'Noto Naskh Arabic', sans-serif;
+      padding: 20px;
+    }
+
+    .slip-container {
+      max-width: 600px;
+      margin: auto;
+      border: 2px dashed #000;
+      padding: 20px;
+      position: relative;
+    }
+
+    .watermark {
+      position: absolute;
+      top: 35%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0.1;
+      font-size: 60px;
+      font-weight: bold;
+      z-index: 0;
+    }
+
+    .logo {
+      max-width: 80px;
+    }
+
+    h2 {
+      margin: 10px 0;
+    }
+
+    .info {
+      margin-top: 20px;
+      font-size: 18px;
+      z-index: 2;
+      position: relative;
+    }
+
+    .barcode {
+      margin-top: 20px;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: black;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    @media print {
+      button {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="slip-container">
+    <div class="watermark">AlphaMed</div>
+
+    <img src="logo.png" class="logo" alt="Lab Logo" />
+    <h2>AlphaMed Clinical Laboratory</h2>
+    <h4>Quality Assurance Through Advance Technology</h4>
+
+    <div class="info">
+      <p><strong>مریض کا نام:</strong> <span id="pname">---</span></p>
+      <p><strong>MRN نمبر:</strong> <span id="mrn">---</span></p>
+      <p><strong>سیمپل نمبر:</strong> <span id="sample">---</span></p>
+      <p><strong>سیکشنز:</strong> <span id="sections">---</span></p>
+    </div>
+
+    <div class="barcode">
+      <canvas id="barcodeCanvas"></canvas>
+    </div>
+
+    <button onclick="window.print()">🖨️ پرنٹ کریں</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+  <script>
+    // Sample data — replace from localStorage or query
+    const patient = JSON.parse(localStorage.getItem("lastRegisteredPatient"));
+
+    if (patient) {
+      document.getElementById("pname").innerText = patient.name;
+      document.getElementById("mrn").innerText = patient.mrn;
+      document.getElementById("sample").innerText = patient.mrn;
+      document.getElementById("sections").innerText = patient.sections.join(", ");
+
+      JsBarcode("#barcodeCanvas", patient.mrn, {
+        format: "CODE128",
+        displayValue: true,
+        fontSize: 16
+      });
+    } else {
+      alert("کوئی مریض منتخب نہیں");
+    }
+  </script>
+
+</body>
+</html>
