@@ -1,110 +1,140 @@
 <!DOCTYPE html>
-<html lang="ur">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>رپورٹ شامل کریں - ٹیکنیشن</title>
+  <meta charset="UTF-8">
+  <title>Reception - Register Patient</title>
   <style>
     body {
-      background-color: #121212;
       font-family: sans-serif;
+      background-color: #121212;
       color: white;
-      direction: rtl;
-      padding: 30px;
+      padding: 20px;
+      direction: ltr;
     }
     h2 {
       color: #00ffaa;
     }
+    .form-section {
+      background-color: #1e1e1e;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
     input, select, button {
+      padding: 10px;
+      margin-top: 5px;
       width: 100%;
-      padding: 12px;
-      margin: 10px 0;
       font-size: 16px;
-      border-radius: 6px;
+      border-radius: 5px;
       border: none;
-      background-color: #1f1f1f;
+      background-color: #2c2c2c;
       color: white;
     }
     button {
       background-color: #00aaff;
-      font-weight: bold;
       cursor: pointer;
     }
-    table {
-      width: 100%;
-      margin-top: 20px;
-      border-collapse: collapse;
-      background-color: #1a1a1a;
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
     }
-    th, td {
-      border: 1px solid #333;
-      padding: 8px;
-      text-align: center;
-    }
-    th {
-      background-color: #282828;
+    .checkbox-group label {
+      width: 45%;
+      margin: 5px 2.5%;
     }
   </style>
 </head>
 <body>
+  <h2>Register Patient</h2>
+  <div class="form-section">
+    <form id="registerForm">
+      <label>Full Name:
+        <input type="text" id="fullName" required>
+      </label>
+      <label>CNIC:
+        <input type="text" id="cnic" required>
+      </label>
+      <label>Phone:
+        <input type="text" id="phone" required>
+      </label>
+      <label>Select Department:
+        <select id="department" onchange="loadTests()">
+          <option value="">-- Select Department --</option>
+          <option value="Hematology">Hematology</option>
+          <option value="Serology">Serology</option>
+          <option value="Biochemistry">Biochemistry</option>
+          <option value="Urine">Urine</option>
+          <option value="Stool">Stool</option>
+        </select>
+      </label>
 
-  <h2>ٹیسٹ رزلٹ شامل کریں</h2>
+      <div id="testSelection" class="checkbox-group"></div>
 
-  <input type="text" id="mrn" placeholder="MRN نمبر تلاش کریں (مثلاً ACL-25-00001)" />
-  <button onclick="loadTests()">مریض لوڈ کریں</button>
-
-  <div id="testArea"></div>
+      <button type="submit">Register Patient</button>
+    </form>
+  </div>
 
   <script>
-    const sectionTests = JSON.parse(localStorage.getItem("sectionTests") || "{}");
+    const tests = {
+      Hematology: ["Hemoglobin", "WBC", "Platelet Count"],
+      Serology: ["CRP", "Typhidot IgM"],
+      Biochemistry: ["Glucose (F)", "Urea", "Creatinine"],
+      Urine: ["Urine pH", "Protein", "Sugar"],
+      Stool: ["Occult Blood", "Consistency", "Mucus"]
+    };
 
     function loadTests() {
-      const mrn = document.getElementById("mrn").value.trim();
-      if (!mrn || !sectionTests[mrn]) {
-        alert("صحیح MRN درج کریں یا مریض کا سیکشن دستیاب نہیں");
-        return;
+      const section = document.getElementById("department").value;
+      const testContainer = document.getElementById("testSelection");
+      testContainer.innerHTML = "";
+
+      if (section && tests[section]) {
+        tests[section].forEach(test => {
+          const label = document.createElement("label");
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.value = test;
+          checkbox.name = "tests";
+          label.appendChild(checkbox);
+          label.append(" " + test);
+          testContainer.appendChild(label);
+        });
       }
-
-      const { section } = sectionTests[mrn];
-      const testList = sectionTests[mrn].tests || [];
-
-      if (testList.length === 0) {
-        document.getElementById("testArea").innerHTML = "<p>کوئی ٹیسٹ منتخب نہیں کیا گیا۔</p>";
-        return;
-      }
-
-      let html = `<form onsubmit="saveReport(event, '${mrn}', '${section}')">`;
-      html += `<table><tr><th>ٹیسٹ</th><th>ریزلٹ</th><th>مرد نارمل</th><th>خاتون نارمل</th></tr>`;
-      testList.forEach((test, i) => {
-        html += `<tr>
-          <td>${test.name}</td>
-          <td><input type='text' name='result-${i}' required></td>
-          <td>${test.male}</td>
-          <td>${test.female}</td>
-        </tr>`;
-      });
-      html += `</table><br><button type='submit'>محفوظ کریں</button></form>`;
-      document.getElementById("testArea").innerHTML = html;
     }
 
-    function saveReport(e, mrn, section) {
+    document.getElementById("registerForm").addEventListener("submit", function(e) {
       e.preventDefault();
-      const form = e.target;
-      const testList = sectionTests[mrn].tests;
-      const results = testList.map((t, i) => ({
-        test: t.name,
-        result: form[`result-${i}`].value,
-        male: t.male,
-        female: t.female
-      }));
+      const fullName = document.getElementById("fullName").value;
+      const cnic = document.getElementById("cnic").value;
+      const phone = document.getElementById("phone").value;
+      const department = document.getElementById("department").value;
+      const selectedTests = Array.from(document.querySelectorAll("input[name='tests']:checked")).map(cb => cb.value);
 
-      const reports = JSON.parse(localStorage.getItem("labReports") || "[]");
-      reports.push({ mrn, section, results, date: new Date().toISOString() });
-      localStorage.setItem("labReports", JSON.stringify(reports));
+      if (!selectedTests.length) {
+        alert("Please select at least one test");
+        return;
+      }
 
-      alert("رپورٹ کامیابی سے محفوظ ہو گئی ✅");
+      const patient = {
+        id: Date.now(),
+        fullName,
+        cnic,
+        phone,
+        department,
+        tests: selectedTests
+      };
+
+      const saved = JSON.parse(localStorage.getItem("patients") || "[]");
+      saved.push(patient);
+      localStorage.setItem("patients", JSON.stringify(saved));
+
+      alert("Patient Registered Successfully ✅");
       location.reload();
-    }
+    });
   </script>
-
 </body>
 </html>
