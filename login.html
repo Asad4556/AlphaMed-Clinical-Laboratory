@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ur">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>لاگ ان صفحہ</title>
   <style>
     body {
@@ -12,9 +12,7 @@
       padding: 50px;
       direction: rtl;
     }
-    h2 {
-      color: #00ffaa;
-    }
+    h2 { color: #00ffaa; }
     input, select {
       padding: 12px;
       width: 80%;
@@ -69,8 +67,7 @@
       <option value="Admin">ایڈمن</option>
       <option value="Technician">ٹیکنیشن</option>
       <option value="Reception">ریسپشن</option>
-    </select>
-    <br />
+    </select><br />
     <input type="text" id="cnic" placeholder="شناختی کارڈ نمبر (CNIC)" />
     <div class="password-wrapper">
       <input type="password" id="password" placeholder="پاسورڈ" />
@@ -96,7 +93,6 @@
       const cnic = document.getElementById("cnic").value.trim();
       const password = document.getElementById("password").value.trim();
 
-      // Default admin login
       if (
         role === defaultAdmin.role &&
         cnic === defaultAdmin.cnic &&
@@ -107,7 +103,6 @@
         return;
       }
 
-      // Check in saved users
       const users = JSON.parse(localStorage.getItem("users") || "[]");
       const user = users.find(
         u => u.role === role && u.cnic === cnic && u.password === password
