@@ -2,139 +2,55 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Login - AlphaMed Lab</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AlphaMed Clinical Laboratory</title>
   <style>
     body {
-      background-color: #121212;
+      margin: 0;
+      background-color: #0d0d0d;
       color: white;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 40px 20px;
-    }
-
-    h2 {
-      color: #00ffaa;
-    }
-
-    .login-box {
-      background-color: #1f1f1f;
-      padding: 30px;
-      border-radius: 10px;
-      max-width: 400px;
-      margin: 20px auto;
-    }
-
-    select, input {
-      width: 90%;
-      padding: 12px;
-      margin: 10px 0;
-      font-size: 16px;
-      border-radius: 5px;
-      border: none;
-      background-color: #2a2a2a;
-      color: white;
-    }
-
-    .password-wrapper {
-      position: relative;
-    }
-
-    .toggle-password {
-      position: absolute;
-      top: 50%;
-      left: 10px;
-      transform: translateY(-50%);
-      cursor: pointer;
-      color: #aaa;
-    }
-
-    button {
-      background-color: #00aaff;
-      padding: 10px 20px;
-      font-size: 16px;
-      color: white;
-      border: none;
-      cursor: pointer;
-      border-radius: 5px;
-      margin-top: 10px;
-    }
-
-    .role-buttons {
+      font-family: 'Segoe UI', sans-serif;
+      height: 100vh;
       display: flex;
-      justify-content: space-around;
-      margin-top: 15px;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background-image: radial-gradient(circle, #121212, #0d0d0d);
+    }
+    img {
+      max-width: 180px;
+      margin-bottom: 20px;
+    }
+    h1 {
+      font-size: 2.5rem;
+      color: #00ffaa;
+      margin-bottom: 10px;
+    }
+    p {
+      font-size: 1.1rem;
+      color: #cccccc;
+      margin-bottom: 30px;
+    }
+    a.login-button {
+      background-color: #00aaff;
+      color: white;
+      padding: 12px 24px;
+      font-size: 16px;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: background 0.3s ease;
+    }
+    a.login-button:hover {
+      background-color: #008ecc;
     }
   </style>
 </head>
 <body>
-
-  <h2>AlphaMed Clinical Laboratory</h2>
-  <p>Please select your role and login</p>
-
-  <div class="login-box">
-    <select id="role">
-      <option value="Admin">Admin</option>
-      <option value="Reception">Reception</option>
-      <option value="Technician">Technician</option>
-    </select><br />
-
-    <input type="text" id="cnic" placeholder="Enter CNIC (e.g. 34501-xxxxxxx-x)" />
-
-    <div class="password-wrapper">
-      <input type="password" id="password" placeholder="Enter Password" />
-      <span class="toggle-password" onclick="togglePassword()">👁️</span>
-    </div>
-
-    <button onclick="login()">Login</button>
-  </div>
-
-  <script>
-    const defaultAdmin = {
-      cnic: "34501-8971113-7",
-      password: "Asad@2723",
-      role: "Admin"
-    };
-
-    function togglePassword() {
-      const pwd = document.getElementById("password");
-      pwd.type = pwd.type === "password" ? "text" : "password";
-    }
-
-    function login() {
-      const role = document.getElementById("role").value;
-      const cnic = document.getElementById("cnic").value.trim();
-      const password = document.getElementById("password").value.trim();
-
-      if (!cnic || !password) {
-        alert("Please fill all fields");
-        return;
-      }
-
-      // Default Admin
-      if (role === defaultAdmin.role && cnic === defaultAdmin.cnic && password === defaultAdmin.password) {
-        localStorage.setItem("loggedIn", JSON.stringify(defaultAdmin));
-        window.location.href = "admin-dashboard.html";
-        return;
-      }
-
-      // Local users
-      const users = JSON.parse(localStorage.getItem("users") || "[]");
-      const user = users.find(u => u.cnic === cnic && u.password === password && u.role === role);
-
-      if (user) {
-        localStorage.setItem("loggedIn", JSON.stringify(user));
-        if (role === "Reception") {
-          window.location.href = "reception.html";
-        } else if (role === "Technician") {
-          window.location.href = "technician.html";
-        } else if (role === "Admin") {
-          window.location.href = "admin-dashboard.html";
-        }
-      } else {
-        alert("Invalid CNIC or Password");
-      }
-    }
-  </script>
-
+  <img src="logo.png" alt="AlphaMed Logo">
+  <h1>AlphaMed Clinical Laboratory</h1>
+  <p>Quality Assurance Through Advance Technology</p>
+  <a class="login-button" href="login.html">🔐 Login</a>
 </body>
 </html>
