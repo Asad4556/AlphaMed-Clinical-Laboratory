@@ -1,72 +1,76 @@
 <!DOCTYPE html>
 <html lang="ur">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>مریض رجسٹریشن - AlphaMed</title>
   <style>
     body { background: #121212; color: #fff; font-family: sans-serif; padding: 40px; direction: rtl; }
     h2 { color: #00ffaa; }
-    label { display: block; margin: 10px 0 5px; }
-    input, select {
-      width: 100%; padding: 10px; border: none; border-radius: 6px; background: #1e1e1e; color: #fff;
+    input, select, button {
+      width: 100%; padding: 10px; border: none; border-radius: 6px; background: #1e1e1e; color: #fff; margin: 5px 0;
     }
-    button {
-      padding: 12px 20px; background: #00aaff; border: none; color: #fff; cursor: pointer; border-radius: 6px;
-      margin-top: 20px;
+    button { background: #00aaff; cursor: pointer; }
+    .logout-btn {
+      background: crimson; padding: 8px 16px; border: none; border-radius: 6px; color: #fff; float: left; cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <h2>📝 مریض رجسٹریشن</h2>
+  <button class="logout-btn" onclick="logout()">🔒 لاگ آؤٹ</button>
+  <h2>👨‍⚕️ مریض رجسٹریشن</h2>
 
-  <label>CNIC</label>
-  <input type="text" id="cnic">
+  <input type="text" id="name" placeholder="نام">
+  <input type="text" id="cnic" placeholder="شناختی کارڈ نمبر">
+  <input type="text" id="fatherName" placeholder="والد/شوہر کا نام">
+  <input type="text" id="phone" placeholder="فون نمبر">
+  <input type="text" id="address" placeholder="ایڈریس">
 
-  <label>نام</label>
-  <input type="text" id="name">
-
-  <label>والد/شوہر کا نام</label>
-  <input type="text" id="father">
-
-  <label>فون نمبر</label>
-  <input type="text" id="phone">
-
-  <label>پتہ</label>
-  <input type="text" id="address">
-
-  <label>ڈپارٹمنٹ منتخب کریں</label>
   <select id="department">
-    <option value="BioChemistry">BioChemistry</option>
-    <option value="Hematology">Hematology</option>
-    <option value="Microbiology">Microbiology</option>
+    <option value="">ڈپارٹمنٹ منتخب کریں</option>
+    <option value="Blood">بلڈ</option>
+    <option value="Urine">یورین</option>
+    <option value="Hormone">ہارمون</option>
+    <!-- اپنی مرضی کے مزید ڈیپارٹمنٹس شامل کریں -->
   </select>
 
   <button onclick="registerPatient()">رجسٹر کریں</button>
 
   <script>
+    function logout() {
+      localStorage.removeItem("loggedIn");
+      window.location.href = "login.html";
+    }
+
     function registerPatient() {
+      const name = document.getElementById("name").value.trim();
+      const cnic = document.getElementById("cnic").value.trim();
+      const fatherName = document.getElementById("fatherName").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const address = document.getElementById("address").value.trim();
+      const department = document.getElementById("department").value;
+
+      if (!name || !cnic || !fatherName || !phone || !address || !department) {
+        alert("براہ کرم تمام فیلڈز پر کریں");
+        return;
+      }
+
       const year = new Date().getFullYear().toString().slice(-2);
-      const date = new Date().getDate();
-      const mrn = `MRN-${date}-${year}-${Math.floor(1000 + Math.random() * 9000)}`;
-      const sample = `AMCL-${year}-${Math.floor(1000 + Math.random() * 9000)}`;
+      const date = String(new Date().getDate()).padStart(2, '0');
+      const random = Math.floor(Math.random() * 90000) + 10000;
+      const mrn = `MRN-${date}-${year}-${random}`;
+      const sample = `AMCL-${year}-${random}`;
 
       const patient = {
-        mrn: mrn,
-        sample: sample,
-        cnic: document.getElementById("cnic").value,
-        name: document.getElementById("name").value,
-        father: document.getElementById("father").value,
-        phone: document.getElementById("phone").value,
-        address: document.getElementById("address").value,
-        department: document.getElementById("department").value
+        mrn, name, cnic, fatherName, phone, address, department, sample
       };
 
       const patients = JSON.parse(localStorage.getItem("patientList") || "[]");
       patients.push(patient);
       localStorage.setItem("patientList", JSON.stringify(patients));
 
-      alert(`رجسٹریشن مکمل\nMRN: ${mrn}\nSample: ${sample}`);
-      window.open(`slip.html?mrn=${mrn}`, "_blank");
+      alert("✅ مریض رجسٹر ہو گیا");
+      window.open(`registration-slip.html?mrn=${mrn}`, "_blank");
+      location.reload();
     }
   </script>
 </body>
