@@ -2,88 +2,46 @@
 <html lang="ur">
 <head>
   <meta charset="UTF-8" />
-  <title>AlphaMed - لاگ ان</title>
+  <title>AlphaMed - ہوم</title>
   <style>
     body {
-      background-color: #121212;
-      color: white;
+      background: #121212;
+      color: #ffffff;
       font-family: sans-serif;
-      direction: rtl;
       text-align: center;
-      padding: 40px;
+      padding: 80px 20px;
+      direction: rtl;
     }
-    h2 {
+    h1 {
       color: #00ffaa;
+      margin-bottom: 20px;
     }
-    input {
-      padding: 12px;
-      width: 80%;
-      margin: 10px 0;
-      background: #1e1e1e;
-      color: white;
-      border: 1px solid #444;
-      border-radius: 6px;
+    p {
+      margin-bottom: 40px;
     }
-    button {
-      padding: 12px 30px;
-      background: #00aaff;
-      border: none;
-      border-radius: 6px;
-      color: white;
-      cursor: pointer;
-    }
-    .showpass {
+    a {
       display: block;
-      margin: 10px;
-      cursor: pointer;
-      font-size: 14px;
+      margin: 10px auto;
+      padding: 15px 30px;
+      background: #00aaff;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      width: 200px;
+      font-weight: bold;
+    }
+    a:hover {
+      background: #0077cc;
     }
   </style>
 </head>
 <body>
-  <h2>AlphaMed Laboratory - لاگ ان</h2>
-  <input type="text" id="cnic" placeholder="CNIC" /><br />
-  <input type="password" id="password" placeholder="پاس ورڈ" /><br />
-  <span class="showpass" onclick="togglePassword()">👁️ پاس ورڈ دیکھیں</span>
-  <button onclick="login()">لاگ ان کریں</button>
 
-  <p><a href="#" onclick="changePassword()">🔑 پاس ورڈ تبدیل کریں</a></p>
+  <h1>💉 AlphaMed Clinical Laboratory</h1>
+  <p>خوش آمدید! براہ کرم اپنا کردار منتخب کریں:</p>
 
-  <script>
-    const ADMIN = { cnic: "34501-8971113-7", password: "Asad@2723" };
+  <a href="login.html">🔑 لاگ ان کریں</a>
+  <a href="view_reports.html">📄 رپورٹ دیکھیں</a>
 
-    function togglePassword() {
-      const pass = document.getElementById("password");
-      pass.type = pass.type === "password" ? "text" : "password";
-    }
-
-    function login() {
-      const cnic = document.getElementById("cnic").value.trim();
-      const pass = document.getElementById("password").value.trim();
-      if (cnic === ADMIN.cnic && pass === ADMIN.password) {
-        localStorage.setItem("role", "admin");
-        window.location.href = "admin.html";
-      } else if (cnic === "tech" && pass === "tech") {
-        localStorage.setItem("role", "technician");
-        window.location.href = "technician.html";
-      } else if (cnic === "reception" && pass === "reception") {
-        localStorage.setItem("role", "reception");
-        window.location.href = "reception.html";
-      } else {
-        alert("غلط CNIC یا پاس ورڈ");
-      }
-    }
-
-    function changePassword() {
-      const old = prompt("پرانا پاس ورڈ");
-      if (old === ADMIN.password) {
-        const newPass = prompt("نیا پاس ورڈ درج کریں");
-        ADMIN.password = newPass;
-        alert("پاس ورڈ تبدیل ہو گیا ✅");
-      } else {
-        alert("پرانا پاس ورڈ غلط ہے");
-      }
-    }
-  </script>
 </body>
 </html>
