@@ -1,1 +1,167 @@
-<!-- export.html updated content -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Patient Report</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    body {
+      background-color: #121212;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    .report-container {
+      background-color: #1e1e1e;
+      padding: 20px;
+      border-radius: 10px;
+      position: relative;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .header img {
+      height: 80px;
+    }
+
+    .watermark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0.1;
+      font-size: 100px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .details {
+      margin-bottom: 20px;
+      z-index: 1;
+      position: relative;
+    }
+
+    .details p {
+      margin: 5px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      z-index: 1;
+      position: relative;
+    }
+
+    th, td {
+      border: 1px solid #444;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #333;
+    }
+
+    .footer {
+      margin-top: 30px;
+      font-size: 12px;
+      color: #aaa;
+      text-align: center;
+    }
+
+    #downloadBtn {
+      background-color: #00aaff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <button id="downloadBtn" onclick="downloadPDF()">📄 Download PDF</button>
+
+  <div class="report-container" id="report">
+    <div class="header">
+      <img src="logo.png" alt="Lab Logo">
+      <h2>AlphaMed Clinical Laboratory</h2>
+      <h4>Quality Assurance Through Advance Technology</h4>
+    </div>
+
+    <div class="watermark">AlphaMed</div>
+
+    <div class="details" id="patientDetails">
+      <!-- Filled by JS -->
+    </div>
+
+    <table id="testResults">
+      <thead>
+        <tr>
+          <th>Test</th>
+          <th>Result</th>
+          <th>Normal (Male)</th>
+          <th>Normal (Female)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Test rows inserted here -->
+      </tbody>
+    </table>
+
+    <div class="footer">
+      This report is computer generated and does not require signature.
+    </div>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const mrn = urlParams.get('mrn');
+
+    const reports = JSON.parse(localStorage.getItem("labReports") || "[]");
+    const patients = JSON.parse(localStorage.getItem("patientList") || "[]");
+    const report = reports.find(r => r.mrn === mrn);
+    const patient = patients.find(p => p.mrn === mrn);
+
+    const patientDiv = document.getElementById("patientDetails");
+    const testTable = document.querySelector("#testResults tbody");
+
+    if (patient) {
+      patientDiv.innerHTML = `
+        <p><strong>MRN:</strong> ${patient.mrn}</p>
+        <p><strong>Name:</strong> ${patient.fullName}</p>
+        <p><strong>CNIC:</strong> ${patient.cnic}</p>
+        <p><strong>Phone:</strong> ${patient.phone}</p>
+        <p><strong>Section:</strong> ${patient.testType}</p>
+      `;
+    }
+
+    if (report) {
+      report.results.forEach(test => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${test.test}</td>
+          <td>${test.result}</td>
+          <td>${test.male}</td>
+          <td>${test.female}</td>
+        `;
+        testTable.appendChild(row);
+      });
+    }
+
+    function downloadPDF() {
+      const element = document.getElementById("report");
+      html2pdf().from(element).save(`Report_${mrn}.pdf`);
+    }
+  </script>
+
+</body>
+</html>
