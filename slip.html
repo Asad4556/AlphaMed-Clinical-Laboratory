@@ -1,102 +1,100 @@
 <!DOCTYPE html>
 <html lang="ur">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>مریض پرچی - AlphaMed</title>
   <script src="https://cdn.jsdelivr.net/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
   <style>
     body {
       font-family: sans-serif;
       direction: rtl;
-      background: #fff;
+      background-color: #fff;
+      padding: 30px;
       text-align: center;
-      padding: 40px;
     }
-
     .slip {
-      position: relative;
       max-width: 600px;
       margin: auto;
+      padding: 20px;
       border: 2px solid #003366;
-      padding: 30px;
+      position: relative;
     }
-
     .watermark {
       position: absolute;
-      top: 50%;
+      top: 45%;
       left: 50%;
       transform: translate(-50%, -50%);
+      opacity: 0.1;
       font-size: 60px;
       color: #003366;
-      opacity: 0.1;
       z-index: 0;
     }
-
-    .slip * { position: relative; z-index: 1; }
-
-    h2 { color: #003366; margin: 10px 0; }
-    p { margin: 5px 0; font-size: 18px; }
-    #barcode { margin-top: 20px; }
-
+    .slip * {
+      z-index: 1;
+      position: relative;
+    }
+    img.logo {
+      height: 60px;
+    }
+    h2 {
+      margin: 5px 0;
+      color: #003366;
+    }
+    p {
+      font-size: 18px;
+      margin: 5px 0;
+    }
+    #barcode {
+      margin-top: 15px;
+    }
     button {
-      margin-top: 30px;
+      margin-top: 20px;
       padding: 10px 20px;
-      background: #003366;
-      color: #fff;
+      font-size: 16px;
+      background-color: #003366;
+      color: white;
       border: none;
       border-radius: 6px;
-      font-size: 16px;
       cursor: pointer;
     }
   </style>
 </head>
 <body>
-
   <div class="slip">
     <div class="watermark">AlphaMed</div>
-
-    <h2>🧾 AlphaMed Clinical Lab</h2>
-
+    <img src="logo.png" class="logo" alt="Logo" />
+    <h2>AlphaMed Clinical Laboratory</h2>
     <p><strong>MRN:</strong> <span id="mrn"></span></p>
-    <p><strong>Sample No:</strong> <span id="sample"></span></p>
+    <p><strong>Sample Number:</strong> <span id="sample"></span></p>
     <p><strong>نام:</strong> <span id="name"></span></p>
     <p><strong>CNIC:</strong> <span id="cnic"></span></p>
-    <p><strong>والد/شوہر:</strong> <span id="father"></span></p>
     <p><strong>فون:</strong> <span id="phone"></span></p>
-    <p><strong>پتہ:</strong> <span id="address"></span></p>
-    <p><strong>ڈپارٹمنٹ:</strong> <span id="department"></span></p>
-
+    <p><strong>ایڈریس:</strong> <span id="address"></span></p>
+    <p><strong>ٹیسٹ:</strong> <span id="tests"></span></p>
     <svg id="barcode"></svg>
-
-    <button onclick="window.print()">🖨️ پرنٹ کریں</button>
+    <br>
+    <button onclick="window.print()">پرنٹ کریں</button>
   </div>
 
   <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const mrn = urlParams.get("mrn");
-
+    const params = new URLSearchParams(window.location.search);
+    const mrn = params.get("mrn");
     const patients = JSON.parse(localStorage.getItem("patientList") || "[]");
     const patient = patients.find(p => p.mrn === mrn);
 
     if (patient) {
       document.getElementById("mrn").textContent = patient.mrn;
-      document.getElementById("sample").textContent = patient.sample;
-      document.getElementById("name").textContent = patient.name;
-      document.getElementById("cnic").textContent = patient.cnic;
-      document.getElementById("father").textContent = patient.father;
-      document.getElementById("phone").textContent = patient.phone;
-      document.getElementById("address").textContent = patient.address;
-      document.getElementById("department").textContent = patient.department;
-
-      JsBarcode("#barcode", `${patient.mrn} | ${patient.name} | ${patient.cnic}`, {
-        format: "CODE128",
-        width: 2,
-        height: 50
-      });
+      document.getElementById("sample").textContent = patient.sample || "AMCL-" + new Date().getFullYear() + "-00001";
+      document.getElementById("name").textContent = patient.name || "";
+      document.getElementById("cnic").textContent = patient.cnic || "";
+      document.getElementById("phone").textContent = patient.phone || "";
+      document.getElementById("address").textContent = patient.address || "";
+      const testList = (patient.tests || []).map(t => t.name).join(", ");
+      document.getElementById("tests").textContent = testList || "کوئی ٹیسٹ شامل نہیں";
+      JsBarcode("#barcode", patient.mrn, { format: "CODE128", width: 2, height: 50 });
     } else {
-      document.querySelector(".slip").innerHTML = "<p>مریض نہیں ملا</p>";
+      alert("کوئی مریض نہیں ملا");
     }
   </script>
-
 </body>
 </html>
