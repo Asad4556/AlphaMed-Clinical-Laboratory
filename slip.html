@@ -1,1 +1,101 @@
-<!-- slip.html updated content -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Patient Slip - AlphaMed Lab</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: white;
+      font-family: sans-serif;
+      direction: rtl;
+      text-align: center;
+      padding: 40px;
+      position: relative;
+    }
+
+    .watermark {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      font-size: 80px;
+      color: rgba(255, 255, 255, 0.08);
+      transform: translate(-50%, -50%) rotate(-30deg);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .slip-container {
+      background-color: #1e1e1e;
+      border: 1px solid #444;
+      padding: 30px;
+      border-radius: 10px;
+      display: inline-block;
+      text-align: right;
+      position: relative;
+      z-index: 2;
+      width: 90%;
+      max-width: 600px;
+    }
+
+    .logo {
+      width: 80px;
+      height: auto;
+    }
+
+    h2 {
+      color: #00ffaa;
+      margin-top: 10px;
+    }
+
+    .barcode {
+      margin-top: 15px;
+    }
+
+    .print-btn {
+      margin-top: 30px;
+      padding: 10px 20px;
+      background-color: #00aaff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+</head>
+<body>
+
+  <div class="watermark">AlphaMed Lab</div>
+
+  <div class="slip-container" id="slipBox">
+    <img src="logo.png" alt="Lab Logo" class="logo" />
+    <h2>AlphaMed Clinical Laboratory</h2>
+    <p><strong>MRN:</strong> <span id="mrn"></span></p>
+    <p><strong>Sample No:</strong> <span id="sample"></span></p>
+
+    <svg id="barcode" class="barcode"></svg>
+  </div>
+
+  <button class="print-btn" onclick="window.print()">🖨️ پرنٹ کریں</button>
+
+  <script>
+    // Example: Load from query parameters (slip.html?mrn=ACL-25-00005)
+    const urlParams = new URLSearchParams(window.location.search);
+    const mrn = urlParams.get("mrn") || "ACL-25-00000";
+    const sample = "SMP-" + mrn.split("-").slice(1).join("");
+
+    document.getElementById("mrn").textContent = mrn;
+    document.getElementById("sample").textContent = sample;
+
+    JsBarcode("#barcode", mrn, {
+      format: "CODE128",
+      displayValue: false,
+      lineColor: "#ffffff",
+      width: 2,
+      height: 50
+    });
+  </script>
+</body>
+</html>
