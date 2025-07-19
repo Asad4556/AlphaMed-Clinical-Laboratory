@@ -12,7 +12,6 @@
       text-align: center;
       padding: 30px;
     }
-
     input, select, button {
       width: 90%;
       padding: 12px;
@@ -23,35 +22,29 @@
       background-color: #1f1f1f;
       color: #ffffff;
     }
-
     button {
       background-image: linear-gradient(45deg, #00aaff, #0077cc);
       color: white;
       font-weight: bold;
       cursor: pointer;
     }
-
     h2, h3 {
       color: #00ffaa;
     }
-
     table {
       width: 100%;
       margin-top: 20px;
       border-collapse: collapse;
       background-color: #1a1a1a;
     }
-
     th, td {
       border: 1px solid #333;
       padding: 8px;
       color: #ffffff;
     }
-
     th {
       background-color: #282828;
     }
-
     .delete-btn {
       background-color: red;
       border: none;
@@ -60,10 +53,43 @@
       cursor: pointer;
       border-radius: 4px;
     }
+    .summary-box {
+      display: inline-block;
+      margin: 10px;
+      padding: 15px;
+      background-color: #1e1e1e;
+      border: 1px solid #444;
+      border-radius: 8px;
+      min-width: 200px;
+    }
+    .summary-box h4 {
+      color: #00ffaa;
+      margin-bottom: 5px;
+    }
   </style>
 </head>
 <body>
   <h2>ایڈمن ڈیش بورڈ</h2>
+
+  <!-- Dashboard Summary -->
+  <div id="dashboardSummary">
+    <div class="summary-box">
+      <h4>کل مریض</h4>
+      <div id="totalPatients">--</div>
+    </div>
+    <div class="summary-box">
+      <h4>آج کے مریض</h4>
+      <div id="todayPatients">--</div>
+    </div>
+    <div class="summary-box">
+      <h4>آج کی رپورٹس</h4>
+      <div id="todayReports">--</div>
+    </div>
+    <div class="summary-box">
+      <h4>کل رپورٹس</h4>
+      <div id="totalReports">--</div>
+    </div>
+  </div>
 
   <h3>نیا صارف شامل کریں</h3>
   <select id="role">
@@ -88,7 +114,7 @@
   </table>
 
   <script>
-    const masterAdmin = "34501-8971113-7"; // Master Admin CNIC
+    const masterAdmin = "34501-8971113-7";
 
     function addUser() {
       const role = document.getElementById("role").value;
@@ -145,15 +171,28 @@
         tr.innerHTML = `
           <td>${user.role.toUpperCase()}</td>
           <td>${user.cnic}</td>
-          <td>
-            ${canDelete ? `<button class='delete-btn' onclick='deleteUser("${user.cnic}")'>🗑️</button>` : "—"}
-          </td>
+          <td>${canDelete ? `<button class='delete-btn' onclick='deleteUser("${user.cnic}")'>🗑️</button>` : "—"}</td>
         `;
         tbody.appendChild(tr);
       });
     }
 
+    function updateSummary() {
+      const patients = JSON.parse(localStorage.getItem("patients") || "[]");
+      const reports = JSON.parse(localStorage.getItem("reports") || "[]");
+      const today = new Date().toISOString().split('T')[0];
+
+      const todayPatients = patients.filter(p => p.date && p.date.startsWith(today)).length;
+      const todayReports = reports.filter(r => r.date && r.date.startsWith(today)).length;
+
+      document.getElementById("totalPatients").innerText = patients.length;
+      document.getElementById("todayPatients").innerText = todayPatients;
+      document.getElementById("totalReports").innerText = reports.length;
+      document.getElementById("todayReports").innerText = todayReports;
+    }
+
     loadUsers();
+    updateSummary();
   </script>
 </body>
 </html>
