@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+  <meta charset="UTF-8" />
+  <title>ڈیٹا ایکسپورٹ کریں - AlphaMed</title>
+  <style>
+    body { background: #121212; color: #fff; padding: 40px; text-align: center; direction: rtl; font-family: sans-serif; }
+    h2 { color: #00ffaa; }
+    button { padding: 12px 20px; margin: 10px; border: none; border-radius: 6px; cursor: pointer; background: #00aaff; color: #fff; }
+  </style>
+</head>
+<body>
+  <h2>🔽 ڈیٹا ایکسپورٹ کریں</h2>
+  <button onclick="exportCSV()">Patient Data CSV</button>
+  <button onclick="exportReportsCSV()">Reports CSV</button>
+
+  <script>
+    function exportCSV() {
+      const data = JSON.parse(localStorage.getItem("patientList") || "[]");
+      if (!data.length) { alert("کوئی patient data نہیں ملا"); return; }
+
+      const csv = ["MRN,Name,CNIC,Phone,Tests"];
+      data.forEach(p => {
+        const tests = (p.selectedTests || []).map(t => t.name).join("|");
+        csv.push(`${p.mrn},${p.fullName},${p.cnic},${p.phone},${tests}`);
+      });
+
+      downloadFile(csv.join("\n"), "patients.csv");
+    }
+
+    function exportReportsCSV() {
+      const reports = JSON.parse(localStorage.getItem("labReports") || "[]");
+      if (!reports.length) { alert("کوئی report نہیں ملی"); return; }
+
+      const csv = ["MRN,Test,Result,Male Normal,Female Normal,Date"];
+      reports.forEach(r => {
+        r.results.forEach(res => {
+          csv.push(`${r.mrn},${res.test},${res.result},${res.male},${res.female},${r.date}`);
+        });
+      });
+
+      downloadFile(csv.join("\n"), "reports.csv");
+    }
+
+    function downloadFile(content, fileName) {
+      const blob = new Blob([content], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = fileName;
+      link.click();
+    }
+  </script>
+</body>
+</html>
