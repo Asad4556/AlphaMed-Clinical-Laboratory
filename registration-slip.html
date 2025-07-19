@@ -11,42 +11,63 @@
       padding: 30px;
       text-align: center;
     }
+
     .slip {
-      max-width: 600px;
+      max-width: 700px;
       margin: auto;
       padding: 20px;
       border: 2px solid #003366;
       position: relative;
     }
+
+    /* Watermark Center */
     .watermark {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      opacity: 0.08;
+      opacity: 0.06;
       z-index: 0;
     }
+
     .watermark img {
-      width: 300px; /* لوگو کا سائز اپنی مرضی سے رکھیں */
+      width: 400px;
     }
+
     .slip * {
       z-index: 1;
       position: relative;
     }
-    img.logo {
+
+    /* Header Layout */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .header img.logo {
       height: 60px;
     }
-    h2 {
-      margin: 5px 0;
+
+    .header h2 {
+      flex: 1;
+      margin: 0;
       color: #003366;
+      font-size: 24px;
     }
+
+    #barcode {
+      width: 150px;
+      height: 50px;
+    }
+
     p {
       font-size: 18px;
       margin: 5px 0;
     }
-    #barcode {
-      margin-top: 15px;
-    }
+
     button {
       margin-top: 20px;
       padding: 10px 20px;
@@ -61,13 +82,19 @@
 </head>
 <body>
   <div class="slip">
+    <!-- Watermark Logo Centered -->
     <div class="watermark">
-      <img src="logo.png" alt="Lab Logo">
+      <img src="logo.png" alt="Watermark Logo">
     </div>
 
-    <img src="logo.png" class="logo" />
-    <h2>AlphaMed Clinical Laboratory</h2>
+    <!-- Header with Logo, Lab Name, and Barcode -->
+    <div class="header">
+      <img src="logo.png" class="logo" alt="Logo Left">
+      <h2>AlphaMed Clinical Laboratory</h2>
+      <svg id="barcode"></svg>
+    </div>
 
+    <!-- Patient Info -->
     <p><strong>MRN:</strong> <span id="mrn"></span></p>
     <p><strong>Sample No:</strong> <span id="sample"></span></p>
     <p><strong>نام:</strong> <span id="name"></span></p>
@@ -76,8 +103,6 @@
     <p><strong>فون:</strong> <span id="phone"></span></p>
     <p><strong>ایڈریس:</strong> <span id="address"></span></p>
     <p><strong>ڈپارٹمنٹ:</strong> <span id="department"></span></p>
-
-    <svg id="barcode"></svg>
 
     <button onclick="window.print()">پرنٹ کریں</button>
   </div>
@@ -101,7 +126,8 @@
       JsBarcode("#barcode", patient.mrn, {
         format: "CODE128",
         width: 2,
-        height: 50
+        height: 50,
+        displayValue: false
       });
     }
   </script>
