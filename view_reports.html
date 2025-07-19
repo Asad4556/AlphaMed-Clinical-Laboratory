@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+  <meta charset="UTF-8">
+  <title>رپورٹ دیکھیں - AlphaMed</title>
+  <style>
+    body { background: #121212; color: #fff; font-family: sans-serif; padding: 40px; direction: rtl; }
+    h2 { color: #00ffaa; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #333; padding: 10px; }
+    th { background: #1e1e1e; }
+  </style>
+</head>
+<body>
+  <h2>📑 رپورٹس</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>MRN</th>
+        <th>رزلٹ</th>
+        <th>تاریخ</th>
+      </tr>
+    </thead>
+    <tbody id="reportTable"></tbody>
+  </table>
+
+  <script>
+    const reports = JSON.parse(localStorage.getItem("labReports") || "[]");
+    const table = document.getElementById("reportTable");
+    reports.forEach(r => {
+      const row = `<tr><td>${r.mrn}</td><td>${r.result}</td><td>${r.date}</td></tr>`;
+      table.innerHTML += row;
+    });
+  </script>
+</body>
+</html>
