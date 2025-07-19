@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+  <meta charset="UTF-8">
+  <title>مریض رجسٹریشن - AlphaMed</title>
+  <style>
+    body { background: #121212; color: #fff; font-family: sans-serif; padding: 40px; direction: rtl; }
+    h2 { color: #00ffaa; }
+    label { display: block; margin: 10px 0 5px; }
+    input, select {
+      width: 100%; padding: 10px; border: none; border-radius: 6px; background: #1e1e1e; color: #fff;
+    }
+    button {
+      padding: 12px 20px; background: #00aaff; border: none; color: #fff; cursor: pointer; border-radius: 6px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h2>📝 مریض رجسٹریشن</h2>
+
+  <label>CNIC</label>
+  <input type="text" id="cnic">
+
+  <label>نام</label>
+  <input type="text" id="name">
+
+  <label>والد/شوہر کا نام</label>
+  <input type="text" id="father">
+
+  <label>فون نمبر</label>
+  <input type="text" id="phone">
+
+  <label>پتہ</label>
+  <input type="text" id="address">
+
+  <label>ڈپارٹمنٹ منتخب کریں</label>
+  <select id="department">
+    <option value="BioChemistry">BioChemistry</option>
+    <option value="Hematology">Hematology</option>
+    <option value="Microbiology">Microbiology</option>
+  </select>
+
+  <button onclick="registerPatient()">رجسٹر کریں</button>
+
+  <script>
+    function registerPatient() {
+      const year = new Date().getFullYear().toString().slice(-2);
+      const date = new Date().getDate();
+      const mrn = `MRN-${date}-${year}-${Math.floor(1000 + Math.random() * 9000)}`;
+      const sample = `AMCL-${year}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+      const patient = {
+        mrn: mrn,
+        sample: sample,
+        cnic: document.getElementById("cnic").value,
+        name: document.getElementById("name").value,
+        father: document.getElementById("father").value,
+        phone: document.getElementById("phone").value,
+        address: document.getElementById("address").value,
+        department: document.getElementById("department").value
+      };
+
+      const patients = JSON.parse(localStorage.getItem("patientList") || "[]");
+      patients.push(patient);
+      localStorage.setItem("patientList", JSON.stringify(patients));
+
+      alert(`رجسٹریشن مکمل\nMRN: ${mrn}\nSample: ${sample}`);
+      window.open(`slip.html?mrn=${mrn}`, "_blank");
+    }
+  </script>
+</body>
+</html>
