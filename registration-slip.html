@@ -2,114 +2,108 @@
 <html lang="ur">
 <head>
   <meta charset="UTF-8">
-  <title>رجسٹریشن سلپ</title>
+  <title>پرچی - AlphaMed</title>
+  <script src="https://cdn.jsdelivr.net/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
   <style>
     body {
+      font-family: sans-serif;
       direction: rtl;
-      background: white;
-      color: black;
-      font-family: 'Noto Naskh Arabic', sans-serif;
-      padding: 20px;
+      background-color: #fff;
+      padding: 30px;
+      text-align: center;
     }
-
-    .slip-container {
+    .slip {
       max-width: 600px;
       margin: auto;
-      border: 2px dashed #000;
       padding: 20px;
+      border: 2px solid #003366;
       position: relative;
     }
-
     .watermark {
       position: absolute;
-      top: 35%;
+      top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
       opacity: 0.1;
       font-size: 60px;
-      font-weight: bold;
+      color: #003366;
       z-index: 0;
     }
-
-    .logo {
-      max-width: 80px;
-    }
-
-    h2 {
-      margin: 10px 0;
-    }
-
-    .info {
-      margin-top: 20px;
-      font-size: 18px;
-      z-index: 2;
+    .slip * {
+      z-index: 1;
       position: relative;
     }
-
-    .barcode {
-      margin-top: 20px;
+    img.logo {
+      height: 60px;
     }
-
+    h2 {
+      margin: 5px 0;
+      color: #003366;
+    }
+    p {
+      font-size: 18px;
+      margin: 5px 0;
+    }
+    #barcode {
+      margin-top: 15px;
+    }
     button {
       margin-top: 20px;
       padding: 10px 20px;
       font-size: 16px;
-      background-color: black;
+      background-color: #003366;
       color: white;
       border: none;
+      border-radius: 6px;
       cursor: pointer;
-    }
-
-    @media print {
-      button {
-        display: none;
-      }
     }
   </style>
 </head>
 <body>
-
-  <div class="slip-container">
+  <div class="slip">
     <div class="watermark">AlphaMed</div>
-
     <img src="logo.png" class="logo" alt="Lab Logo" />
     <h2>AlphaMed Clinical Laboratory</h2>
-    <h4>Quality Assurance Through Advance Technology</h4>
 
-    <div class="info">
-      <p><strong>مریض کا نام:</strong> <span id="pname">---</span></p>
-      <p><strong>MRN نمبر:</strong> <span id="mrn">---</span></p>
-      <p><strong>سیمپل نمبر:</strong> <span id="sample">---</span></p>
-      <p><strong>سیکشنز:</strong> <span id="sections">---</span></p>
-    </div>
+    <p><strong>MRN:</strong> <span id="mrn"></span></p>
+    <p><strong>Sample No:</strong> <span id="sample"></span></p>
+    <p><strong>نام:</strong> <span id="name"></span></p>
+    <p><strong>CNIC:</strong> <span id="cnic"></span></p>
+    <p><strong>والد/شوہر نام:</strong> <span id="fatherName"></span></p>
+    <p><strong>فون:</strong> <span id="phone"></span></p>
+    <p><strong>ایڈریس:</strong> <span id="address"></span></p>
+    <p><strong>ڈپارٹمنٹ:</strong> <span id="department"></span></p>
 
-    <div class="barcode">
-      <canvas id="barcodeCanvas"></canvas>
-    </div>
+    <svg id="barcode"></svg>
 
-    <button onclick="window.print()">🖨️ پرنٹ کریں</button>
+    <button onclick="window.print()">پرنٹ کریں</button>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
   <script>
-    // Sample data — replace from localStorage or query
-    const patient = JSON.parse(localStorage.getItem("lastRegisteredPatient"));
+    const params = new URLSearchParams(window.location.search);
+    const mrn = params.get("mrn");
+
+    const patients = JSON.parse(localStorage.getItem("patientList") || "[]");
+    const patient = patients.find(p => p.mrn === mrn);
 
     if (patient) {
-      document.getElementById("pname").innerText = patient.name;
-      document.getElementById("mrn").innerText = patient.mrn;
-      document.getElementById("sample").innerText = patient.mrn;
-      document.getElementById("sections").innerText = patient.sections.join(", ");
+      document.getElementById("mrn").textContent = patient.mrn;
+      document.getElementById("sample").textContent = patient.sample;
+      document.getElementById("name").textContent = patient.name;
+      document.getElementById("cnic").textContent = patient.cnic;
+      document.getElementById("fatherName").textContent = patient.fatherName;
+      document.getElementById("phone").textContent = patient.phone;
+      document.getElementById("address").textContent = patient.address;
+      document.getElementById("department").textContent = patient.department;
 
-      JsBarcode("#barcodeCanvas", patient.mrn, {
+      JsBarcode("#barcode", `${patient.mrn} | ${patient.sample} | ${patient.name}`, {
         format: "CODE128",
-        displayValue: true,
-        fontSize: 16
+        width: 2,
+        height: 50
       });
     } else {
-      alert("کوئی مریض منتخب نہیں");
+      document.body.innerHTML = "<p>ڈیٹا نہیں ملا</p>";
     }
   </script>
-
 </body>
 </html>
