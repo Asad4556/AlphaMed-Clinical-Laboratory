@@ -1,1 +1,70 @@
-<!-- technician_dashboard.html updated content -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Technician Dashboard - AlphaMed</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background-color: #121212;
+      color: #ffffff;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 30px;
+      text-align: center;
+    }
+    h1 {
+      color: #00ffaa;
+    }
+    .dashboard-box {
+      background-color: #1e1e1e;
+      padding: 20px;
+      margin: 20px auto;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 0 10px #00ffaa44;
+    }
+    button {
+      background-color: #00aaff;
+      border: none;
+      padding: 12px 20px;
+      color: white;
+      font-size: 16px;
+      margin: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0088cc;
+    }
+    .logout {
+      background-color: crimson;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Technician Dashboard</h1>
+
+  <div class="dashboard-box">
+    <p>Welcome Technician 👨‍🔬</p>
+    <button onclick="location.href='add_test_result.html'">Add Test Results</button>
+    <button onclick="location.href='report.html'">View Reports</button>
+    <button onclick="location.href='change_password.html'">Change Password</button>
+    <button class="logout" onclick="logout()">Logout</button>
+  </div>
+
+  <script>
+    function logout() {
+      localStorage.removeItem("loggedIn");
+      window.location.href = "login.html";
+    }
+
+    // Access check
+    const user = JSON.parse(localStorage.getItem("loggedIn"));
+    if (!user || user.role !== "Technician") {
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>
