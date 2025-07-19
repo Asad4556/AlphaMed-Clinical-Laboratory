@@ -2,36 +2,28 @@
 <html lang="ur">
 <head>
   <meta charset="UTF-8" />
-  <title>Reception - AlphaMed</title>
+  <title>ریسپشن - مریض رجسٹریشن</title>
   <link rel="stylesheet" href="style.css" />
   <style>
     body {
-      background-color: #f4f4f4;
-      direction: rtl;
       font-family: sans-serif;
-      padding: 20px;
-    }
-
-    .container {
-      max-width: 600px;
-      margin: auto;
-      background: white;
+      direction: rtl;
+      background-color: #f0f8ff;
+      text-align: center;
       padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
     }
 
     h2 {
-      text-align: center;
+      color: #003366;
       margin-bottom: 20px;
     }
 
     input, select, button {
       width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      margin-bottom: 15px;
-      border-radius: 5px;
+      padding: 12px;
+      margin: 10px 0;
+      font-size: 16px;
+      border-radius: 6px;
       border: 1px solid #ccc;
     }
 
@@ -42,106 +34,127 @@
       cursor: pointer;
     }
 
-    .table-list {
-      margin-top: 30px;
+    .search-box {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #fff;
+      border-radius: 10px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
 
     table {
       width: 100%;
+      margin-top: 20px;
       border-collapse: collapse;
     }
 
     th, td {
       border: 1px solid #ccc;
-      padding: 8px;
-      text-align: center;
+      padding: 10px;
+      font-size: 15px;
+    }
+
+    th {
+      background-color: #e3efff;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>ریسپشن ڈیش بورڈ</h2>
 
-    <form id="patientForm">
-      <input type="text" placeholder="مریض کا پورا نام" required id="fullName" />
-      <input type="text" placeholder="شناختی کارڈ نمبر (CNIC)" required id="cnic" />
-      <input type="text" placeholder="فون نمبر" required id="phone" />
-      <label for="testType">سیکشن منتخب کریں:</label>
-      <select id="testType" required>
-        <option value="">-- منتخب کریں --</option>
-        <option value="Hematology">Hematology</option>
-        <option value="Serology">Serology</option>
-        <option value="Biochemistry">Biochemistry</option>
-        <option value="Urine">Urine</option>
-        <option value="Hormones">Hormones</option>
-        <option value="HIV">HIV</option>
-        <option value="PCR">PCR</option>
-        <option value="Culture">Culture</option>
-        <option value="Others">Others</option>
-      </select>
-      <button type="submit">مریض شامل کریں</button>
-    </form>
+  <h2>نیا مریض رجسٹر کریں</h2>
 
-    <div class="table-list">
-      <h3>تمام مریض</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>MRN</th>
-            <th>نام</th>
-            <th>سیکشن</th>
-          </tr>
-        </thead>
-        <tbody id="patientTable"></tbody>
-      </table>
-    </div>
+  <input type="text" id="name" placeholder="مریض کا پورا نام" />
+  <input type="text" id="cnic" placeholder="شناختی کارڈ نمبر (CNIC)" />
+  <input type="text" id="phone" placeholder="فون نمبر" />
+
+  <select id="section">
+    <option value="">-- سیکشن منتخب کریں --</option>
+    <option value="Hematology">Hematology</option>
+    <option value="Serology">Serology</option>
+    <option value="Biochemistry">Biochemistry</option>
+    <option value="Urine">Urine</option>
+    <option value="Stool">Stool</option>
+  </select>
+
+  <button onclick="registerPatient()">MRN بنائیں اور رجسٹر کریں</button>
+
+  <div class="search-box">
+    <h3>تمام مریض</h3>
+    <input type="text" id="searchInput" placeholder="نام، CNIC یا MRN تلاش کریں" onkeyup="filterPatients()" />
+    <table>
+      <thead>
+        <tr>
+          <th>MRN</th>
+          <th>نام</th>
+          <th>CNIC</th>
+          <th>فون</th>
+          <th>سیکشن</th>
+          <th>رپورٹ</th>
+        </tr>
+      </thead>
+      <tbody id="patientTable"></tbody>
+    </table>
   </div>
 
   <script>
-    let patientList = JSON.parse(localStorage.getItem('patientList') || '[]');
-    let counter = patientList.length + 1;
+    function generateMRN() {
+      const year = new Date().getFullYear().toString().slice(-2);
+      const patients = JSON.parse(localStorage.getItem("patients") || "[]");
+      const nextId = (patients.length + 1).toString().padStart(5, "0");
+      return `ACL-${year}-${nextId}`;
+    }
 
-    function renderTable() {
+    function registerPatient() {
+      const name = document.getElementById("name").value.trim();
+      const cnic = document.getElementById("cnic").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const section = document.getElementById("section").value;
+
+      if (!name || !cnic || !phone || !section) {
+        alert("تمام فیلڈز لازمی ہیں");
+        return;
+      }
+
+      const patients = JSON.parse(localStorage.getItem("patients") || "[]");
+      const mrn = generateMRN();
+      patients.push({ name, cnic, phone, section, mrn });
+      localStorage.setItem("patients", JSON.stringify(patients));
+      alert("مریض رجسٹر ہو گیا ✅");
+      location.reload();
+    }
+
+    function showPatients() {
+      const patients = JSON.parse(localStorage.getItem("patients") || "[]");
       const table = document.getElementById("patientTable");
       table.innerHTML = "";
-      patientList.forEach(p => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
+      patients.forEach(p => {
+        const row = `<tr>
           <td>${p.mrn}</td>
-          <td>${p.fullName}</td>
-          <td>${p.testType}</td>
-        `;
-        table.appendChild(row);
+          <td>${p.name}</td>
+          <td>${p.cnic}</td>
+          <td>${p.phone}</td>
+          <td>${p.section}</td>
+          <td><a href="report.html" target="_blank">رپورٹ دیکھیں</a></td>
+        </tr>`;
+        table.innerHTML += row;
       });
     }
 
-    document.getElementById("patientForm").addEventListener("submit", function (e) {
-      e.preventDefault();
+    function filterPatients() {
+      const value = document.getElementById("searchInput").value.toLowerCase();
+      const rows = document.querySelectorAll("#patientTable tr");
 
-      const fullName = document.getElementById("fullName").value;
-      const cnic = document.getElementById("cnic").value;
-      const phone = document.getElementById("phone").value;
-      const testType = document.getElementById("testType").value;
-      const year = new Date().getFullYear().toString().slice(-2);
-      const mrn = `ACL-${year}-${String(counter).padStart(5, '0')}`;
-      counter++;
-
-      const newPatient = { mrn, fullName, cnic, phone, testType };
-      patientList.push(newPatient);
-      localStorage.setItem('patientList', JSON.stringify(patientList));
-
-      renderTable();
-      document.getElementById("patientForm").reset();
-    });
-
-    // Role check
-    const sessionUser = JSON.parse(sessionStorage.getItem("loggedInUser"));
-    if (!sessionUser || sessionUser.role !== "reception") {
-      alert("صرف ریسپشن کو اجازت ہے");
-      window.location.href = "login.html";
-    } else {
-      renderTable();
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(value) ? "" : "none";
+      });
     }
+
+    showPatients();
   </script>
+
 </body>
 </html>
