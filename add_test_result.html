@@ -5,20 +5,31 @@
   <title>ٹیسٹ رزلٹ شامل کریں - AlphaMed</title>
   <style>
     body {
-      background: #121212; color: #fff; font-family: sans-serif; padding: 40px; direction: rtl;
+      background: #121212;
+      color: #fff;
+      font-family: sans-serif;
+      padding: 40px;
+      direction: rtl;
     }
-    h2 { color: #00ffaa; }
+
+    h2 {
+      color: #00ffaa;
+    }
+
     input, button {
-      width: 100%; padding: 10px; border: none; border-radius: 6px; background: #1e1e1e; color: #fff; margin: 5px 0;
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      background: #1e1e1e;
+      color: #fff;
+      margin: 5px 0;
     }
-    button { background: #00aaff; cursor: pointer; }
-    table {
-      width: 100%; border-collapse: collapse; margin-top: 20px;
+
+    button {
+      background: #00aaff;
+      cursor: pointer;
     }
-    th, td {
-      border: 1px solid #444; padding: 10px; text-align: center;
-    }
-    th { background: #222; }
   </style>
 </head>
 <body>
@@ -32,53 +43,37 @@
   <script>
     function loadPatient() {
       const mrn = document.getElementById("mrn").value.trim();
-      const patients = JSON.parse(localStorage.getItem("patientList") || "[]");
-      const patient = patients.find(p => p.mrn.trim() === mrn);
-
-      if (!patient) { 
-        alert("مریض نہیں ملا"); 
-        return; 
-      }
-
-      if (!patient.selectedTests || patient.selectedTests.length === 0) {
-        alert("کوئی ٹیسٹ نہیں ملا");
+      if (mrn === "") {
+        alert("براہ کرم MRN درج کریں");
         return;
       }
 
-      let html = `<table><tr><th>ٹیسٹ</th><th>ریزلٹ</th><th>مرد نارمل</th><th>خاتون نارمل</th></tr>`;
-      patient.selectedTests.forEach((test, index) => {
-        html += `
-          <tr>
-            <td>${test.name}</td>
-            <td><input type="text" id="result-${index}" placeholder="ریزلٹ لکھیں" /></td>
-            <td>${test.male}</td>
-            <td>${test.female}</td>
-          </tr>
-        `;
-      });
-      html += `</table><br><button onclick="saveResult('${mrn}')">محفوظ کریں</button>`;
+      const patients = JSON.parse(localStorage.getItem("patientList") || "[]");
+      const patient = patients.find(p => p.mrn === mrn);
+
+      if (!patient) {
+        alert("مریض نہیں ملا");
+        return;
+      }
+
+      let html = `<p><strong>نام:</strong> ${patient.name || patient.fullName}</p>`;
+      html += `<label>رزلٹ</label>
+               <input type="text" id="result" placeholder="رزلٹ لکھیں" />
+               <button onclick="saveResult('${mrn}')">محفوظ کریں</button>`;
       document.getElementById("test-area").innerHTML = html;
     }
 
     function saveResult(mrn) {
-      const patients = JSON.parse(localStorage.getItem("patientList") || "[]");
-      const patient = patients.find(p => p.mrn.trim() === mrn.trim());
-      const assignedTests = patient.selectedTests || [];
+      const result = document.getElementById("result").value.trim();
+      if (result === "") {
+        alert("رزلٹ لکھیں");
+        return;
+      }
 
-      const results = assignedTests.map((test, index) => ({
-        test: test.name,
-        result: document.getElementById(`result-${index}`).value.trim(),
-        male: test.male,
-        female: test.female
-      }));
+      const reports = JSON.parse(localStorage.getItem("labReports") || "[]");
+      reports.push({ mrn: mrn, result: result, date: new Date().toLocaleDateString() });
+      localStorage.setItem("labReports", JSON.stringify(reports));
 
-      const allReports = JSON.parse(localStorage.getItem("labReports") || "[]");
-      allReports.push({
-        mrn,
-        results,
-        date: new Date().toISOString()
-      });
-      localStorage.setItem("labReports", JSON.stringify(allReports));
       alert("رزلٹ محفوظ ہو گیا ✅");
       location.reload();
     }
