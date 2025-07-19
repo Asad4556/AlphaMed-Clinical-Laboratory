@@ -1,1 +1,165 @@
-<!-- report.html content -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Patient Report</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #121212;
+      color: white;
+      margin: 0;
+      padding: 40px;
+    }
+
+    .container {
+      background-color: #1c1c1c;
+      padding: 30px;
+      border-radius: 10px;
+      max-width: 800px;
+      margin: auto;
+      position: relative;
+    }
+
+    .watermark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      font-size: 75px;
+      color: rgba(255, 255, 255, 0.05);
+      transform: translate(-50%, -50%);
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .header {
+      text-align: center;
+      z-index: 2;
+    }
+
+    .header img {
+      width: 100px;
+    }
+
+    .header h2 {
+      margin: 10px 0;
+      color: #00ffaa;
+    }
+
+    .info, .test-table, .footer-note {
+      position: relative;
+      z-index: 2;
+    }
+
+    .info {
+      text-align: left;
+      margin: 20px 0;
+    }
+
+    .info p {
+      margin: 5px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+    }
+
+    th, td {
+      border: 1px solid #444;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #282828;
+      color: #00ffaa;
+    }
+
+    .footer-note {
+      margin-top: 40px;
+      font-size: 12px;
+      color: #ccc;
+      text-align: center;
+    }
+
+    @media print {
+      .no-print {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="watermark">AlphaMed Clinical Laboratory</div>
+
+    <div class="header">
+      <img src="logo.png" alt="Lab Logo" />
+      <h2>AlphaMed Clinical Laboratory</h2>
+    </div>
+
+    <div class="info" id="patientInfo">
+      <!-- Patient info goes here -->
+    </div>
+
+    <div class="test-table">
+      <table id="resultTable">
+        <thead>
+          <tr>
+            <th>Test</th>
+            <th>Result</th>
+            <th>Normal (Male)</th>
+            <th>Normal (Female)</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="footer-note">
+      This report is computer generated and does not require signature.
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const mrn = params.get("mrn");
+
+    const patients = JSON.parse(localStorage.getItem("patients") || "[]");
+    const reports = JSON.parse(localStorage.getItem("labReports") || "[]");
+
+    const patient = patients.find(p => p.mrn === mrn);
+    const report = reports.find(r => r.mrn === mrn);
+
+    const infoDiv = document.getElementById("patientInfo");
+    const tableBody = document.querySelector("#resultTable tbody");
+
+    if (!patient || !report) {
+      infoDiv.innerHTML = "<p>Patient report not found.</p>";
+    } else {
+      infoDiv.innerHTML = `
+        <p><strong>MRN:</strong> ${patient.mrn}</p>
+        <p><strong>Name:</strong> ${patient.fullName}</p>
+        <p><strong>CNIC:</strong> ${patient.cnic}</p>
+        <p><strong>Phone:</strong> ${patient.phone}</p>
+        <p><strong>Section:</strong> ${report.section}</p>
+        <p><strong>Date:</strong> ${report.timestamp}</p>
+      `;
+
+      report.results.forEach(r => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${r.test}</td>
+          <td>${r.result}</td>
+          <td>${r.male}</td>
+          <td>${r.female}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+  </script>
+</body>
+</html>
