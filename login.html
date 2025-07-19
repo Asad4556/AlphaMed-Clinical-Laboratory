@@ -1,53 +1,68 @@
 <!DOCTYPE html>
 <html lang="ur">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>لاگ ان - AlphaMed</title>
-  <link rel="stylesheet" href="style.css" />
   <style>
     body {
-      background-color: #eaf4ff;
-      direction: rtl;
+      background-color: #eef6ff;
       font-family: sans-serif;
+      direction: rtl;
       text-align: center;
-      padding: 50px 20px;
+      padding: 60px 20px;
     }
 
     .login-box {
-      background: white;
+      background: #fff;
       max-width: 400px;
       margin: auto;
       padding: 30px;
-      border-radius: 10px;
+      border-radius: 12px;
       box-shadow: 0 0 10px rgba(0,0,0,0.2);
     }
 
-    input, button {
+    input {
       width: 100%;
       padding: 12px;
       margin: 10px 0;
       font-size: 16px;
-      border-radius: 5px;
       border: 1px solid #ccc;
+      border-radius: 6px;
     }
 
     button {
+      width: 100%;
+      padding: 12px;
       background-color: #003366;
       color: white;
+      font-size: 16px;
       font-weight: bold;
+      border: none;
+      border-radius: 6px;
       cursor: pointer;
     }
 
-    h2 {
-      margin-bottom: 20px;
-      color: #003366;
+    button:hover {
+      background-color: #002244;
     }
 
-    label {
+    .checkbox-label {
       font-size: 14px;
-      float: right;
+      display: flex;
+      align-items: center;
+      justify-content: right;
       margin-top: -5px;
-      margin-right: 5px;
+      margin-bottom: 10px;
+    }
+
+    .checkbox-label input {
+      width: auto;
+      margin-left: 6px;
+    }
+
+    h2 {
+      color: #003366;
+      margin-bottom: 20px;
     }
   </style>
 </head>
@@ -57,7 +72,11 @@
     <h2>لاگ ان کریں</h2>
     <input type="text" id="cnic" placeholder="شناختی کارڈ نمبر (CNIC)" required />
     <input type="password" id="password" placeholder="پاس ورڈ" required />
-    <label><input type="checkbox" onclick="togglePassword()" /> پاس ورڈ دکھائیں</label>
+
+    <div class="checkbox-label">
+      <input type="checkbox" onclick="togglePassword()"> پاس ورڈ دکھائیں
+    </div>
+
     <button onclick="login()">لاگ ان</button>
   </div>
 
@@ -94,7 +113,6 @@
         if (user.role === "admin") window.location.href = "admin-dashboard.html";
         else if (user.role === "reception") window.location.href = "reception.html";
         else if (user.role === "technician") window.location.href = "technician.html";
-        else alert("نامعلوم کردار، لاگ ان ناکام ❌");
       } else {
         alert("غلط CNIC یا پاس ورڈ ❌");
       }
