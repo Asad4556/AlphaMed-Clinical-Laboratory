@@ -1,170 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Register Patient</title>
-  <script src="https://cdn.jsdelivr.net/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
+  <meta charset="UTF-8">
+  <title>Reception - Register Patient</title>
   <style>
     body {
+      font-family: sans-serif;
       background-color: #121212;
       color: white;
-      font-family: Arial, sans-serif;
-      padding: 30px;
+      padding: 20px;
+      direction: ltr;
     }
-
     h2 {
       color: #00ffaa;
-      text-align: center;
     }
-
+    .form-section {
+      background-color: #1e1e1e;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+    }
     label {
       display: block;
       margin-top: 10px;
     }
-
     input, select, button {
-      width: 100%;
       padding: 10px;
       margin-top: 5px;
+      width: 100%;
+      font-size: 16px;
       border-radius: 5px;
       border: none;
-      font-size: 16px;
-      background-color: #1e1e1e;
+      background-color: #2c2c2c;
       color: white;
     }
-
     button {
       background-color: #00aaff;
-      font-weight: bold;
-      margin-top: 20px;
       cursor: pointer;
     }
-
-    .form-section {
-      max-width: 600px;
-      margin: auto;
-      background-color: #1a1a1a;
-      padding: 20px;
-      border-radius: 10px;
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
     }
-
-    .barcode {
-      margin-top: 20px;
-      text-align: center;
-    }
-
-    .watermark {
-      position: fixed;
-      top: 40%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 60px;
-      color: rgba(255, 255, 255, 0.05);
-      white-space: nowrap;
-      z-index: -1;
-    }
-
-    #slip {
-      margin-top: 30px;
-      background-color: #1e1e1e;
-      padding: 20px;
-      border-radius: 8px;
-    }
-
-    .section-checkbox {
-      display: inline-block;
-      margin-right: 10px;
+    .checkbox-group label {
+      width: 45%;
+      margin: 5px 2.5%;
     }
   </style>
 </head>
 <body>
-  <div class="watermark">AlphaMed Clinical Laboratory</div>
-
-  <h2>Register New Patient</h2>
-
+  <h2>Register Patient</h2>
   <div class="form-section">
-    <form id="patientForm">
-      <label>Full Name</label>
-      <input type="text" id="fullName" required>
+    <form id="registerForm">
+      <label>Full Name:
+        <input type="text" id="fullName" required>
+      </label>
+      <label>CNIC:
+        <input type="text" id="cnic" required>
+      </label>
+      <label>Phone:
+        <input type="text" id="phone" required>
+      </label>
+      <label>Select Department:
+        <select id="department" onchange="loadTests()">
+          <option value="">-- Select Department --</option>
+          <option value="Hematology">Hematology</option>
+          <option value="Serology">Serology</option>
+          <option value="Biochemistry">Biochemistry</option>
+          <option value="Urine">Urine</option>
+          <option value="Stool">Stool</option>
+        </select>
+      </label>
 
-      <label>CNIC</label>
-      <input type="text" id="cnic" required>
+      <div id="testSelection" class="checkbox-group"></div>
 
-      <label>Phone Number</label>
-      <input type="text" id="phone" required>
-
-      <label>Select Sections</label>
-      <div id="sectionOptions">
-        <label class="section-checkbox"><input type="checkbox" value="Hematology"> Hematology</label>
-        <label class="section-checkbox"><input type="checkbox" value="Serology"> Serology</label>
-        <label class="section-checkbox"><input type="checkbox" value="Biochemistry"> Biochemistry</label>
-        <label class="section-checkbox"><input type="checkbox" value="Urine"> Urine</label>
-        <label class="section-checkbox"><input type="checkbox" value="Stool"> Stool</label>
-      </div>
-
-      <button type="submit">Generate MRN & Register</button>
+      <button type="submit">Register Patient</button>
     </form>
   </div>
 
-  <div id="slip" style="display:none;">
-    <h3>Registration Slip</h3>
-    <p><strong>MRN:</strong> <span id="mrnDisplay"></span></p>
-    <p><strong>Sample No:</strong> <span id="sampleNo"></span></p>
-    <p><strong>Sections:</strong> <span id="sectionDisplay"></span></p>
-    <div class="barcode">
-      <svg id="barcode"></svg>
-    </div>
-  </div>
-
   <script>
-    let counter = parseInt(localStorage.getItem("mrnCounter") || "1");
+    const tests = {
+      Hematology: ["Hemoglobin", "WBC", "Platelet Count"],
+      Serology: ["CRP", "Typhidot IgM"],
+      Biochemistry: ["Glucose (F)", "Urea", "Creatinine"],
+      Urine: ["Urine pH", "Protein", "Sugar"],
+      Stool: ["Occult Blood", "Consistency", "Mucus"]
+    };
 
-    document.getElementById("patientForm").addEventListener("submit", function (e) {
+    function loadTests() {
+      const section = document.getElementById("department").value;
+      const testContainer = document.getElementById("testSelection");
+      testContainer.innerHTML = "";
+
+      if (section && tests[section]) {
+        tests[section].forEach(test => {
+          const label = document.createElement("label");
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.value = test;
+          checkbox.name = "tests";
+          label.appendChild(checkbox);
+          label.append(" " + test);
+          testContainer.appendChild(label);
+        });
+      }
+    }
+
+    document.getElementById("registerForm").addEventListener("submit", function(e) {
       e.preventDefault();
+      const fullName = document.getElementById("fullName").value;
+      const cnic = document.getElementById("cnic").value;
+      const phone = document.getElementById("phone").value;
+      const department = document.getElementById("department").value;
+      const selectedTests = Array.from(document.querySelectorAll("input[name='tests']:checked")).map(cb => cb.value);
 
-      const fullName = document.getElementById("fullName").value.trim();
-      const cnic = document.getElementById("cnic").value.trim();
-      const phone = document.getElementById("phone").value.trim();
-      const sectionInputs = document.querySelectorAll("#sectionOptions input[type='checkbox']:checked");
-      const sections = Array.from(sectionInputs).map(i => i.value);
-
-      if (sections.length === 0) {
-        alert("Please select at least one section");
+      if (!selectedTests.length) {
+        alert("Please select at least one test");
         return;
       }
 
-      const year = new Date().getFullYear().toString().slice(-2);
-      const mrn = `ACL-${year}-${String(counter).padStart(5, '5')}`;
-      const sampleNo = `SMP-${Date.now().toString().slice(-6)}`;
-
-      counter++;
-      localStorage.setItem("mrnCounter", counter);
-
-      const newPatient = {
-        mrn,
+      const patient = {
+        id: Date.now(),
         fullName,
         cnic,
         phone,
-        sections,
-        date: new Date().toISOString().split("T")[0]
+        department,
+        tests: selectedTests
       };
 
-      const patients = JSON.parse(localStorage.getItem("patients") || "[]");
-      patients.push(newPatient);
-      localStorage.setItem("patients", JSON.stringify(patients));
+      const saved = JSON.parse(localStorage.getItem("patients") || "[]");
+      saved.push(patient);
+      localStorage.setItem("patients", JSON.stringify(saved));
 
-      // Show Slip
-      document.getElementById("mrnDisplay").innerText = mrn;
-      document.getElementById("sampleNo").innerText = sampleNo;
-      document.getElementById("sectionDisplay").innerText = sections.join(", ");
-      JsBarcode("#barcode", mrn, {
-        format: "CODE128",
-        width: 2,
-        height: 40,
-        displayValue: false
-      });
-      document.getElementById("slip").style.display = "block";
-      document.getElementById("patientForm").reset();
+      alert("Patient Registered Successfully ✅");
+      location.reload();
     });
   </script>
 </body>
