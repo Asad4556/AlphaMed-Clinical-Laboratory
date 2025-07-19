@@ -1,1 +1,155 @@
-<!-- admin-dashboard.html content -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      direction: ltr;
+      padding: 20px;
+    }
+    h2, h3 {
+      color: #00ffaa;
+    }
+    input, select, button {
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 16px;
+      border-radius: 5px;
+      border: none;
+      background-color: #1e1e1e;
+      color: white;
+    }
+    button {
+      background-color: #00aaff;
+      cursor: pointer;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #444;
+      padding: 8px;
+      text-align: center;
+    }
+    .form-section {
+      background-color: #1c1c1c;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+    }
+    .logout-button {
+      background-color: crimson;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      float: right;
+    }
+  </style>
+</head>
+<body>
+  <div style="text-align: right;">
+    <button class="logout-button" onclick="logout()">🔒 Logout</button>
+  </div>
+
+  <h2>Admin Dashboard</h2>
+
+  <div class="form-section">
+    <h3>Add New User</h3>
+    <form id="addUserForm">
+      <select id="newUserRole" required>
+        <option value="">Select Role</option>
+        <option value="Reception">Reception</option>
+        <option value="Technician">Technician</option>
+      </select><br>
+      <input type="text" id="newUserCnic" placeholder="CNIC" required><br>
+      <input type="password" id="newUserPassword" placeholder="Password" required><br>
+      <button type="submit">Add User</button>
+    </form>
+  </div>
+
+  <div class="form-section">
+    <h3>All Users</h3>
+    <table id="userTable">
+      <thead>
+        <tr>
+          <th>Role</th>
+          <th>CNIC</th>
+          <th>Delete</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    const currentAdmin = JSON.parse(localStorage.getItem("loggedIn"));
+    if (!currentAdmin || currentAdmin.role !== "Admin") {
+      window.location.href = "login.html";
+    }
+
+    const userTable = document.getElementById("userTable").querySelector("tbody");
+
+    function loadUsers() {
+      const users = JSON.parse(localStorage.getItem("users") || "[]");
+      userTable.innerHTML = "";
+      users.forEach(user => {
+        if (user.role === "Admin") return;
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${user.role}</td>
+          <td>${user.cnic}</td>
+          <td><button onclick="deleteUser('${user.cnic}')">❌</button></td>
+        `;
+        userTable.appendChild(row);
+      });
+    }
+
+    function deleteUser(cnic) {
+      let users = JSON.parse(localStorage.getItem("users") || "[]");
+      users = users.filter(u => u.cnic !== cnic);
+      localStorage.setItem("users", JSON.stringify(users));
+      loadUsers();
+    }
+
+    document.getElementById("addUserForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const role = document.getElementById("newUserRole").value;
+      const cnic = document.getElementById("newUserCnic").value;
+      const password = document.getElementById("newUserPassword").value;
+
+      if (role === "Admin") {
+        alert("Creating new Admin is not allowed.");
+        return;
+      }
+
+      let users = JSON.parse(localStorage.getItem("users") || "[]");
+      if (users.find(u => u.cnic === cnic)) {
+        alert("This CNIC already exists.");
+        return;
+      }
+
+      users.push({ role, cnic, password });
+      localStorage.setItem("users", JSON.stringify(users));
+      alert("User added successfully.");
+      document.getElementById("addUserForm").reset();
+      loadUsers();
+    });
+
+    function logout() {
+      localStorage.removeItem("loggedIn");
+      window.location.href = "login.html";
+    }
+
+    loadUsers();
+  </script>
+</body>
+</html>
