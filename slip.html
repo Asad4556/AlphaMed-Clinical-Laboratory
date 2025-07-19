@@ -1,1 +1,39 @@
-<!-- Slip -->
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+  <meta charset="UTF-8" />
+  <title>پرچی - AlphaMed</title>
+  <script src="https://cdn.jsdelivr.net/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
+  <style>
+    body { direction: rtl; font-family: sans-serif; text-align: center; }
+    .watermark {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      opacity: 0.1; font-size: 70px; color: #003366;
+    }
+  </style>
+</head>
+<body>
+  <div class="watermark">AlphaMed</div>
+  <h2>AlphaMed Clinical Lab</h2>
+  <div id="details"></div>
+  <svg id="barcode"></svg><br>
+  <button onclick="window.print()">پرنٹ کریں</button>
+
+  <script>
+    const mrn = new URLSearchParams(window.location.search).get("mrn");
+    const p = JSON.parse(localStorage.getItem("patientList") || "[]").find(x => x.mrn === mrn);
+    if (p) {
+      document.getElementById("details").innerHTML = `
+        MRN: ${p.mrn}<br>
+        Sample: ${p.sample}<br>
+        نام: ${p.name}<br>
+        CNIC: ${p.cnic}<br>
+        فون: ${p.phone}<br>
+        ٹیسٹ: ${p.selectedTests.map(t=>t.name).join(", ")}
+      `;
+      JsBarcode("#barcode", `${p.mrn} ${p.sample}`, {format:"CODE128"});
+    }
+  </script>
+</body>
+</html>
