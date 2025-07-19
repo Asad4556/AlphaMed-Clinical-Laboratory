@@ -1,133 +1,130 @@
 <!DOCTYPE html>
 <html lang="ur">
 <head>
-  <meta charset="UTF-8" />
-  <title>لیب رپورٹ - AlphaMed</title>
+  <meta charset="UTF-8">
+  <title>لیبارٹری رپورٹ - AlphaMed</title>
   <script src="https://cdn.jsdelivr.net/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
   <style>
     body {
+      background: #fff;
       font-family: sans-serif;
       direction: rtl;
-      background: #fff;
-      color: #000;
       padding: 40px;
-    }
-    .header {
-      text-align: center;
       position: relative;
-    }
-    .header img {
-      height: 60px;
-    }
-    .header h2 {
-      margin: 5px 0;
-      color: #003366;
     }
     .watermark {
       position: absolute;
-      top: 50%; left: 50%;
+      top: 50%;
+      left: 50%;
       transform: translate(-50%, -50%);
-      opacity: 0.1;
       font-size: 100px;
       color: #003366;
+      opacity: 0.1;
       z-index: 0;
     }
-    .content * {
-      position: relative;
+    .report * {
       z-index: 1;
+      position: relative;
     }
-    .details {
-      text-align: left; margin-top: 20px;
+    .logo {
+      height: 70px;
+      display: block;
+      margin: 0 auto 10px;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
+    h2 {
+      text-align: center;
+      color: #003366;
+    }
+    .barcode {
+      position: absolute;
+      top: 40px;
+      right: 40px;
+    }
+    .patient-details {
+      text-align: right;
       margin-top: 20px;
     }
-    th, td {
-      border: 1px solid #444;
+    .test-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+    }
+    .test-table th, .test-table td {
+      border: 1px solid #333;
       padding: 10px;
-    }
-    th {
-      background: #003366; color: #fff;
-    }
-    #barcode {
-      position: absolute;
-      top: 40px; right: 40px;
+      text-align: center;
     }
     button {
-      margin-top: 30px; padding: 12px 25px;
-      background: #003366; color: #fff;
-      border: none; border-radius: 6px;
+      margin-top: 30px;
+      padding: 12px 20px;
+      font-size: 16px;
+      background: #003366;
+      color: white;
+      border: none;
+      border-radius: 6px;
       cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <div class="header">
-    <div class="watermark">AlphaMed</div>
-    <img src="logo.png" alt="Logo" />
+  <div class="watermark">AlphaMed</div>
+  <div class="report">
+    <img src="logo.png" class="logo" alt="Lab Logo">
     <h2>AlphaMed Clinical Laboratory</h2>
-    <svg id="barcode"></svg>
-  </div>
+    <svg id="barcode" class="barcode"></svg>
 
-  <div class="details">
-    <p><strong>MRN:</strong> <span id="mrn"></span></p>
-    <p><strong>نام:</strong> <span id="name"></span></p>
-    <p><strong>CNIC:</strong> <span id="cnic"></span></p>
-    <p><strong>فون:</strong> <span id="phone"></span></p>
-    <p><strong>پتہ:</strong> <span id="address"></span></p>
-  </div>
+    <div class="patient-details">
+      <p><strong>MRN:</strong> <span id="mrn"></span></p>
+      <p><strong>نام:</strong> <span id="name"></span></p>
+      <p><strong>CNIC:</strong> <span id="cnic"></span></p>
+      <p><strong>فون:</strong> <span id="phone"></span></p>
+      <p><strong>پتہ:</strong> <span id="address"></span></p>
+    </div>
 
-  <div class="content">
-    <table>
+    <table class="test-table">
       <thead>
         <tr>
           <th>ٹیسٹ</th>
-          <th>ریزلٹ</th>
-          <th>پیرامیٹر</th>
-          <th>مرد نارمل</th>
-          <th>خاتون نارمل</th>
+          <th>نتیجہ</th>
+          <th>نارمل (مرد)</th>
+          <th>نارمل (خاتون)</th>
         </tr>
       </thead>
-      <tbody id="test-results"></tbody>
+      <tbody id="testResults"></tbody>
     </table>
+
+    <button onclick="window.print()">📄 پرنٹ کریں</button>
   </div>
 
-  <button onclick="window.print()">پرنٹ کریں</button>
-
   <script>
-    const url = new URLSearchParams(window.location.search);
-    const mrn = url.get("mrn");
-
+    const urlParams = new URLSearchParams(window.location.search);
+    const mrn = urlParams.get("mrn");
     const patients = JSON.parse(localStorage.getItem("patientList") || "[]");
-    const patient = patients.find(p => p.mrn === mrn);
-
     const reports = JSON.parse(localStorage.getItem("labReports") || "[]");
+
+    const patient = patients.find(p => p.mrn === mrn);
     const report = reports.find(r => r.mrn === mrn);
 
     if (patient && report) {
       document.getElementById("mrn").textContent = patient.mrn;
-      document.getElementById("name").textContent = patient.fullName;
+      document.getElementById("name").textContent = patient.fullName || patient.name;
       document.getElementById("cnic").textContent = patient.cnic;
       document.getElementById("phone").textContent = patient.phone;
-      document.getElementById("address").textContent = patient.address || "";
+      document.getElementById("address").textContent = patient.address || "—";
 
-      JsBarcode("#barcode", patient.mrn, { format: "CODE128", width: 2, height: 40 });
-
-      let rows = "";
-      report.results.forEach(t => {
-        rows += `<tr>
-          <td>${t.name}</td>
-          <td>${t.result}</td>
-          <td>${t.param}</td>
-          <td>${t.male}</td>
-          <td>${t.female}</td>
-        </tr>`;
+      const tbody = document.getElementById("testResults");
+      report.results.forEach(result => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${result.test}</td>
+          <td>${result.result}</td>
+          <td>${result.male}</td>
+          <td>${result.female}</td>
+        `;
+        tbody.appendChild(tr);
       });
-      document.getElementById("test-results").innerHTML = rows;
-    } else {
-      document.body.innerHTML = "<h2>رپورٹ نہیں ملی!</h2>";
+
+      JsBarcode("#barcode", patient.mrn, { format: "CODE128", width: 2, height: 50 });
     }
   </script>
 </body>
