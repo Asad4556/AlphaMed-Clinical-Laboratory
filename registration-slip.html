@@ -3,93 +3,68 @@
 <head>
   <meta charset="UTF-8">
   <title>مریض پرچی - AlphaMed</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
   <style>
-    body {
-      font-family: sans-serif;
-      direction: rtl;
-      background-color: #fff;
-      padding: 30px;
-      text-align: center;
-    }
-
-    .slip {
-      max-width: 700px;
-      margin: auto;
-      padding: 20px;
-      border: 2px solid #003366;
-      position: relative;
-    }
-
-    /* Watermark Center */
-    .watermark {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+    /* Slip-specific watermark image style */
+    .watermark img {
+      width: 400px;
       opacity: 0.06;
+      pointer-events: none;
+      position: relative;
       z-index: 0;
     }
 
-    .watermark img {
-      width: 400px;
-    }
-
-    .slip * {
-      z-index: 1;
-      position: relative;
-    }
-
-    /* Header Layout */
-    .header {
+    /* Header for slip (Logo - Title - Barcode) */
+    .slip .header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       margin-bottom: 20px;
+      padding: 0 10px;
     }
 
-    .header img.logo {
-      height: 60px;
-    }
-
-    .header h2 {
+    .slip .header h2 {
       flex: 1;
       margin: 0;
-      color: #003366;
+      color: #00ffaa;
       font-size: 24px;
+      text-align: center;
     }
 
-    #barcode {
-      width: 150px;
-      height: 50px;
-    }
+    @media print {
+      body {
+        background: white;
+        color: black;
+      }
 
-    p {
-      font-size: 18px;
-      margin: 5px 0;
-    }
+      .slip {
+        border: none;
+        box-shadow: none;
+        background: white;
+      }
 
-    button {
-      margin-top: 20px;
-      padding: 10px 20px;
-      font-size: 16px;
-      background-color: #003366;
-      color: white;
-      border: none;
-      border-radius: 6px;
+      button {
+        display: none;
+      }
+
+      .watermark img {
+        opacity: 0.1;
+      }
     }
   </style>
-  <script src="https://cdn.jsdelivr.net/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
 </head>
 <body>
-  <div class="slip">
-    <!-- Watermark Logo Centered -->
+  <div class="slip centered">
+    
+    <!-- Watermark image in center -->
     <div class="watermark">
       <img src="logo.png" alt="Watermark Logo">
     </div>
 
-    <!-- Header with Logo, Lab Name, and Barcode -->
+    <!-- Header row: Logo | Lab Name | Barcode -->
     <div class="header">
-      <img src="logo.png" class="logo" alt="Logo Left">
+      <img src="logo.png" class="logo" alt="Logo" style="height: 60px;">
       <h2>AlphaMed Clinical Laboratory</h2>
       <svg id="barcode"></svg>
     </div>
