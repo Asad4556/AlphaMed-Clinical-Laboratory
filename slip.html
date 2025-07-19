@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+  <meta charset="UTF-8">
+  <title>مریض پرچی - AlphaMed</title>
+  <script src="https://cdn.jsdelivr.net/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      direction: rtl;
+      background-color: #fff;
+      padding: 30px;
+      text-align: center;
+    }
+    .slip {
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+      border: 2px solid #003366;
+      position: relative;
+    }
+    .watermark {
+      position: absolute;
+      top: 45%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0.15;
+      font-size: 60px;
+      color: #003366;
+      z-index: 0;
+    }
+    .slip * {
+      z-index: 1;
+      position: relative;
+    }
+    img.logo {
+      height: 60px;
+    }
+    h2 {
+      margin: 5px 0;
+      color: #003366;
+    }
+    p {
+      font-size: 18px;
+      margin: 5px 0;
+    }
+    #barcode {
+      margin-top: 15px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #003366;
+      color: white;
+      border: none;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="slip">
+    <div class="watermark">AlphaMed</div>
+    <img src="logo.png" class="logo" />
+    <h2>AlphaMed Clinical Laboratory</h2>
+    <p><strong>MRN:</strong> <span id="mrn"></span></p>
+    <p><strong>Sample Number:</strong> <span id="sample"></span></p>
+    <p><strong>نام:</strong> <span id="name"></span></p>
+    <p><strong>CNIC:</strong> <span id="cnic"></span></p>
+    <p><strong>فون:</strong> <span id="phone"></span></p>
+    <p><strong>سیکشن:</strong> <span id="sections"></span></p>
+    <svg id="barcode"></svg>
+    <button onclick="window.print()">پرنٹ کریں</button>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const mrn = urlParams.get("mrn");
+    const patients = JSON.parse(localStorage.getItem("patients") || "[]");
+    const patient = patients.find(p => p.mrn === mrn);
+
+    if (patient) {
+      document.getElementById("mrn").textContent = patient.mrn;
+      document.getElementById("sample").textContent = patient.sample;
+      document.getElementById("name").textContent = patient.name;
+      document.getElementById("cnic").textContent = patient.cnic;
+      document.getElementById("phone").textContent = patient.phone;
+      document.getElementById("sections").textContent = patient.sections.join(", ");
+      JsBarcode("#barcode", patient.mrn, { format: "CODE128", width: 2, height: 50 });
+    }
+  </script>
+</body>
+</html>
