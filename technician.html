@@ -1,45 +1,42 @@
 <!DOCTYPE html>
 <html lang="ur">
 <head>
-  <meta charset="UTF-8">
-  <title>ٹیکنیشن - ٹیسٹ شامل کریں</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>ٹیکنیشن ڈیش بورڈ - AlphaMed</title>
+  <link rel="stylesheet" href="style.css" />
   <style>
-    .form-section {
-      max-width: 600px;
-      margin: auto;
+    .highlight-high {
+      background-color: rgba(255, 0, 0, 0.3);
     }
-    table {
-      width: 100%;
-      margin-top: 20px;
-      border-collapse: collapse;
-    }
-    th, td {
-      padding: 10px;
-      border: 1px solid #444;
-      text-align: center;
+    .highlight-low {
+      background-color: rgba(255, 255, 0, 0.3);
     }
   </style>
 </head>
 <body>
   <button class="logout-btn" onclick="logout()">🔒 لاگ آؤٹ</button>
-  <h2>🧪 ٹیسٹ رزلٹ شامل کریں</h2>
+  <h2>🧪 ٹیکنیشن - رزلٹ شامل کریں</h2>
 
-  <div class="form-section">
-    <input type="text" id="mrn" placeholder="MRN نمبر درج کریں">
-    <button onclick="loadPatientTests()">مریض لوڈ کریں</button>
+  <div class="form-section centered">
+    <input type="text" id="mrn" placeholder="MRN نمبر لکھیں (مثال: MRN-24-00001)" />
+    <button onclick="loadTests()">لوڈ کریں</button>
   </div>
 
-  <div id="testArea"></div>
+  <div id="test-area" class="centered"></div>
 
   <script>
     function logout() {
-      localStorage.removeItem("loggedInRole");
+      localStorage.removeItem("loggedIn");
       window.location.href = "login.html";
     }
 
-    function loadPatientTests() {
+    function loadTests() {
       const mrn = document.getElementById("mrn").value.trim();
+      if (!mrn) {
+        alert("براہ کرم MRN درج کریں");
+        return;
+      }
+
       const patients = JSON.parse(localStorage.getItem("patientList") || "[]");
       const patient = patients.find(p => p.mrn === mrn);
 
@@ -49,28 +46,66 @@
       }
 
       if (!patient.selectedTests || patient.selectedTests.length === 0) {
-        alert("اس مریض کے لیے کوئی ٹیسٹ منتخب نہیں کیا گیا");
+        alert("اس مریض کے لئے کوئی ٹیسٹ منتخب نہیں ہوئے");
         return;
       }
 
       let html = `<h3>👤 ${patient.name}</h3>`;
-      html += `<table><tr><th>ٹیسٹ</th><th>ریزلٹ</th><th>نارمل ویلیو</th></tr>`;
+      html += `<table><tr><th>ٹیسٹ</th><th>ریزلٹ</th><th>ریفرنس ویلیو</th><th>حالت</th></tr>`;
       patient.selectedTests.forEach((test, index) => {
         html += `
           <tr>
             <td>${test.name}</td>
-            <td><input type="text" id="result-${index}" placeholder="ریزلٹ"></td>
+            <td><input type="number" id="result-${index}" placeholder="ریزلٹ لکھیں" oninput="highlight(${index}, '${test.normal}')" /></td>
             <td>${test.normal}</td>
+            <td id="status-${index}">-</td>
           </tr>
         `;
       });
-      html += `</table><br><button onclick="saveResults('${mrn}')">💾 رزلٹ محفوظ کریں</button>`;
-      document.getElementById("testArea").innerHTML = html;
+      html += `</table><br><button onclick="saveReport('${mrn}')">💾 رپورٹ محفوظ کریں</button>`;
+      document.getElementById("test-area").innerHTML = html;
     }
 
-    function saveResults(mrn) {
+    function highlight(index, normalRange) {
+      const input = document.getElementById(`result-${index}`);
+      const status = document.getElementById(`status-${index}`);
+      const value = parseFloat(input.value);
+
+      if (isNaN(value)) {
+        status.textContent = "-";
+        input.classList.remove("highlight-high", "highlight-low");
+        return;
+      }
+
+      let low = null, high = null;
+      const parts = normalRange.split("-");
+      if (parts.length === 2) {
+        low = parseFloat(parts[0]);
+        high = parseFloat(parts[1]);
+      }
+
+      if (low !== null && high !== null) {
+        if (value < low) {
+          status.textContent = "⬇ کم";
+          input.classList.add("highlight-low");
+          input.classList.remove("highlight-high");
+        } else if (value > high) {
+          status.textContent = "⬆ زیادہ";
+          input.classList.add("highlight-high");
+          input.classList.remove("highlight-low");
+        } else {
+          status.textContent = "✅ نارمل";
+          input.classList.remove("highlight-high", "highlight-low");
+        }
+      } else {
+        status.textContent = "ℹ دستیاب نہیں";
+      }
+    }
+
+    function saveReport(mrn) {
       const patients = JSON.parse(localStorage.getItem("patientList") || "[]");
       const patient = patients.find(p => p.mrn === mrn);
+
       const results = patient.selectedTests.map((test, index) => ({
         test: test.name,
         result: document.getElementById(`result-${index}`).value.trim(),
@@ -79,12 +114,14 @@
 
       const allReports = JSON.parse(localStorage.getItem("labReports") || "[]");
       allReports.push({
-        mrn,
-        results,
+        mrn: mrn,
+        name: patient.name,
+        results: results,
         date: new Date().toISOString()
       });
+
       localStorage.setItem("labReports", JSON.stringify(allReports));
-      alert("رزلٹ محفوظ ہو گئے ✅");
+      alert("رپورٹ محفوظ ہو گئی ✅");
       location.reload();
     }
   </script>
