@@ -1,1 +1,110 @@
-<!-- add_test_result.html updated content -->
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+  <meta charset="UTF-8" />
+  <title>رپورٹ شامل کریں - ٹیکنیشن</title>
+  <style>
+    body {
+      background-color: #121212;
+      font-family: sans-serif;
+      color: white;
+      direction: rtl;
+      padding: 30px;
+    }
+    h2 {
+      color: #00ffaa;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      font-size: 16px;
+      border-radius: 6px;
+      border: none;
+      background-color: #1f1f1f;
+      color: white;
+    }
+    button {
+      background-color: #00aaff;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+      background-color: #1a1a1a;
+    }
+    th, td {
+      border: 1px solid #333;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #282828;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>ٹیسٹ رزلٹ شامل کریں</h2>
+
+  <input type="text" id="mrn" placeholder="MRN نمبر تلاش کریں (مثلاً ACL-25-00001)" />
+  <button onclick="loadTests()">مریض لوڈ کریں</button>
+
+  <div id="testArea"></div>
+
+  <script>
+    const sectionTests = JSON.parse(localStorage.getItem("sectionTests") || "{}");
+
+    function loadTests() {
+      const mrn = document.getElementById("mrn").value.trim();
+      if (!mrn || !sectionTests[mrn]) {
+        alert("صحیح MRN درج کریں یا مریض کا سیکشن دستیاب نہیں");
+        return;
+      }
+
+      const { section } = sectionTests[mrn];
+      const testList = sectionTests[mrn].tests || [];
+
+      if (testList.length === 0) {
+        document.getElementById("testArea").innerHTML = "<p>کوئی ٹیسٹ منتخب نہیں کیا گیا۔</p>";
+        return;
+      }
+
+      let html = `<form onsubmit="saveReport(event, '${mrn}', '${section}')">`;
+      html += `<table><tr><th>ٹیسٹ</th><th>ریزلٹ</th><th>مرد نارمل</th><th>خاتون نارمل</th></tr>`;
+      testList.forEach((test, i) => {
+        html += `<tr>
+          <td>${test.name}</td>
+          <td><input type='text' name='result-${i}' required></td>
+          <td>${test.male}</td>
+          <td>${test.female}</td>
+        </tr>`;
+      });
+      html += `</table><br><button type='submit'>محفوظ کریں</button></form>`;
+      document.getElementById("testArea").innerHTML = html;
+    }
+
+    function saveReport(e, mrn, section) {
+      e.preventDefault();
+      const form = e.target;
+      const testList = sectionTests[mrn].tests;
+      const results = testList.map((t, i) => ({
+        test: t.name,
+        result: form[`result-${i}`].value,
+        male: t.male,
+        female: t.female
+      }));
+
+      const reports = JSON.parse(localStorage.getItem("labReports") || "[]");
+      reports.push({ mrn, section, results, date: new Date().toISOString() });
+      localStorage.setItem("labReports", JSON.stringify(reports));
+
+      alert("رپورٹ کامیابی سے محفوظ ہو گئی ✅");
+      location.reload();
+    }
+  </script>
+
+</body>
+</html>
