@@ -1,1 +1,125 @@
-<!-- registration-slip.html updated content -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Patient Registration Slip</title>
+  <script src="https://cdn.jsdelivr.net/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #121212;
+      color: white;
+      margin: 0;
+      padding: 40px;
+    }
+
+    .container {
+      background-color: #1c1c1c;
+      padding: 30px;
+      border-radius: 10px;
+      position: relative;
+      max-width: 700px;
+      margin: auto;
+    }
+
+    .logo {
+      width: 120px;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #00ffaa;
+    }
+
+    .info {
+      margin-top: 20px;
+    }
+
+    .info p {
+      margin: 8px 0;
+    }
+
+    .barcode {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .watermark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      font-size: 70px;
+      color: rgba(255, 255, 255, 0.05);
+      transform: translate(-50%, -50%);
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .footer-note {
+      margin-top: 30px;
+      font-size: 12px;
+      color: #ccc;
+      text-align: center;
+    }
+
+    @media print {
+      .no-print {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="watermark">AlphaMed Clinical Laboratory</div>
+    <div style="text-align: center;">
+      <img src="logo.png" class="logo" alt="Lab Logo" />
+    </div>
+    <h2>Patient Registration Slip</h2>
+
+    <div class="info">
+      <p><strong>MRN:</strong> <span id="mrnText">---</span></p>
+      <p><strong>Sample No:</strong> <span id="sampleText">---</span></p>
+      <p><strong>Patient Name:</strong> <span id="nameText">---</span></p>
+      <p><strong>CNIC:</strong> <span id="cnicText">---</span></p>
+      <p><strong>Phone:</strong> <span id="phoneText">---</span></p>
+      <p><strong>Selected Sections:</strong> <span id="sectionText">---</span></p>
+    </div>
+
+    <div class="barcode">
+      <svg id="barcode"></svg>
+    </div>
+
+    <div class="footer-note">
+      This slip is computer generated and does not require a signature.
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const mrn = params.get("mrn");
+
+    const patients = JSON.parse(localStorage.getItem("patients") || "[]");
+    const patient = patients.find(p => p.mrn === mrn);
+
+    if (patient) {
+      document.getElementById("mrnText").innerText = patient.mrn;
+      document.getElementById("nameText").innerText = patient.fullName;
+      document.getElementById("cnicText").innerText = patient.cnic;
+      document.getElementById("phoneText").innerText = patient.phone;
+      document.getElementById("sectionText").innerText = patient.sections.join(", ");
+      document.getElementById("sampleText").innerText = `SMP-${patient.mrn.slice(-5)}`;
+      JsBarcode("#barcode", patient.mrn, {
+        format: "CODE128",
+        width: 2,
+        height: 50,
+        displayValue: false
+      });
+    } else {
+      alert("Patient not found.");
+    }
+  </script>
+</body>
+</html>
