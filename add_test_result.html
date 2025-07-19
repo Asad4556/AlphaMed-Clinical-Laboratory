@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+  <meta charset="UTF-8">
+  <title>ٹیسٹ رزلٹ شامل کریں - AlphaMed</title>
+  <style>
+    body { background: #121212; color: #fff; font-family: sans-serif; padding: 40px; direction: rtl; }
+    h2 { color: #00ffaa; }
+    input, button {
+      width: 100%; padding: 10px; border: none; border-radius: 6px; background: #1e1e1e; color: #fff; margin: 5px 0;
+    }
+    button { background: #00aaff; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h2>🧬 ٹیسٹ رزلٹ شامل کریں</h2>
+
+  <input type="text" id="mrn" placeholder="MRN نمبر">
+  <button onclick="loadPatient()">لوڈ کریں</button>
+
+  <div id="test-area"></div>
+
+  <script>
+    function loadPatient() {
+      const mrn = document.getElementById("mrn").value.trim();
+      const patients = JSON.parse(localStorage.getItem("patientList") || "[]");
+      const patient = patients.find(p => p.mrn === mrn);
+
+      if (!patient) { alert("مریض نہیں ملا"); return; }
+
+      const html = `
+        <p><strong>نام:</strong> ${patient.name}</p>
+        <label>رزلٹ</label>
+        <input type="text" id="result" placeholder="رزلٹ لکھیں" />
+        <button onclick="saveResult('${mrn}')">محفوظ کریں</button>
+      `;
+      document.getElementById("test-area").innerHTML = html;
+    }
+
+    function saveResult(mrn) {
+      const result = document.getElementById("result").value.trim();
+      const reports = JSON.parse(localStorage.getItem("labReports") || "[]");
+      reports.push({ mrn: mrn, result: result, date: new Date().toLocaleDateString() });
+      localStorage.setItem("labReports", JSON.stringify(reports));
+      alert("رزلٹ محفوظ ہو گیا ✅");
+      location.reload();
+    }
+  </script>
+</body>
+</html>
