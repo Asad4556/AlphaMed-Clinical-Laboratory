@@ -2,127 +2,123 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>View Patient Report - AlphaMed</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Patient Report - AlphaMed Lab</title>
+  <link rel="stylesheet" href="style.css" />
   <style>
     body {
+      font-family: Arial, sans-serif;
       background-color: #121212;
       color: white;
-      font-family: 'Segoe UI', sans-serif;
       padding: 30px;
-      text-align: center;
+      direction: ltr;
     }
-    h2 {
-      color: #00ffaa;
-    }
-    input {
-      padding: 12px;
-      width: 300px;
-      font-size: 16px;
-      border-radius: 6px;
-      border: none;
-      margin-top: 20px;
+    .report-container {
       background-color: #1e1e1e;
-      color: white;
-    }
-    button {
-      padding: 12px 20px;
-      background-color: #00aaff;
-      border: none;
-      border-radius: 6px;
-      color: white;
-      margin-top: 10px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    .report-card {
-      margin-top: 30px;
-      padding: 20px;
-      background-color: #1c1c1c;
+      padding: 30px;
       border-radius: 10px;
-      box-shadow: 0 0 10px #00ffaa55;
-      text-align: left;
-      max-width: 800px;
-      margin-left: auto;
-      margin-right: auto;
+      max-width: 900px;
+      margin: auto;
+      position: relative;
     }
-    .report-card h3 {
+    .header {
+      text-align: center;
+      position: relative;
+    }
+    .header img {
+      width: 80px;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    .header h1 {
       color: #00ffaa;
+      font-size: 28px;
     }
-    table {
+    .patient-info {
+      margin-top: 40px;
+      line-height: 1.8;
+      font-size: 16px;
+    }
+    .test-table {
       width: 100%;
+      margin-top: 30px;
       border-collapse: collapse;
-      margin-top: 15px;
+      font-size: 15px;
     }
-    th, td {
-      border: 1px solid #444;
+    .test-table th, .test-table td {
+      border: 1px solid #333;
       padding: 10px;
       text-align: center;
     }
-    th {
-      background-color: #222;
+    .test-table th {
+      background-color: #333;
     }
-    .not-found {
-      color: red;
-      margin-top: 20px;
+    .footer-note {
+      margin-top: 40px;
+      font-size: 12px;
+      text-align: center;
+      color: #aaa;
+    }
+    .actions {
+      text-align: right;
+      margin-bottom: 20px;
+    }
+    button {
+      background-color: #00aaff;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+    .watermark {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0.05;
+      font-size: 100px;
+      white-space: nowrap;
+      pointer-events: none;
     }
   </style>
 </head>
 <body>
-  <h2>View Patient Report</h2>
-  <input type="text" id="searchMrn" placeholder="Enter MRN (e.g. ACL-25-00001)">
-  <br>
-  <button onclick="findReport()">Search Report</button>
 
-  <div id="reportContainer"></div>
+  <div class="report-container" id="reportArea">
+    <div class="watermark">AlphaMed Lab</div>
 
+    <div class="actions">
+      <button onclick="window.print()">🖨️ Print</button>
+      <button onclick="exportPDF()">📄 Export PDF</button>
+    </div>
+
+    <div class="header">
+      <img src="logo.png" alt="Logo" />
+      <h1>AlphaMed Clinical Laboratory</h1>
+      <p>Quality Assurance Through Advanced Technology</p>
+    </div>
+
+    <div class="patient-info" id="patientInfo"></div>
+
+    <table class="test-table" id="testTable">
+      <thead>
+        <tr>
+          <th>Test Name</th>
+          <th>Result</th>
+          <th>Normal (Male)</th>
+          <th>Normal (Female)</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div class="footer-note">
+      This report is computer-generated and does not require a signature.
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
   <script>
-    function findReport() {
-      const mrn = document.getElementById('searchMrn').value.trim();
-      const container = document.getElementById('reportContainer');
-      const reports = JSON.parse(localStorage.getItem('labReports') || '[]');
-      const match = reports.find(r => r.mrn === mrn);
-
-      if (!match) {
-        container.innerHTML = `<p class="not-found">❌ Report not found for MRN: ${mrn}</p>`;
-        return;
-      }
-
-      let html = `
-        <div class="report-card">
-          <h3>Patient MRN: ${match.mrn}</h3>
-          <p><strong>Section:</strong> ${match.section}</p>
-          <p><strong>Date:</strong> ${match.timestamp}</p>
-          <table>
-            <tr>
-              <th>Test</th>
-              <th>Result</th>
-              <th>Normal (Male)</th>
-              <th>Normal (Female)</th>
-            </tr>
-      `;
-
-      match.results.forEach(res => {
-        html += `
-          <tr>
-            <td>${res.test}</td>
-            <td>${res.result}</td>
-            <td>${res.male}</td>
-            <td>${res.female}</td>
-          </tr>
-        `;
-      });
-
-      html += `
-          </table>
-          <p style="margin-top: 15px; font-size: 12px; color: #aaa;">
-            This report is computer generated and does not require signature.
-          </p>
-        </div>
-      `;
-
-      container.innerHTML = html;
-    }
-  </script>
-</body>
-</html>
+    const urlParams = new URLSearchParams(window.location.search
