@@ -42,6 +42,13 @@
       margin-bottom: 20px;
       color: #003366;
     }
+
+    label {
+      font-size: 14px;
+      float: right;
+      margin-top: -5px;
+      margin-right: 5px;
+    }
   </style>
 </head>
 <body>
@@ -50,13 +57,14 @@
     <h2>لاگ ان کریں</h2>
     <input type="text" id="cnic" placeholder="شناختی کارڈ نمبر (CNIC)" required />
     <input type="password" id="password" placeholder="پاس ورڈ" required />
+    <label><input type="checkbox" onclick="togglePassword()" /> پاس ورڈ دکھائیں</label>
     <button onclick="login()">لاگ ان</button>
   </div>
 
   <script>
     const users = JSON.parse(localStorage.getItem("users") || "[]");
 
-    // Default admin (hardcoded)
+    // Default admin user
     const defaultAdmin = {
       cnic: "34501-8971113-7",
       password: "Asad@2723",
@@ -66,6 +74,11 @@
     if (!users.find(u => u.cnic === defaultAdmin.cnic)) {
       users.push(defaultAdmin);
       localStorage.setItem("users", JSON.stringify(users));
+    }
+
+    function togglePassword() {
+      const passField = document.getElementById("password");
+      passField.type = passField.type === "password" ? "text" : "password";
     }
 
     function login() {
@@ -81,6 +94,7 @@
         if (user.role === "admin") window.location.href = "admin-dashboard.html";
         else if (user.role === "reception") window.location.href = "reception.html";
         else if (user.role === "technician") window.location.href = "technician.html";
+        else alert("نامعلوم کردار، لاگ ان ناکام ❌");
       } else {
         alert("غلط CNIC یا پاس ورڈ ❌");
       }
