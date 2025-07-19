@@ -116,8 +116,8 @@
   </div>
 
   <script>
-    function loadReport() {
-      const mrn = document.getElementById("searchMRN").value.trim();
+    function loadReport(passedMRN) {
+      const mrn = passedMRN || document.getElementById("searchMRN").value.trim();
       const reports = JSON.parse(localStorage.getItem("labReports") || "[]");
       const report = reports.find(r => r.mrn === mrn);
 
@@ -143,6 +143,16 @@
       });
 
       document.getElementById("reportArea").style.display = "block";
+    }
+
+    // auto-load MRN if passed in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const mrnParam = urlParams.get("mrn");
+    const mrnInput = document.getElementById("searchMRN");
+
+    if (mrnParam) {
+      mrnInput.value = mrnParam;
+      loadReport(mrnParam);
     }
   </script>
 
