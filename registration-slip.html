@@ -14,6 +14,22 @@
       padding: 0;
     }
 
+    /* ===== Watermark (Full Page Center) ===== */
+    .watermark {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0.05;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .watermark img {
+      width: 400px;
+    }
+
+    /* ===== Main Slip Box ===== */
     .slip {
       width: 800px;
       min-height: 100vh;
@@ -23,19 +39,7 @@
       background-color: #1e1e1e;
       box-shadow: 0 0 20px #00ffaa30;
       border: 2px solid #00ffaa;
-    }
-
-    .watermark {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      opacity: 0.05;
-      z-index: 0;
-    }
-
-    .watermark img {
-      width: 500px;
+      z-index: 1;
     }
 
     .slip * {
@@ -43,6 +47,7 @@
       z-index: 1;
     }
 
+    /* ===== Header Section ===== */
     .header {
       display: flex;
       justify-content: space-between;
@@ -62,16 +67,19 @@
       margin: 0;
     }
 
+    /* ===== Barcode Style ===== */
     #barcode {
-      width: 160px;
+      width: 150px;
       height: 40px;
     }
 
+    /* ===== Patient Info ===== */
     .info p {
       font-size: 18px;
       margin: 5px 0;
     }
 
+    /* ===== Print Button ===== */
     button {
       margin-top: 30px;
       padding: 12px 30px;
@@ -83,18 +91,22 @@
       cursor: pointer;
     }
 
+    /* ===== Print Mode Cleanup ===== */
     @media print {
       body {
         background: white;
         color: black;
       }
+
       .slip {
         border: none;
         box-shadow: none;
       }
+
       button {
         display: none;
       }
+
       .watermark img {
         opacity: 0.1;
       }
@@ -103,20 +115,21 @@
 </head>
 <body>
 
-  <div class="slip">
-    <!-- Watermark -->
-    <div class="watermark">
-      <img src="logo.png" alt="Watermark">
-    </div>
+  <!-- Watermark Center -->
+  <div class="watermark">
+    <img src="logo.png" alt="Watermark">
+  </div>
 
-    <!-- Header -->
+  <!-- Main Slip -->
+  <div class="slip">
+    <!-- Header with Logo, Lab Name, Barcode -->
     <div class="header">
       <img src="logo.png" class="logo" alt="Logo">
       <h2>AlphaMed Clinical Laboratory</h2>
       <svg id="barcode"></svg>
     </div>
 
-    <!-- Patient Info -->
+    <!-- Patient Info Section -->
     <div class="info">
       <p><strong>MRN:</strong> <span id="mrn"></span></p>
       <p><strong>Sample No:</strong> <span id="sample"></span></p>
@@ -131,6 +144,7 @@
     <button onclick="window.print()">پرنٹ کریں</button>
   </div>
 
+  <!-- Barcode + Patient Data Script -->
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const mrn = urlParams.get("mrn");
