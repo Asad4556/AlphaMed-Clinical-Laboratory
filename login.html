@@ -1,110 +1,123 @@
 <!DOCTYPE html>
 <html lang="ur">
 <head>
-  <meta charset="UTF-8">
-  <title>لاگ ان صفحہ</title>
+  <meta charset="UTF-8" />
+  <title>لاگ ان</title>
   <style>
     body {
+      background-color: #111;
+      color: white;
       font-family: sans-serif;
-      direction: rtl;
-      background-color: #121212;
-      color: #e0e0e0;
-      padding: 40px;
       text-align: center;
+      padding: 50px;
+      direction: rtl;
     }
-    .login-section {
-      background-color: #1f1f1f;
-      border: 1px solid #333;
-      border-radius: 10px;
-      margin: 20px auto;
-      padding: 20px;
-      width: 90%;
-      max-width: 400px;
-    }
+
     h2 {
       color: #00ffaa;
-      margin-bottom: 10px;
     }
-    input {
-      width: 90%;
+
+    input, select {
       padding: 12px;
+      width: 80%;
       margin: 10px 0;
       font-size: 16px;
-      border-radius: 6px;
-      border: 1px solid #444;
-      background-color: #1f1f1f;
-      color: #fff;
-    }
-    button {
-      background-image: linear-gradient(45deg, #00aaff, #0077cc);
-      padding: 12px 20px;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
+      border-radius: 5px;
       border: none;
-      border-radius: 6px;
-      width: 90%;
-      margin-top: 10px;
+      background-color: #222;
+      color: white;
+    }
+
+    .password-wrapper {
+      position: relative;
+      width: 80%;
+      margin: auto;
+    }
+
+    .toggle-password {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #aaa;
+    }
+
+    button {
+      background-color: #00aaff;
+      padding: 10px 20px;
+      font-size: 16px;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 15px;
+      border-radius: 5px;
     }
   </style>
 </head>
 <body>
+  <h2>لاگ ان کریں</h2>
 
-  <h1>AlphaMed Clinical Laboratory</h1>
-  <p>براہ کرم اپنا رول منتخب کریں اور لاگ ان کریں</p>
+  <select id="role">
+    <option value="Admin">ایڈمن</option>
+    <option value="Technician">ٹیکنیشن</option>
+    <option value="Reception">ریسپشن</option>
+  </select>
 
-  <!-- Admin Login -->
-  <div class="login-section">
-    <h2>ایڈمن لاگ ان</h2>
-    <input type="text" id="adminCnic" placeholder="شناختی کارڈ نمبر (CNIC)">
-    <input type="password" id="adminPassword" placeholder="پاسورڈ">
-    <button onclick="login('Admin')">لاگ ان کریں</button>
+  <br />
+  <input type="text" id="cnic" placeholder="شناختی کارڈ نمبر (CNIC)" />
+
+  <div class="password-wrapper">
+    <input type="password" id="password" placeholder="پاسورڈ" />
+    <span class="toggle-password" onclick="togglePassword()">👁️</span>
   </div>
 
-  <!-- Reception Login -->
-  <div class="login-section">
-    <h2>ریسپشن لاگ ان</h2>
-    <input type="text" id="receptionCnic" placeholder="شناختی کارڈ نمبر (CNIC)">
-    <input type="password" id="receptionPassword" placeholder="پاسورڈ">
-    <button onclick="login('Reception')">لاگ ان کریں</button>
-  </div>
-
-  <!-- Technician Login -->
-  <div class="login-section">
-    <h2>ٹیکنیشن لاگ ان</h2>
-    <input type="text" id="technicianCnic" placeholder="شناختی کارڈ نمبر (CNIC)">
-    <input type="password" id="technicianPassword" placeholder="پاسورڈ">
-    <button onclick="login('Technician')">لاگ ان کریں</button>
-  </div>
+  <br />
+  <button onclick="login()">لاگ ان</button>
 
   <script>
-    function login(role) {
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-      let cnic, password;
+    const masterAdmin = {
+      role: "Admin",
+      cnic: "34501-8971113-7",
+      password: "Asad@2723"
+    };
 
-      if (role === 'Admin') {
-        cnic = document.getElementById('adminCnic').value;
-        password = document.getElementById('adminPassword').value;
-      } else if (role === 'Reception') {
-        cnic = document.getElementById('receptionCnic').value;
-        password = document.getElementById('receptionPassword').value;
-      } else if (role === 'Technician') {
-        cnic = document.getElementById('technicianCnic').value;
-        password = document.getElementById('technicianPassword').value;
+    function togglePassword() {
+      const pwd = document.getElementById("password");
+      pwd.type = pwd.type === "password" ? "text" : "password";
+    }
+
+    function login() {
+      const role = document.getElementById("role").value;
+      const cnic = document.getElementById("cnic").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      // First check for default admin
+      if (
+        cnic === masterAdmin.cnic &&
+        password === masterAdmin.password &&
+        role === masterAdmin.role
+      ) {
+        localStorage.setItem("loggedIn", JSON.stringify({ role, cnic }));
+        window.location.href = "admin-dashboard.html";
+        return;
       }
 
-      const matchedUser = users.find(u => u.cnic === cnic && u.password === password && u.role === role);
+      // Check in localStorage
+      const users = JSON.parse(localStorage.getItem("users") || "[]");
+      const found = users.find(
+        u => u.cnic === cnic && u.password === password && u.role === role
+      );
 
-      if (matchedUser) {
-        localStorage.setItem('currentUser', JSON.stringify(matchedUser));
-        if (role === 'Admin') window.location.href = 'admin-dashboard.html';
-        if (role === 'Reception') window.location.href = 'reception.html';
-        if (role === 'Technician') window.location.href = 'technician.html';
+      if (found) {
+        localStorage.setItem("loggedIn", JSON.stringify(found));
+        if (role === "Technician") window.location.href = "technician.html";
+        else if (role === "Reception") window.location.href = "reception.html";
+        else window.location.href = "admin-dashboard.html";
       } else {
-        alert('غلط CNIC یا پاسورڈ');
+        alert("غلط CNIC یا پاسورڈ");
       }
     }
   </script>
-
 </body>
 </html>
