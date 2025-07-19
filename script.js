@@ -1,86 +1,72 @@
-// ======= COMMON GLOBAL =======
-const loggedInUser = localStorage.getItem("loggedIn") || null;
+// -----------------------------
+// Basic Login System
+// -----------------------------
 
-// ======= LOGIN LOGIC =======
-function login(role) {
+const users = [
+  { cnic: "34501-8971113-7", password: "Asad@2723", role: "admin" },
+  { cnic: "12345-1234567-1", password: "tech@123", role: "technician" },
+  { cnic: "54321-7654321-1", password: "reception@123", role: "reception" }
+];
+
+// Login Function
+function login() {
   const cnic = document.getElementById("cnic").value.trim();
   const password = document.getElementById("password").value.trim();
 
-  if (role === "admin" && cnic === "34501-8971113-7" && password === "Asad@2723") {
-    localStorage.setItem("loggedIn", "admin");
-    window.location.href = "admin_dashboard.html";
-  } else if (role === "reception") {
-    // Add your reception login logic
-    localStorage.setItem("loggedIn", "reception");
-    window.location.href = "reception_dashboard.html";
-  } else if (role === "technician") {
-    // Add your technician login logic
-    localStorage.setItem("loggedIn", "technician");
-    window.location.href = "technician_dashboard.html";
+  const user = users.find(u => u.cnic === cnic && u.password === password);
+
+  if (user) {
+    localStorage.setItem("loggedIn", JSON.stringify(user));
+    if (user.role === "admin") {
+      window.location.href = "admin_dashboard.html";
+    } else if (user.role === "technician") {
+      window.location.href = "technician_dashboard.html";
+    } else if (user.role === "reception") {
+      window.location.href = "reception_dashboard.html";
+    }
   } else {
-    alert("Invalid CNIC or Password");
+    alert("CNIC یا پاسورڈ غلط ہے");
   }
 }
 
-// ======= SHOW/HIDE PASSWORD =======
-function togglePassword() {
-  const pwField = document.getElementById("password");
-  pwField.type = pwField.type === "password" ? "text" : "password";
-}
-
-// ======= CHANGE PASSWORD =======
-function changePassword() {
-  const oldPass = prompt("Enter old password:");
-  if (oldPass !== "Asad@2723") {
-    alert("Wrong old password!");
-    return;
-  }
-  const newPass = prompt("Enter new password:");
-  if (newPass && newPass.length >= 5) {
-    alert("Password changed! (Hardcoded only, not real DB)");
-    // In real system, save securely!
-  } else {
-    alert("Invalid new password");
-  }
-}
-
-// ======= LOGOUT =======
+// Logout
 function logout() {
   localStorage.removeItem("loggedIn");
   window.location.href = "login.html";
 }
 
-// ======= Generate Unique MRN =======
-function generateMRN(counter) {
-  const date = new Date();
-  const year = date.getFullYear().toString().slice(-2);
-  const day = String(date.getDate()).padStart(2, '0');
-  return `MRN-${day}-${year}-${String(counter).padStart(5, '0')}`;
+// Show Password
+function togglePassword() {
+  const field = document.getElementById("password");
+  if (field.type === "password") {
+    field.type = "text";
+  } else {
+    field.type = "password";
+  }
 }
 
-// ======= Generate Sample Number =======
-function generateSample(counter) {
-  const year = new Date().getFullYear().toString().slice(-2);
-  return `AMCL-${year}-${String(counter).padStart(5, '0')}`;
+// Protect Dashboard Pages
+function checkAuth(role) {
+  const user = JSON.parse(localStorage.getItem("loggedIn"));
+  if (!user || user.role !== role) {
+    window.location.href = "login.html";
+  }
 }
 
-// ======= Save Patient & Tests =======
-function registerPatient(patient) {
-  let patients = JSON.parse(localStorage.getItem("patientList") || "[]");
-  patients.push(patient);
-  localStorage.setItem("patientList", JSON.stringify(patients));
+// Change Password
+function changePassword() {
+  const oldPass = document.getElementById("oldPass").value.trim();
+  const newPass = document.getElementById("newPass").value.trim();
+
+  const loggedIn = JSON.parse(localStorage.getItem("loggedIn"));
+
+  const userIndex = users.findIndex(u => u.cnic === loggedIn.cnic && u.password === oldPass);
+
+  if (userIndex >= 0) {
+    users[userIndex].password = newPass;
+    alert("پاسورڈ تبدیل ہو گیا ✅");
+    logout();
+  } else {
+    alert("پرانا پاسورڈ غلط ہے");
+  }
 }
-
-// ======= Barcode Generator =======
-function createBarcode(selector, text) {
-  JsBarcode(selector, text, {
-    format: "CODE128",
-    width: 2,
-    height: 40,
-    displayValue: false
-  });
-}
-
-// ======= Report View =======
-// Same logic, open report.html?mrn=xyz
-
