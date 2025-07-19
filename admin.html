@@ -1,1 +1,31 @@
-<!-- Admin -->
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+  <meta charset="UTF-8" />
+  <title>ایڈمن ڈیش بورڈ - AlphaMed Lab</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <button class="logout-btn" onclick="logout()">🔒 لاگ آؤٹ</button>
+
+  <h1>👑 ایڈمن ڈیش بورڈ</h1>
+
+  <div class="admin-options">
+    <button onclick="window.location.href='reception_dashboard.html'">📋 ریسپشن سیکشن</button>
+    <button onclick="window.location.href='technician_dashboard.html'">🧪 ٹیکنیشن سیکشن</button>
+    <button onclick="window.location.href='view_reports.html'">📑 رپورٹس دیکھیں</button>
+    <button onclick="createUser()">➕ نیا لاگ ان بنائیں</button>
+    <button onclick="changePassword()">🔑 پاس ورڈ تبدیل کریں</button>
+  </div>
+
+  <script src="script.js"></script>
+
+  <script>
+    function createUser() {
+      alert("یہ فیچر اس DEMO میں Hardcoded ہے۔ اصل میں DB کیساتھ بنائیں گے!");
+    }
+  </script>
+
+</body>
+</html>
