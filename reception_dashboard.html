@@ -1,28 +1,43 @@
 <!DOCTYPE html>
 <html lang="ur">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>ریسپشن ڈیش بورڈ - AlphaMed</title>
   <style>
     body {
-      background: #121212; color: #fff; font-family: sans-serif;
-      padding: 40px; direction: rtl; text-align: right;
+      background: #121212;
+      color: #fff;
+      font-family: sans-serif;
+      direction: rtl;
+      text-align: center;
+      padding: 40px 20px;
     }
-    h2 { color: #00ffaa; }
+    h2 {
+      color: #00ffaa;
+      margin-bottom: 30px;
+    }
     button {
-      padding: 12px 20px; margin: 10px;
-      border: none; border-radius: 6px;
-      background: #00aaff; color: #fff; cursor: pointer; font-weight: bold;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin: 10px;
+      background: #00aaff;
+      color: #fff;
+      font-weight: bold;
     }
-    .logout { background: crimson; }
+    .logout-btn {
+      background: crimson;
+    }
   </style>
 </head>
 <body>
-  <h2>💼 ریسپشن ڈیش بورڈ</h2>
 
-  <button onclick="location.href='register_patient.html'">مریض رجسٹر کریں</button>
-  <button onclick="location.href='view_reports.html'">رپورٹ دیکھیں</button>
-  <button class="logout" onclick="logout()">🔒 لاگ آؤٹ</button>
+  <h2>💁‍♀️ ریسپشن ڈیش بورڈ</h2>
+
+  <button onclick="location.href='add_patient.html'">مریض رجسٹر کریں</button>
+  <button onclick="location.href='view_reports.html'">رپورٹس دیکھیں</button>
+  <button class="logout-btn" onclick="logout()">🔒 لاگ آؤٹ</button>
 
   <script>
     function logout() {
@@ -30,5 +45,6 @@
       window.location.href = "login.html";
     }
   </script>
+
 </body>
 </html>
