@@ -1,1 +1,131 @@
-<!-- reception_dashboard.html updated content -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Reception Dashboard</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding: 30px;
+    }
+
+    h2 {
+      color: #00ffaa;
+      text-align: center;
+    }
+
+    .logout-btn {
+      background-color: crimson;
+      padding: 10px 20px;
+      color: white;
+      font-weight: bold;
+      float: left;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      border: 1px solid #333;
+      padding: 8px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #1e1e1e;
+      color: #00ffaa;
+    }
+
+    input[type="text"] {
+      width: 300px;
+      padding: 10px;
+      background-color: #1e1e1e;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+
+    .watermark {
+      position: fixed;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 60px;
+      color: rgba(255, 255, 255, 0.08);
+      z-index: -1;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="watermark">AlphaMed Clinical Laboratory</div>
+
+  <button class="logout-btn" onclick="logout()">Logout</button>
+  <h2>Reception Dashboard</h2>
+
+  <input type="text" id="searchInput" placeholder="Search by MRN or Name" onkeyup="filterPatients()" />
+
+  <table>
+    <thead>
+      <tr>
+        <th>MRN</th>
+        <th>Name</th>
+        <th>CNIC</th>
+        <th>Phone</th>
+        <th>Sections</th>
+      </tr>
+    </thead>
+    <tbody id="patientTableBody"></tbody>
+  </table>
+
+  <script>
+    const receptionUser = JSON.parse(localStorage.getItem("loggedIn"));
+    if (!receptionUser || receptionUser.role !== "Reception") {
+      window.location.href = "login.html";
+    }
+
+    function loadPatients() {
+      const patients = JSON.parse(localStorage.getItem("patients") || "[]");
+      const tbody = document.getElementById("patientTableBody");
+      tbody.innerHTML = "";
+
+      patients.forEach(patient => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${patient.mrn}</td>
+          <td>${patient.fullName}</td>
+          <td>${patient.cnic}</td>
+          <td>${patient.phone}</td>
+          <td>${patient.sections.join(", ")}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function filterPatients() {
+      const value = document.getElementById("searchInput").value.toLowerCase();
+      const rows = document.querySelectorAll("#patientTableBody tr");
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(value) ? "" : "none";
+      });
+    }
+
+    function logout() {
+      localStorage.removeItem("loggedIn");
+      window.location.href = "login.html";
+    }
+
+    loadPatients();
+  </script>
+</body>
+</html>
