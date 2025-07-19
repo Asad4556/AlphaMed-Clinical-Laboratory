@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+  <meta charset="UTF-8" />
+  <title>لیب سیٹنگز - AlphaMed</title>
+  <style>
+    body { background: #121212; color: #fff; padding: 40px; text-align: center; direction: rtl; font-family: sans-serif; }
+    h2 { color: #00ffaa; }
+    input, textarea { width: 80%; padding: 10px; margin: 8px 0; border-radius: 6px; border: none; background: #1e1e1e; color: #fff; }
+    button { padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; background: #00aaff; color: #fff; }
+  </style>
+</head>
+<body>
+  <h2>⚙️ لیب سیٹنگز</h2>
+
+  <input type="text" id="labName" placeholder="لیب کا نام" /><br/>
+  <textarea id="labAddress" placeholder="ایڈریس"></textarea><br/>
+  <input type="text" id="labPhone" placeholder="فون نمبر" /><br/>
+  <input type="file" id="labLogo" /><br/>
+  <button onclick="saveSettings()">محفوظ کریں</button>
+
+  <script>
+    // Load existing settings
+    const saved = JSON.parse(localStorage.getItem("labSettings") || "{}");
+    if (saved.name) document.getElementById("labName").value = saved.name;
+    if (saved.address) document.getElementById("labAddress").value = saved.address;
+    if (saved.phone) document.getElementById("labPhone").value = saved.phone;
+
+    function saveSettings() {
+      const name = document.getElementById("labName").value.trim();
+      const address = document.getElementById("labAddress").value.trim();
+      const phone = document.getElementById("labPhone").value.trim();
+      const logoFile = document.getElementById("labLogo").files[0];
+
+      const settings = { name, address, phone };
+
+      if (logoFile) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          settings.logo = e.target.result;
+          localStorage.setItem("labSettings", JSON.stringify(settings));
+          alert("سیٹنگز محفوظ ہو گئیں ✅");
+        };
+        reader.readAsDataURL(logoFile);
+      } else {
+        localStorage.setItem("labSettings", JSON.stringify(settings));
+        alert("سیٹنگز محفوظ ہو گئیں ✅");
+      }
+    }
+  </script>
+</body>
+</html>
