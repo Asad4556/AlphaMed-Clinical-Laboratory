@@ -5,26 +5,51 @@
   <title>ایڈمن ڈیش بورڈ - AlphaMed</title>
   <style>
     body {
-      background: #121212; color: #fff; font-family: sans-serif;
-      padding: 40px; direction: rtl; text-align: right;
+      background: #121212;
+      color: #ffffff;
+      font-family: sans-serif;
+      padding: 40px;
+      text-align: center;
+      direction: rtl;
     }
-    h2 { color: #00ffaa; }
-    button {
-      padding: 12px 20px; margin: 10px;
-      border: none; border-radius: 6px;
-      background: #00aaff; color: #fff; cursor: pointer; font-weight: bold;
+    h1 {
+      color: #00ffaa;
+      margin-bottom: 30px;
     }
-    .logout { background: crimson; }
+    .card {
+      background: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 8px;
+      margin: 15px auto;
+      padding: 20px;
+      width: 300px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .card:hover {
+      background: #2a2a2a;
+    }
+    button.logout-btn {
+      float: left;
+      background: crimson;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
-  <h2>📊 ایڈمن ڈیش بورڈ</h2>
 
-  <button onclick="location.href='reception_dashboard.html'">ریسپشن سیکشن</button>
-  <button onclick="location.href='technician_dashboard.html'">ٹیکنیشن سیکشن</button>
-  <button onclick="location.href='view_reports.html'">رپورٹ دیکھیں</button>
-  <button onclick="location.href='manage_users.html'">یوزر منیج کریں</button>
-  <button class="logout" onclick="logout()">🔒 لاگ آؤٹ</button>
+  <button class="logout-btn" onclick="logout()">🔒 لاگ آؤٹ</button>
+  <h1>ایڈمن ڈیش بورڈ</h1>
+
+  <div class="card" onclick="location.href='register_patient.html'">➕ نیا مریض رجسٹر کریں</div>
+  <div class="card" onclick="location.href='view_reports.html'">📄 رپورٹس دیکھیں</div>
+  <div class="card" onclick="location.href='add_test_result.html'">🧬 رزلٹ شامل کریں</div>
+  <div class="card" onclick="location.href='manage_users.html'">👥 یوزر مینج کریں</div>
+  <div class="card" onclick="location.href='change_password.html'">🔑 پاسورڈ تبدیل کریں</div>
 
   <script>
     function logout() {
@@ -32,5 +57,6 @@
       window.location.href = "login.html";
     }
   </script>
+
 </body>
 </html>
