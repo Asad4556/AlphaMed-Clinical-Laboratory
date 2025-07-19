@@ -2,38 +2,101 @@
 <html lang="ur">
 <head>
   <meta charset="UTF-8" />
-  <title>پرچی - AlphaMed</title>
+  <title>مریض پرچی - AlphaMed</title>
   <script src="https://cdn.jsdelivr.net/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
   <style>
-    body { direction: rtl; font-family: sans-serif; text-align: center; }
+    body {
+      font-family: sans-serif;
+      direction: rtl;
+      background: #fff;
+      text-align: center;
+      padding: 40px;
+    }
+
+    .slip {
+      position: relative;
+      max-width: 600px;
+      margin: auto;
+      border: 2px solid #003366;
+      padding: 30px;
+    }
+
     .watermark {
-      position: absolute; top: 50%; left: 50%;
-      transform: translate(-50%,-50%);
-      opacity: 0.1; font-size: 70px; color: #003366;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 60px;
+      color: #003366;
+      opacity: 0.1;
+      z-index: 0;
+    }
+
+    .slip * { position: relative; z-index: 1; }
+
+    h2 { color: #003366; margin: 10px 0; }
+    p { margin: 5px 0; font-size: 18px; }
+    #barcode { margin-top: 20px; }
+
+    button {
+      margin-top: 30px;
+      padding: 10px 20px;
+      background: #003366;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <div class="watermark">AlphaMed</div>
-  <h2>AlphaMed Clinical Lab</h2>
-  <div id="details"></div>
-  <svg id="barcode"></svg><br>
-  <button onclick="window.print()">پرنٹ کریں</button>
+
+  <div class="slip">
+    <div class="watermark">AlphaMed</div>
+
+    <h2>🧾 AlphaMed Clinical Lab</h2>
+
+    <p><strong>MRN:</strong> <span id="mrn"></span></p>
+    <p><strong>Sample No:</strong> <span id="sample"></span></p>
+    <p><strong>نام:</strong> <span id="name"></span></p>
+    <p><strong>CNIC:</strong> <span id="cnic"></span></p>
+    <p><strong>والد/شوہر:</strong> <span id="father"></span></p>
+    <p><strong>فون:</strong> <span id="phone"></span></p>
+    <p><strong>پتہ:</strong> <span id="address"></span></p>
+    <p><strong>ڈپارٹمنٹ:</strong> <span id="department"></span></p>
+
+    <svg id="barcode"></svg>
+
+    <button onclick="window.print()">🖨️ پرنٹ کریں</button>
+  </div>
 
   <script>
-    const mrn = new URLSearchParams(window.location.search).get("mrn");
-    const p = JSON.parse(localStorage.getItem("patientList") || "[]").find(x => x.mrn === mrn);
-    if (p) {
-      document.getElementById("details").innerHTML = `
-        MRN: ${p.mrn}<br>
-        Sample: ${p.sample}<br>
-        نام: ${p.name}<br>
-        CNIC: ${p.cnic}<br>
-        فون: ${p.phone}<br>
-        ٹیسٹ: ${p.selectedTests.map(t=>t.name).join(", ")}
-      `;
-      JsBarcode("#barcode", `${p.mrn} ${p.sample}`, {format:"CODE128"});
+    const urlParams = new URLSearchParams(window.location.search);
+    const mrn = urlParams.get("mrn");
+
+    const patients = JSON.parse(localStorage.getItem("patientList") || "[]");
+    const patient = patients.find(p => p.mrn === mrn);
+
+    if (patient) {
+      document.getElementById("mrn").textContent = patient.mrn;
+      document.getElementById("sample").textContent = patient.sample;
+      document.getElementById("name").textContent = patient.name;
+      document.getElementById("cnic").textContent = patient.cnic;
+      document.getElementById("father").textContent = patient.father;
+      document.getElementById("phone").textContent = patient.phone;
+      document.getElementById("address").textContent = patient.address;
+      document.getElementById("department").textContent = patient.department;
+
+      JsBarcode("#barcode", `${patient.mrn} | ${patient.name} | ${patient.cnic}`, {
+        format: "CODE128",
+        width: 2,
+        height: 50
+      });
+    } else {
+      document.querySelector(".slip").innerHTML = "<p>مریض نہیں ملا</p>";
     }
   </script>
+
 </body>
 </html>
