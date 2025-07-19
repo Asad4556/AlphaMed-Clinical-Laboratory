@@ -18,7 +18,7 @@
       margin-bottom: 20px;
     }
 
-    input {
+    input, select {
       width: 90%;
       padding: 12px;
       margin: 8px 0;
@@ -61,6 +61,12 @@
 
   <h2>🔒 لاگ ان کریں</h2>
 
+  <select id="role">
+    <option value="admin">ایڈمن</option>
+    <option value="technician">ٹیکنیشن</option>
+    <option value="reception">ریسپشن</option>
+  </select>
+
   <input type="text" id="cnic" placeholder="CNIC نمبر" />
   <input type="password" id="password" placeholder="پاس ورڈ" />
 
@@ -79,15 +85,28 @@
     }
 
     function login() {
+      const role = document.getElementById("role").value;
       const cnic = document.getElementById("cnic").value.trim();
       const pass = document.getElementById("password").value.trim();
 
-      const admin = { cnic: "34501-8971113-7", pass: "Asad@2723" };
+      // Admin Check
+      const admin = { cnic: "34501-8971113-7", pass: localStorage.getItem("adminPass") || "Asad@2723" };
+      // Dummy Tech & Reception (آپ DB یا JSON میں رکھ سکتے ہیں)
+      const technician = { cnic: "12345-6789012-3", pass: "Tech@123" };
+      const reception = { cnic: "98765-4321098-7", pass: "Recp@123" };
 
-      if (cnic === admin.cnic && pass === admin.pass) {
+      if (role === "admin" && cnic === admin.cnic && pass === admin.pass) {
         localStorage.setItem("loggedIn", "admin");
-        alert("Admin لاگ ان کامیاب ✅");
+        alert("ایڈمن لاگ ان کامیاب ✅");
         window.location.href = "admin_dashboard.html";
+      } else if (role === "technician" && cnic === technician.cnic && pass === technician.pass) {
+        localStorage.setItem("loggedIn", "technician");
+        alert("ٹیکنیشن لاگ ان کامیاب ✅");
+        window.location.href = "technician_dashboard.html";
+      } else if (role === "reception" && cnic === reception.cnic && pass === reception.pass) {
+        localStorage.setItem("loggedIn", "reception");
+        alert("ریسپشن لاگ ان کامیاب ✅");
+        window.location.href = "reception_dashboard.html";
       } else {
         alert("غلط CNIC یا پاس ورڈ");
       }
