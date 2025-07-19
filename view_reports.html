@@ -1,37 +1,98 @@
 <!DOCTYPE html>
 <html lang="ur">
 <head>
-  <meta charset="UTF-8">
-  <title>رپورٹ دیکھیں - AlphaMed</title>
+  <meta charset="UTF-8" />
+  <title>رپورٹس دیکھیں - AlphaMed</title>
   <style>
-    body { background: #121212; color: #fff; font-family: sans-serif; padding: 40px; direction: rtl; }
-    h2 { color: #00ffaa; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #333; padding: 10px; }
-    th { background: #1e1e1e; }
+    body {
+      background: #121212;
+      color: #fff;
+      font-family: sans-serif;
+      direction: rtl;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    h2 {
+      color: #00ffaa;
+      margin-bottom: 30px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #1e1e1e;
+      margin-bottom: 30px;
+    }
+    th, td {
+      border: 1px solid #444;
+      padding: 10px;
+    }
+    th {
+      background: #222;
+    }
+    button {
+      padding: 10px 20px;
+      background: #00aaff;
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      cursor: pointer;
+      margin: 5px;
+    }
+    .logout-btn {
+      background: crimson;
+    }
   </style>
 </head>
 <body>
-  <h2>📑 رپورٹس</h2>
+
+  <h2>📋 تمام رپورٹس</h2>
 
   <table>
     <thead>
       <tr>
         <th>MRN</th>
-        <th>رزلٹ</th>
         <th>تاریخ</th>
+        <th>رپورٹ</th>
       </tr>
     </thead>
     <tbody id="reportTable"></tbody>
   </table>
 
+  <button class="logout-btn" onclick="logout()">🔒 لاگ آؤٹ</button>
+
   <script>
-    const reports = JSON.parse(localStorage.getItem("labReports") || "[]");
-    const table = document.getElementById("reportTable");
-    reports.forEach(r => {
-      const row = `<tr><td>${r.mrn}</td><td>${r.result}</td><td>${r.date}</td></tr>`;
-      table.innerHTML += row;
+    const allReports = JSON.parse(localStorage.getItem("labReports") || "[]");
+
+    const tbody = document.getElementById("reportTable");
+    allReports.forEach(report => {
+      const tr = document.createElement("tr");
+
+      const mrnTd = document.createElement("td");
+      mrnTd.textContent = report.mrn;
+
+      const dateTd = document.createElement("td");
+      dateTd.textContent = new Date(report.date).toLocaleString('ur-PK');
+
+      const linkTd = document.createElement("td");
+      const link = document.createElement("a");
+      link.href = `report.html?mrn=${encodeURIComponent(report.mrn)}`;
+      link.textContent = "رپورٹ دیکھیں";
+      link.target = "_blank";
+      link.style.color = "#00ffaa";
+      linkTd.appendChild(link);
+
+      tr.appendChild(mrnTd);
+      tr.appendChild(dateTd);
+      tr.appendChild(linkTd);
+
+      tbody.appendChild(tr);
     });
+
+    function logout() {
+      localStorage.removeItem("loggedIn");
+      window.location.href = "login.html";
+    }
   </script>
+
 </body>
 </html>
