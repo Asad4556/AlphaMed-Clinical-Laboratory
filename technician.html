@@ -15,7 +15,7 @@
 </head>
 <body>
   <button class="logout-btn" onclick="logout()">🔒 لاگ آؤٹ</button>
-  <h2>🧪 ٹیکنیشن - رزلٹ شامل کریں</h2>
+  <h2>🤪 ٹیکنیشن - رزلٹ شامل کریں</h2>
 
   <div class="form-section centered">
     <input type="text" id="mrn" placeholder="MRN نمبر لکھیں (مثال: MRN-24-00001)" />
@@ -51,18 +51,18 @@
       }
 
       let html = `<h3>👤 ${patient.name}</h3>`;
-      html += `<table><tr><th>ٹیسٹ</th><th>ریزلٹ</th><th>ریفرنس ویلیو</th><th>حالت</th></tr>`;
+      html += `<table><tr><th>ٹیسٹ</th><th>رزلٹ</th><th>ریفرنس ویلیو</th><th>حالت</th></tr>`;
       patient.selectedTests.forEach((test, index) => {
         html += `
           <tr>
             <td>${test.name}</td>
-            <td><input type="number" id="result-${index}" placeholder="ریزلٹ لکھیں" oninput="highlight(${index}, '${test.normal}')" /></td>
+            <td><input type="number" id="result-${index}" placeholder="رزلٹ لکھیں" oninput="highlight(${index}, '${test.normal}')" /></td>
             <td>${test.normal}</td>
             <td id="status-${index}">-</td>
           </tr>
         `;
       });
-      html += `</table><br><button onclick="saveReport('${mrn}')">💾 رپورٹ محفوظ کریں</button>`;
+      html += `</table><br><button onclick="saveReport('${mrn}')">📎 رپورٹ محفوظ کریں</button>`;
       document.getElementById("test-area").innerHTML = html;
     }
 
