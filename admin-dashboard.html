@@ -1,198 +1,152 @@
 <!DOCTYPE html>
 <html lang="ur">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>ایڈمن ڈیش بورڈ</title>
   <style>
     body {
-      font-family: sans-serif;
-      direction: rtl;
       background-color: #121212;
-      color: #e0e0e0;
-      text-align: center;
-      padding: 30px;
-    }
-    input, select, button {
-      width: 90%;
-      padding: 12px;
-      margin: 10px 0;
-      font-size: 16px;
-      border-radius: 6px;
-      border: 1px solid #444;
-      background-color: #1f1f1f;
-      color: #ffffff;
-    }
-    button {
-      background-image: linear-gradient(45deg, #00aaff, #0077cc);
       color: white;
-      font-weight: bold;
-      cursor: pointer;
+      font-family: 'Noto Naskh Arabic', sans-serif;
+      direction: rtl;
+      padding: 20px;
     }
     h2, h3 {
       color: #00ffaa;
     }
+    input, select, button {
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 16px;
+      border-radius: 5px;
+      border: none;
+      background-color: #1e1e1e;
+      color: white;
+    }
+    button {
+      background-color: #00aaff;
+      cursor: pointer;
+    }
     table {
       width: 100%;
-      margin-top: 20px;
       border-collapse: collapse;
-      background-color: #1a1a1a;
+      margin-top: 20px;
     }
     th, td {
-      border: 1px solid #333;
-      padding: 8px;
-      color: #ffffff;
-    }
-    th {
-      background-color: #282828;
-    }
-    .delete-btn {
-      background-color: red;
-      border: none;
-      padding: 5px 10px;
-      color: white;
-      cursor: pointer;
-      border-radius: 4px;
-    }
-    .summary-box {
-      display: inline-block;
-      margin: 10px;
-      padding: 15px;
-      background-color: #1e1e1e;
       border: 1px solid #444;
-      border-radius: 8px;
-      min-width: 200px;
+      padding: 8px;
+      text-align: center;
     }
-    .summary-box h4 {
-      color: #00ffaa;
-      margin-bottom: 5px;
+    .form-section {
+      background-color: #1c1c1c;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
     }
   </style>
 </head>
 <body>
   <h2>ایڈمن ڈیش بورڈ</h2>
 
-  <!-- Dashboard Summary -->
-  <div id="dashboardSummary">
-    <div class="summary-box">
-      <h4>کل مریض</h4>
-      <div id="totalPatients">--</div>
-    </div>
-    <div class="summary-box">
-      <h4>آج کے مریض</h4>
-      <div id="todayPatients">--</div>
-    </div>
-    <div class="summary-box">
-      <h4>آج کی رپورٹس</h4>
-      <div id="todayReports">--</div>
-    </div>
-    <div class="summary-box">
-      <h4>کل رپورٹس</h4>
-      <div id="totalReports">--</div>
-    </div>
+  <div class="form-section">
+    <h3>نیا صارف شامل کریں</h3>
+    <form id="addUserForm">
+      <select id="newUserRole" required>
+        <option value="">رول منتخب کریں</option>
+        <option value="Reception">ریسپشن</option>
+        <option value="Technician">ٹیکنیشن</option>
+      </select><br>
+      <input type="text" id="newUserCnic" placeholder="CNIC" required><br>
+      <input type="password" id="newUserPassword" placeholder="پاسورڈ" required><br>
+      <button type="submit">صارف شامل کریں</button>
+    </form>
   </div>
 
-  <h3>نیا صارف شامل کریں</h3>
-  <select id="role">
-    <option value="Admin">ایڈمن</option>
-    <option value="Technician">ٹیکنیشن</option>
-    <option value="Reception">ریسپشن</option>
-  </select>
-  <input type="text" id="cnic" placeholder="شناختی کارڈ نمبر (CNIC)" />
-  <input type="password" id="password" placeholder="پاسورڈ" />
-  <button onclick="addUser()">صارف شامل کریں</button>
+  <div class="form-section">
+    <h3>تمام صارفین</h3>
+    <table id="userTable">
+      <thead>
+        <tr>
+          <th>رول</th>
+          <th>CNIC</th>
+          <th>حذف کریں</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 
-  <h3>تمام صارفین</h3>
-  <table>
-    <thead>
-      <tr>
-        <th>رول</th>
-        <th>CNIC</th>
-        <th>عمل</th>
-      </tr>
-    </thead>
-    <tbody id="userTableBody"></tbody>
-  </table>
+  <div class="form-section">
+    <h3>رپورٹ تلاش کریں</h3>
+    <form id="reportSearchForm">
+      <input type="text" id="searchMRN" placeholder="MRN درج کریں">
+      <button type="submit">رپورٹ دیکھیں</button>
+    </form>
+  </div>
 
   <script>
-    const masterAdmin = "34501-8971113-7";
+    const currentAdmin = JSON.parse(localStorage.getItem("loggedIn"));
+    if (!currentAdmin || currentAdmin.role !== "Admin") {
+      window.location.href = "login.html";
+    }
 
-    function addUser() {
-      const role = document.getElementById("role").value;
-      const cnic = document.getElementById("cnic").value.trim();
-      const password = document.getElementById("password").value.trim();
+    const userTable = document.getElementById("userTable").querySelector("tbody");
 
-      if (!cnic || !password) {
-        alert("تمام فیلڈز لازمی ہیں");
+    function loadUsers() {
+      const users = JSON.parse(localStorage.getItem("users") || "[]");
+      userTable.innerHTML = "";
+      users.forEach(user => {
+        if (user.role === "Admin") return;
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${user.role}</td>
+          <td>${user.cnic}</td>
+          <td><button onclick="deleteUser('${user.cnic}')">❌</button></td>
+        `;
+        userTable.appendChild(row);
+      });
+    }
+
+    function deleteUser(cnic) {
+      let users = JSON.parse(localStorage.getItem("users") || "[]");
+      users = users.filter(u => u.cnic !== cnic);
+      localStorage.setItem("users", JSON.stringify(users));
+      loadUsers();
+    }
+
+    document.getElementById("addUserForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const role = document.getElementById("newUserRole").value;
+      const cnic = document.getElementById("newUserCnic").value;
+      const password = document.getElementById("newUserPassword").value;
+
+      if (role === "Admin") {
+        alert("نیا ایڈمن بنانا اجازت نہیں ہے");
         return;
       }
 
-      const users = JSON.parse(localStorage.getItem("users") || "[]");
-
+      let users = JSON.parse(localStorage.getItem("users") || "[]");
       if (users.find(u => u.cnic === cnic)) {
         alert("یہ CNIC پہلے سے موجود ہے");
         return;
       }
 
-      if (role === "Admin" && cnic === masterAdmin) {
-        alert("یہ ایڈمن پہلے سے موجود ہے");
-        return;
-      }
-
       users.push({ role, cnic, password });
       localStorage.setItem("users", JSON.stringify(users));
-      alert("صارف شامل ہو گیا ✅");
+      alert("صارف شامل ہو گیا");
+      document.getElementById("addUserForm").reset();
       loadUsers();
-    }
+    });
 
-    function deleteUser(cnic) {
-      if (cnic === masterAdmin) {
-        alert("اس ایڈمن کو حذف نہیں کیا جا سکتا");
-        return;
+    document.getElementById("reportSearchForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const mrn = document.getElementById("searchMRN").value.trim();
+      if (mrn) {
+        window.open(`report.html?mrn=${encodeURIComponent(mrn)}`, '_blank');
       }
-
-      if (confirm("کیا آپ واقعی اس صارف کو حذف کرنا چاہتے ہیں؟")) {
-        let users = JSON.parse(localStorage.getItem("users") || "[]");
-        users = users.filter(u => u.cnic !== cnic);
-        localStorage.setItem("users", JSON.stringify(users));
-        loadUsers();
-      }
-    }
-
-    function loadUsers() {
-      const users = JSON.parse(localStorage.getItem("users") || "[]");
-      const tbody = document.getElementById("userTableBody");
-      tbody.innerHTML = "";
-
-      users.forEach(user => {
-        const tr = document.createElement("tr");
-        const isMaster = user.cnic === masterAdmin;
-        const canDelete = !isMaster;
-
-        tr.innerHTML = `
-          <td>${user.role.toUpperCase()}</td>
-          <td>${user.cnic}</td>
-          <td>${canDelete ? `<button class='delete-btn' onclick='deleteUser("${user.cnic}")'>🗑️</button>` : "—"}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function updateSummary() {
-      const patients = JSON.parse(localStorage.getItem("patients") || "[]");
-      const reports = JSON.parse(localStorage.getItem("reports") || "[]");
-      const today = new Date().toISOString().split('T')[0];
-
-      const todayPatients = patients.filter(p => p.date && p.date.startsWith(today)).length;
-      const todayReports = reports.filter(r => r.date && r.date.startsWith(today)).length;
-
-      document.getElementById("totalPatients").innerText = patients.length;
-      document.getElementById("todayPatients").innerText = todayPatients;
-      document.getElementById("totalReports").innerText = reports.length;
-      document.getElementById("todayReports").innerText = todayReports;
-    }
+    });
 
     loadUsers();
-    updateSummary();
   </script>
 </body>
 </html>
