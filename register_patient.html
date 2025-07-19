@@ -1,1 +1,171 @@
-<!-- register_patient.html updated content -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Register Patient</title>
+  <script src="https://cdn.jsdelivr.net/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
+  <style>
+    body {
+      background-color: #121212;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding: 30px;
+    }
+
+    h2 {
+      color: #00ffaa;
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: none;
+      font-size: 16px;
+      background-color: #1e1e1e;
+      color: white;
+    }
+
+    button {
+      background-color: #00aaff;
+      font-weight: bold;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+
+    .form-section {
+      max-width: 600px;
+      margin: auto;
+      background-color: #1a1a1a;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    .barcode {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .watermark {
+      position: fixed;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 60px;
+      color: rgba(255, 255, 255, 0.05);
+      white-space: nowrap;
+      z-index: -1;
+    }
+
+    #slip {
+      margin-top: 30px;
+      background-color: #1e1e1e;
+      padding: 20px;
+      border-radius: 8px;
+    }
+
+    .section-checkbox {
+      display: inline-block;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="watermark">AlphaMed Clinical Laboratory</div>
+
+  <h2>Register New Patient</h2>
+
+  <div class="form-section">
+    <form id="patientForm">
+      <label>Full Name</label>
+      <input type="text" id="fullName" required>
+
+      <label>CNIC</label>
+      <input type="text" id="cnic" required>
+
+      <label>Phone Number</label>
+      <input type="text" id="phone" required>
+
+      <label>Select Sections</label>
+      <div id="sectionOptions">
+        <label class="section-checkbox"><input type="checkbox" value="Hematology"> Hematology</label>
+        <label class="section-checkbox"><input type="checkbox" value="Serology"> Serology</label>
+        <label class="section-checkbox"><input type="checkbox" value="Biochemistry"> Biochemistry</label>
+        <label class="section-checkbox"><input type="checkbox" value="Urine"> Urine</label>
+        <label class="section-checkbox"><input type="checkbox" value="Stool"> Stool</label>
+      </div>
+
+      <button type="submit">Generate MRN & Register</button>
+    </form>
+  </div>
+
+  <div id="slip" style="display:none;">
+    <h3>Registration Slip</h3>
+    <p><strong>MRN:</strong> <span id="mrnDisplay"></span></p>
+    <p><strong>Sample No:</strong> <span id="sampleNo"></span></p>
+    <p><strong>Sections:</strong> <span id="sectionDisplay"></span></p>
+    <div class="barcode">
+      <svg id="barcode"></svg>
+    </div>
+  </div>
+
+  <script>
+    let counter = parseInt(localStorage.getItem("mrnCounter") || "1");
+
+    document.getElementById("patientForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const fullName = document.getElementById("fullName").value.trim();
+      const cnic = document.getElementById("cnic").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const sectionInputs = document.querySelectorAll("#sectionOptions input[type='checkbox']:checked");
+      const sections = Array.from(sectionInputs).map(i => i.value);
+
+      if (sections.length === 0) {
+        alert("Please select at least one section");
+        return;
+      }
+
+      const year = new Date().getFullYear().toString().slice(-2);
+      const mrn = `ACL-${year}-${String(counter).padStart(5, '5')}`;
+      const sampleNo = `SMP-${Date.now().toString().slice(-6)}`;
+
+      counter++;
+      localStorage.setItem("mrnCounter", counter);
+
+      const newPatient = {
+        mrn,
+        fullName,
+        cnic,
+        phone,
+        sections,
+        date: new Date().toISOString().split("T")[0]
+      };
+
+      const patients = JSON.parse(localStorage.getItem("patients") || "[]");
+      patients.push(newPatient);
+      localStorage.setItem("patients", JSON.stringify(patients));
+
+      // Show Slip
+      document.getElementById("mrnDisplay").innerText = mrn;
+      document.getElementById("sampleNo").innerText = sampleNo;
+      document.getElementById("sectionDisplay").innerText = sections.join(", ");
+      JsBarcode("#barcode", mrn, {
+        format: "CODE128",
+        width: 2,
+        height: 40,
+        displayValue: false
+      });
+      document.getElementById("slip").style.display = "block";
+      document.getElementById("patientForm").reset();
+    });
+  </script>
+</body>
+</html>
