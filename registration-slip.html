@@ -2,8 +2,7 @@
 <html lang="ur">
 <head>
   <meta charset="UTF-8">
-  <title>پرچی - AlphaMed</title>
-  <script src="https://cdn.jsdelivr.net/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
+  <title>مریض پرچی - AlphaMed</title>
   <style>
     body {
       font-family: sans-serif;
@@ -24,10 +23,11 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      opacity: 0.1;
-      font-size: 60px;
-      color: #003366;
+      opacity: 0.08;
       z-index: 0;
+    }
+    .watermark img {
+      width: 300px; /* لوگو کا سائز اپنی مرضی سے رکھیں */
     }
     .slip * {
       z-index: 1;
@@ -55,21 +55,24 @@
       color: white;
       border: none;
       border-radius: 6px;
-      cursor: pointer;
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
 </head>
 <body>
   <div class="slip">
-    <div class="watermark">AlphaMed</div>
-    <img src="logo.png" class="logo" alt="Lab Logo" />
+    <div class="watermark">
+      <img src="logo.png" alt="Lab Logo">
+    </div>
+
+    <img src="logo.png" class="logo" />
     <h2>AlphaMed Clinical Laboratory</h2>
 
     <p><strong>MRN:</strong> <span id="mrn"></span></p>
     <p><strong>Sample No:</strong> <span id="sample"></span></p>
     <p><strong>نام:</strong> <span id="name"></span></p>
     <p><strong>CNIC:</strong> <span id="cnic"></span></p>
-    <p><strong>والد/شوہر نام:</strong> <span id="fatherName"></span></p>
+    <p><strong>والد/شوہر نام:</strong> <span id="father"></span></p>
     <p><strong>فون:</strong> <span id="phone"></span></p>
     <p><strong>ایڈریس:</strong> <span id="address"></span></p>
     <p><strong>ڈپارٹمنٹ:</strong> <span id="department"></span></p>
@@ -80,29 +83,26 @@
   </div>
 
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const mrn = params.get("mrn");
-
+    const urlParams = new URLSearchParams(window.location.search);
+    const mrn = urlParams.get("mrn");
     const patients = JSON.parse(localStorage.getItem("patientList") || "[]");
     const patient = patients.find(p => p.mrn === mrn);
 
     if (patient) {
       document.getElementById("mrn").textContent = patient.mrn;
-      document.getElementById("sample").textContent = patient.sample;
+      document.getElementById("sample").textContent = patient.sampleNo;
       document.getElementById("name").textContent = patient.name;
       document.getElementById("cnic").textContent = patient.cnic;
-      document.getElementById("fatherName").textContent = patient.fatherName;
+      document.getElementById("father").textContent = patient.father;
       document.getElementById("phone").textContent = patient.phone;
       document.getElementById("address").textContent = patient.address;
       document.getElementById("department").textContent = patient.department;
 
-      JsBarcode("#barcode", `${patient.mrn} | ${patient.sample} | ${patient.name}`, {
+      JsBarcode("#barcode", patient.mrn, {
         format: "CODE128",
         width: 2,
         height: 50
       });
-    } else {
-      document.body.innerHTML = "<p>ڈیٹا نہیں ملا</p>";
     }
   </script>
 </body>
