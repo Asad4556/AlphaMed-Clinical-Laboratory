@@ -11,17 +11,14 @@
       direction: rtl;
       padding: 40px;
     }
-
     h2 {
       color: #00ffaa;
       text-align: center;
     }
-
     label {
       display: block;
       margin: 10px 0 5px;
     }
-
     input, select, button {
       width: 100%;
       padding: 12px;
@@ -31,13 +28,11 @@
       background: #1e1e1e;
       color: #fff;
     }
-
     button {
       background: #00aaff;
       font-weight: bold;
       cursor: pointer;
     }
-
     .logout {
       float: left;
       background: crimson;
@@ -46,6 +41,13 @@
       border-radius: 6px;
       cursor: pointer;
       margin-bottom: 20px;
+    }
+    .test-group {
+      margin-bottom: 20px;
+      padding: 15px;
+      border: 1px solid #444;
+      border-radius: 6px;
+      background: #1c1c1c;
     }
   </style>
 </head>
@@ -70,50 +72,64 @@
   <label>ایڈریس</label>
   <input type="text" id="address" placeholder="ایڈریس" />
 
-  <label>ڈپارٹمنٹ</label>
-  <select id="department" onchange="loadTests()">
+  <label>ڈپارٹمنٹ منتخب کریں</label>
+  <select id="departmentSelect" onchange="addDepartment()">
     <option value="">ڈپارٹمنٹ منتخب کریں</option>
-    <option value="Blood">بلڈ</option>
-    <option value="Urine">یورین</option>
-    <option value="XRay">ایکس رے</option>
+    <option value="Pathology">پیتھالوجی</option>
+    <option value="Microbiology">مائیکروبایولوجی</option>
+    <option value="Radiology">ریڈیالوجی</option>
   </select>
 
-  <label>ٹیسٹ منتخب کریں</label>
-  <div id="tests"></div>
+  <div id="allTestsContainer"></div>
 
-  <button onclick="registerPatient()">رجسٹر کریں</button>
+  <button onclick="registerPatient()">✅ رجسٹر کریں</button>
 
   <script>
     const testsDB = {
-      Blood: [
+      Pathology: [
         { name: "CBC", param: "WBC, RBC", normal: "4.5-11" },
         { name: "Blood Sugar", param: "Glucose", normal: "70-110" }
       ],
-      Urine: [
-        { name: "Urine R/E", param: "Color, pH", normal: "5.5-7" },
-        { name: "Urine Culture", param: "Bacteria", normal: "No Growth" }
+      Microbiology: [
+        { name: "Urine Culture", param: "Bacteria", normal: "No Growth" },
+        { name: "Sputum Culture", param: "Pathogen", normal: "No Growth" }
       ],
-      XRay: [
-        { name: "Chest X-Ray", param: "Lungs, Heart", normal: "Normal" }
+      Radiology: [
+        { name: "Chest X-Ray", param: "Lungs", normal: "Normal" },
+        { name: "Ultrasound", param: "Abdomen", normal: "Normal" }
       ]
     };
 
     function logout() {
-      localStorage.removeItem("loggedIn");
+      localStorage.removeItem("loggedInRole");
       window.location.href = "login.html";
     }
 
-    function loadTests() {
-      const dept = document.getElementById("department").value;
-      const container = document.getElementById("tests");
-      container.innerHTML = "";
-      if (dept && testsDB[dept]) {
-        testsDB[dept].forEach((test, idx) => {
-          container.innerHTML += `
-            <label><input type="checkbox" value="${idx}"> ${test.name} (${test.param}) [${test.normal}]</label>
-          `;
-        });
-      }
+    function addDepartment() {
+      const dept = document.getElementById("departmentSelect").value;
+      if (!dept || document.getElementById(`dept-${dept}`)) return;
+
+      const container = document.getElementById("allTestsContainer");
+
+      const div = document.createElement("div");
+      div.className = "test-group";
+      div.id = `dept-${dept}`;
+      div.innerHTML = `<h3>📌 ${dept}</h3>`;
+
+      testsDB[dept].forEach((test, idx) => {
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.value = idx;
+        checkbox.dataset.dept = dept;
+
+        const label = document.createElement("label");
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(` ${test.name} (${test.param}) [${test.normal}]`));
+
+        div.appendChild(label);
+      });
+
+      container.appendChild(div);
     }
 
     function registerPatient() {
@@ -122,20 +138,24 @@
       const cnic = document.getElementById("cnic").value.trim();
       const phone = document.getElementById("phone").value.trim();
       const address = document.getElementById("address").value.trim();
-      const dept = document.getElementById("department").value;
 
-      if (!name || !fatherName || !cnic || !phone || !address || !dept) {
+      if (!name || !fatherName || !cnic || !phone || !address) {
         alert("تمام خانے مکمل کریں");
         return;
       }
 
-      const checkboxes = document.querySelectorAll("#tests input[type='checkbox']:checked");
+      const checkboxes = document.querySelectorAll("#allTestsContainer input[type='checkbox']:checked");
       if (checkboxes.length === 0) {
         alert("کم از کم ایک ٹیسٹ منتخب کریں");
         return;
       }
 
-      const selectedTests = Array.from(checkboxes).map(cb => testsDB[dept][cb.value]);
+      const selectedTests = [];
+      checkboxes.forEach(cb => {
+        const dept = cb.dataset.dept;
+        const test = testsDB[dept][cb.value];
+        selectedTests.push({ ...test, department: dept });
+      });
 
       const date = new Date();
       const year = date.getFullYear();
@@ -144,9 +164,7 @@
 
       const patient = {
         mrn, name, fatherName, cnic, phone, address,
-        department: dept,
-        selectedTests,
-        sample
+        selectedTests, sample
       };
 
       const patients = JSON.parse(localStorage.getItem("patientList") || "[]");
