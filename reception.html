@@ -12,12 +12,6 @@
       text-align: center;
       padding: 30px;
     }
-
-    h2 {
-      color: #003366;
-      margin-bottom: 20px;
-    }
-
     input, select, button {
       width: 100%;
       padding: 12px;
@@ -26,39 +20,24 @@
       border-radius: 6px;
       border: 1px solid #ccc;
     }
-
     button {
       background-color: #003366;
       color: white;
       font-weight: bold;
       cursor: pointer;
     }
-
-    .search-box {
-      margin-top: 20px;
-      padding: 10px;
-      background-color: #fff;
-      border-radius: 10px;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    label {
+      display: block;
+      text-align: right;
+      padding-right: 10px;
     }
-
-    table {
-      width: 100%;
-      margin-top: 20px;
-      border-collapse: collapse;
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: right;
     }
-
-    th, td {
-      border: 1px solid #ccc;
-      padding: 10px;
-      font-size: 15px;
-    }
-
-    th {
-      background-color: #e3efff;
+    .checkbox-group label {
+      width: 50%;
     }
   </style>
 </head>
@@ -70,34 +49,16 @@
   <input type="text" id="cnic" placeholder="شناختی کارڈ نمبر (CNIC)" />
   <input type="text" id="phone" placeholder="فون نمبر" />
 
-  <select id="section">
-    <option value="">-- سیکشن منتخب کریں --</option>
-    <option value="Hematology">Hematology</option>
-    <option value="Serology">Serology</option>
-    <option value="Biochemistry">Biochemistry</option>
-    <option value="Urine">Urine</option>
-    <option value="Stool">Stool</option>
-  </select>
+  <label>سیکشن منتخب کریں:</label>
+  <div class="checkbox-group">
+    <label><input type="checkbox" value="Hematology" class="section"> Hematology</label>
+    <label><input type="checkbox" value="Serology" class="section"> Serology</label>
+    <label><input type="checkbox" value="Biochemistry" class="section"> Biochemistry</label>
+    <label><input type="checkbox" value="Urine" class="section"> Urine</label>
+    <label><input type="checkbox" value="Stool" class="section"> Stool</label>
+  </div>
 
   <button onclick="registerPatient()">MRN بنائیں اور رجسٹر کریں</button>
-
-  <div class="search-box">
-    <h3>تمام مریض</h3>
-    <input type="text" id="searchInput" placeholder="نام، CNIC یا MRN تلاش کریں" onkeyup="filterPatients()" />
-    <table>
-      <thead>
-        <tr>
-          <th>MRN</th>
-          <th>نام</th>
-          <th>CNIC</th>
-          <th>فون</th>
-          <th>سیکشن</th>
-          <th>رپورٹ</th>
-        </tr>
-      </thead>
-      <tbody id="patientTable"></tbody>
-    </table>
-  </div>
 
   <script>
     function generateMRN() {
@@ -107,53 +68,36 @@
       return `ACL-${year}-${nextId}`;
     }
 
+    function generateSampleNo() {
+      const year = new Date().getFullYear().toString().slice(-2);
+      const patients = JSON.parse(localStorage.getItem("patients") || "[]");
+      const nextId = (patients.length + 1).toString().padStart(5, "0");
+      return `SMP-${year}-${nextId}`;
+    }
+
     function registerPatient() {
       const name = document.getElementById("name").value.trim();
       const cnic = document.getElementById("cnic").value.trim();
       const phone = document.getElementById("phone").value.trim();
-      const section = document.getElementById("section").value;
+      const sectionElems = document.querySelectorAll(".section:checked");
 
-      if (!name || !cnic || !phone || !section) {
+      if (!name || !cnic || !phone || sectionElems.length === 0) {
         alert("تمام فیلڈز لازمی ہیں");
         return;
       }
 
-      const patients = JSON.parse(localStorage.getItem("patients") || "[]");
+      const sections = Array.from(sectionElems).map(el => el.value);
       const mrn = generateMRN();
-      patients.push({ name, cnic, phone, section, mrn });
-      localStorage.setItem("patients", JSON.stringify(patients));
-      alert("مریض رجسٹر ہو گیا ✅");
-      location.reload();
-    }
+      const sample = generateSampleNo();
+      const patient = { name, cnic, phone, sections, mrn, sample };
 
-    function showPatients() {
       const patients = JSON.parse(localStorage.getItem("patients") || "[]");
-      const table = document.getElementById("patientTable");
-      table.innerHTML = "";
-      patients.forEach(p => {
-        const row = `<tr>
-          <td>${p.mrn}</td>
-          <td>${p.name}</td>
-          <td>${p.cnic}</td>
-          <td>${p.phone}</td>
-          <td>${p.section}</td>
-          <td><a href="report.html?mrn=${p.mrn}" target="_blank">رپورٹ دیکھیں</a></td>
-        </tr>`;
-        table.innerHTML += row;
-      });
+      patients.push(patient);
+      localStorage.setItem("patients", JSON.stringify(patients));
+
+      alert("مریض رجسٹر ہو گیا ✅");
+      window.open(`slip.html?mrn=${mrn}`, '_blank');
     }
-
-    function filterPatients() {
-      const value = document.getElementById("searchInput").value.toLowerCase();
-      const rows = document.querySelectorAll("#patientTable tr");
-
-      rows.forEach(row => {
-        const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(value) ? "" : "none";
-      });
-    }
-
-    showPatients();
   </script>
 
 </body>
