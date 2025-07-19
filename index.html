@@ -1,1 +1,23 @@
-<!-- Index -->
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+  <meta charset="UTF-8" />
+  <title>AlphaMed Login</title>
+</head>
+<body>
+  <h2>AlphaMed Lab - لاگ ان</h2>
+  <form>
+    CNIC: <input type="text" /><br/>
+    Password: <input type="password" id="password" />
+    <button type="button" onclick="togglePassword()">👁️</button><br/>
+    <button type="submit">Login</button>
+  </form>
+  <a href="change_password.html">پاسورڈ تبدیل کریں</a>
+  <script>
+    function togglePassword() {
+      const input = document.getElementById('password');
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+  </script>
+</body>
+</html>
