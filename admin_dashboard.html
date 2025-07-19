@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+  <meta charset="UTF-8">
+  <title>ایڈمن ڈیش بورڈ - AlphaMed</title>
+  <style>
+    body {
+      background: #121212; color: #fff; font-family: sans-serif;
+      padding: 40px; direction: rtl; text-align: right;
+    }
+    h2 { color: #00ffaa; }
+    button {
+      padding: 12px 20px; margin: 10px;
+      border: none; border-radius: 6px;
+      background: #00aaff; color: #fff; cursor: pointer; font-weight: bold;
+    }
+    .logout { background: crimson; }
+  </style>
+</head>
+<body>
+  <h2>📊 ایڈمن ڈیش بورڈ</h2>
+
+  <button onclick="location.href='reception_dashboard.html'">ریسپشن سیکشن</button>
+  <button onclick="location.href='technician_dashboard.html'">ٹیکنیشن سیکشن</button>
+  <button onclick="location.href='view_reports.html'">رپورٹ دیکھیں</button>
+  <button onclick="location.href='manage_users.html'">یوزر منیج کریں</button>
+  <button class="logout" onclick="logout()">🔒 لاگ آؤٹ</button>
+
+  <script>
+    function logout() {
+      localStorage.removeItem("loggedIn");
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>
