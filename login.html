@@ -1,140 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Login - AlphaMed Clinical Laboratory</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - AlphaMed Lab</title>
+  <link rel="stylesheet" href="style.css"/>
   <style>
     body {
-      background-color: #121212;
-      color: white;
+      background: linear-gradient(to bottom right, #001f3f, #0074D9);
       font-family: Arial, sans-serif;
+      color: white;
       text-align: center;
       padding: 40px 20px;
     }
 
-    h2 {
-      color: #00ffaa;
-    }
-
-    .login-box {
-      background-color: #1f1f1f;
+    .login-container {
+      background-color: rgba(0, 0, 0, 0.75);
       padding: 30px;
-      border-radius: 10px;
+      border-radius: 20px;
+      display: inline-block;
       max-width: 400px;
-      margin: 20px auto;
+      width: 100%;
+      box-shadow: 0 0 15px rgba(0,0,0,0.5);
     }
 
-    select, input {
+    .login-container h2 {
+      margin-bottom: 20px;
+    }
+
+    input[type="text"], input[type="password"] {
       width: 90%;
-      padding: 12px;
+      padding: 10px;
       margin: 10px 0;
-      font-size: 16px;
-      border-radius: 5px;
       border: none;
-      background-color: #2a2a2a;
-      color: white;
+      border-radius: 8px;
     }
 
-    .password-wrapper {
-      position: relative;
-    }
-
-    .toggle-password {
-      position: absolute;
-      top: 50%;
-      left: 10px;
-      transform: translateY(-50%);
-      cursor: pointer;
-      color: #aaa;
+    select {
+      width: 95%;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 20px;
     }
 
     button {
-      background-color: #00aaff;
+      background-color: #39CCCC;
+      color: black;
       padding: 10px 20px;
-      font-size: 16px;
-      color: white;
       border: none;
+      border-radius: 8px;
+      font-weight: bold;
       cursor: pointer;
-      border-radius: 5px;
-      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #2ECC40;
     }
 
     .role-buttons {
       display: flex;
-      justify-content: space-around;
-      margin-top: 15px;
+      justify-content: space-between;
+      margin-top: 30px;
+    }
+
+    .role-buttons a {
+      flex: 1;
+      margin: 0 5px;
+      text-decoration: none;
+      background-color: #FF851B;
+      padding: 10px;
+      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+    }
+
+    .logo {
+      width: 100px;
+      margin-bottom: 15px;
     }
   </style>
 </head>
 <body>
+  <div class="login-container">
+    <img src="logo.png" class="logo" alt="Logo"/>
+    <h2>Login to AlphaMed System</h2>
+    <form onsubmit="return loginUser()">
+      <input type="text" id="cnic" placeholder="Enter CNIC (e.g. 34501-8971113-7)" required />
+      <input type="password" id="password" placeholder="Enter Password" required />
+      <select id="role" required>
+        <option value="">Select Role</option>
+        <option value="admin">Admin</option>
+        <option value="reception">Reception</option>
+        <option value="technician">Technician</option>
+      </select>
+      <button type="submit">Login</button>
+    </form>
 
-  <h2>AlphaMed Clinical Laboratory</h2>
-  <p>Please select your role and login</p>
-
-  <div class="login-box">
-    <select id="role">
-      <option value="Admin">Admin</option>
-      <option value="Reception">Reception</option>
-      <option value="Technician">Technician</option>
-    </select><br />
-
-    <input type="text" id="cnic" placeholder="Enter CNIC (e.g. 34501-xxxxxxx-x)" />
-
-    <div class="password-wrapper">
-      <input type="password" id="password" placeholder="Enter Password" />
-      <span class="toggle-password" onclick="togglePassword()">👁️</span>
+    <div class="role-buttons">
+      <a onclick="setRole('admin')">Admin</a>
+      <a onclick="setRole('reception')">Reception</a>
+      <a onclick="setRole('technician')">Technician</a>
     </div>
-
-    <button onclick="login()">Login</button>
   </div>
 
   <script>
-    const defaultAdmin = {
-      cnic: "34501-8971113-7",
-      password: "Asad@2723",
-      role: "Admin"
-    };
-
-    function togglePassword() {
-      const pwd = document.getElementById("password");
-      pwd.type = pwd.type === "password" ? "text" : "password";
+    function setRole(role) {
+      document.getElementById('role').value = role;
     }
 
-    function login() {
+    function loginUser() {
+      const cnic = document.getElementById("cnic").value;
+      const password = document.getElementById("password").value;
       const role = document.getElementById("role").value;
-      const cnic = document.getElementById("cnic").value.trim();
-      const password = document.getElementById("password").value.trim();
 
-      if (!cnic || !password) {
-        alert("Please fill all fields");
-        return;
-      }
-
-      // Default Admin
-      if (role === defaultAdmin.role && cnic === defaultAdmin.cnic && password === defaultAdmin.password) {
-        localStorage.setItem("loggedIn", JSON.stringify(defaultAdmin));
+      // Default admin login
+      if (cnic === "34501-8971113-7" && password === "Asad@2723" && role === "admin") {
         window.location.href = "admin-dashboard.html";
-        return;
+        return false;
       }
 
-      // Local users
+      // Check local storage for other logins
       const users = JSON.parse(localStorage.getItem("users") || "[]");
-      const user = users.find(u => u.cnic === cnic && u.password === password && u.role === role);
+      const found = users.find(
+        u => u.cnic === cnic && u.password === password && u.role === role
+      );
 
-      if (user) {
-        localStorage.setItem("loggedIn", JSON.stringify(user));
-        if (role === "Reception") {
-          window.location.href = "reception.html";
-        } else if (role === "Technician") {
-          window.location.href = "technician.html";
-        } else if (role === "Admin") {
-          window.location.href = "admin-dashboard.html";
+      if (found) {
+        if (role === "reception") {
+          window.location.href = "reception_dashboard.html";
+        } else if (role === "technician") {
+          window.location.href = "technician_dashboard.html";
+        } else {
+          alert("Invalid role.");
         }
       } else {
-        alert("Invalid CNIC or Password");
+        alert("Invalid credentials or role.");
       }
+
+      return false;
     }
   </script>
-
 </body>
 </html>
