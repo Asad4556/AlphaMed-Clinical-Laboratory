@@ -106,7 +106,7 @@
 
     window.onload = function () {
       const user = JSON.parse(localStorage.getItem("loggedInUser"));
-      if (!user || user.role !== "Reception") {
+      if (!user || (user.role !== "Reception" && user.role !== "Admin")) {
         alert("Unauthorized access. Redirecting to login.");
         window.location.href = "login.html";
       }
