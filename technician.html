@@ -2,84 +2,48 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Technician Panel - Add Test Results</title>
-  <link rel="stylesheet" href="style.css" />
-  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Technician Panel - AlphaMed Lab</title>
+  <link rel="stylesheet" href="style.css"/>
 </head>
-<body>
-  <h2>Technician - Enter Test Results</h2>
+<body class="dark-theme">
+  <header>
+    <h1>AlphaMed Clinical Laboratory</h1>
+    <p>Technician Panel</p>
+  </header>
 
-  <input type="text" id="mrnInput" placeholder="Enter MRN (e.g. ACL-25-00001)" />
-  <button onclick="loadPatientTests()">Load Tests</button>
+  <nav>
+    <ul>
+      <li><a href="technician_dashboard.html">Dashboard</a></li>
+      <li><a href="add_test_result.html">Add Test Result</a></li>
+      <li><a href="view_reports.html">View Reports</a></li>
+      <li><a href="change_password.html">Change Password</a></li>
+      <li><a href="index.html" onclick="logout()">Logout</a></li>
+    </ul>
+  </nav>
 
-  <div id="testResultsArea"></div>
+  <main>
+    <section class="dashboard-welcome">
+      <h2>Welcome, Technician</h2>
+      <p>Select an option from the menu to begin.</p>
+    </section>
+  </main>
 
-  <button onclick="saveResults()">Save Report</button>
+  <footer>
+    <p>&copy; 2025 AlphaMed Clinical Laboratory</p>
+  </footer>
 
   <script>
-    function loadPatientTests() {
-      const mrn = document.getElementById("mrnInput").value.trim();
-      const patients = JSON.parse(localStorage.getItem("patients") || "[]");
-      const reports = JSON.parse(localStorage.getItem("labReports") || "[]");
-
-      const patient = patients.find(p => p.mrn === mrn);
-      const report = reports.find(r => r.mrn === mrn);
-
-      if (!patient || !report) {
-        alert("No record found for this MRN.");
-        return;
-      }
-
-      let html = `
-        <h3>Patient: ${patient.fullName}</h3>
-        <p>Section: ${report.section}</p>
-        <table>
-          <thead>
-            <tr>
-              <th>Test</th>
-              <th>Result</th>
-              <th>Normal (Male)</th>
-              <th>Normal (Female)</th>
-            </tr>
-          </thead>
-          <tbody>
-      `;
-
-      report.results.forEach((test, index) => {
-        html += `
-          <tr>
-            <td>${test.test}</td>
-            <td><input type="text" id="result-${index}" value="${test.result || ""}" /></td>
-            <td>${test.male}</td>
-            <td>${test.female}</td>
-          </tr>
-        `;
-      });
-
-      html += `</tbody></table>`;
-      document.getElementById("testResultsArea").innerHTML = html;
+    function logout() {
+      localStorage.removeItem("loggedInUser");
+      localStorage.removeItem("loggedInRole");
     }
 
-    function saveResults() {
-      const mrn = document.getElementById("mrnInput").value.trim();
-      let reports = JSON.parse(localStorage.getItem("labReports") || "[]");
-      const reportIndex = reports.findIndex(r => r.mrn === mrn);
-
-      if (reportIndex === -1) {
-        alert("Report not found.");
-        return;
-      }
-
-      const updatedResults = reports[reportIndex].results.map((test, i) => ({
-        ...test,
-        result: document.getElementById(`result-${i}`).value.trim()
-      }));
-
-      reports[reportIndex].results = updatedResults;
-      reports[reportIndex].updatedAt = new Date().toLocaleString();
-      localStorage.setItem("labReports", JSON.stringify(reports));
-
-      alert("Results saved successfully ✅");
+    // Restrict access to logged-in technician only
+    const role = localStorage.getItem("loggedInRole");
+    if (role !== "Technician") {
+      alert("Unauthorized access!");
+      window.location.href = "login.html";
     }
   </script>
 </body>
