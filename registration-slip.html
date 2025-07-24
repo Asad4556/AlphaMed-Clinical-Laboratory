@@ -1,125 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Patient Registration Slip</title>
-  <script src="https://cdn.jsdelivr.net/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #121212;
-      color: white;
-      margin: 0;
-      padding: 40px;
-    }
-
-    .container {
-      background-color: #1c1c1c;
-      padding: 30px;
-      border-radius: 10px;
-      position: relative;
-      max-width: 700px;
-      margin: auto;
-    }
-
-    .logo {
-      width: 120px;
-      margin-bottom: 10px;
-    }
-
-    h2 {
-      text-align: center;
-      color: #00ffaa;
-    }
-
-    .info {
-      margin-top: 20px;
-    }
-
-    .info p {
-      margin: 8px 0;
-    }
-
-    .barcode {
-      text-align: center;
-      margin-top: 20px;
-    }
-
-    .watermark {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      font-size: 70px;
-      color: rgba(255, 255, 255, 0.05);
-      transform: translate(-50%, -50%);
-      white-space: nowrap;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .footer-note {
-      margin-top: 30px;
-      font-size: 12px;
-      color: #ccc;
-      text-align: center;
-    }
-
-    @media print {
-      .no-print {
-        display: none;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Registration Slip - AlphaMed Clinical Laboratory</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background: url('logo.png') center center no-repeat;
+            background-size: 80%;
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .container {
+            width: 80%;
+            margin: 30px auto;
+            padding: 30px;
+            background-color: rgba(255,255,255,0.95);
+            border-radius: 10px;
+            box-shadow: 0 0 10px #999;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        .info, .barcode-section {
+            margin-top: 30px;
+        }
+        .info table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .info th, .info td {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ccc;
+        }
+        .barcode-section {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .btn-print {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        button {
+            padding: 10px 25px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        @media print {
+            button {
+                display: none;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <div class="watermark">AlphaMed Clinical Laboratory</div>
-    <div style="text-align: center;">
-      <img src="logo.png" class="logo" alt="Lab Logo" />
+    <div class="container">
+        <h2>AlphaMed Clinical Laboratory</h2>
+        <h4 style="text-align: center;">Patient Registration Slip</h4>
+
+        <div class="info">
+            <table>
+                <tr><th>Patient Name:</th><td id="name"></td></tr>
+                <tr><th>MRN:</th><td id="mrn"></td></tr>
+                <tr><th>CNIC:</th><td id="cnic"></td></tr>
+                <tr><th>Age:</th><td id="age"></td></tr>
+                <tr><th>Gender:</th><td id="gender"></td></tr>
+                <tr><th>Phone:</th><td id="phone"></td></tr>
+                <tr><th>Section:</th><td id="section"></td></tr>
+                <tr><th>Tests:</th><td id="tests"></td></tr>
+                <tr><th>Recommended Department:</th><td id="recommended"></td></tr>
+                <tr><th>Sample Number:</th><td id="sample"></td></tr>
+                <tr><th>Registration Date:</th><td id="date"></td></tr>
+            </table>
+        </div>
+
+        <div class="barcode-section">
+            <canvas id="barcode"></canvas>
+        </div>
+
+        <div class="btn-print">
+            <button onclick="window.print()">Print Slip</button>
+        </div>
     </div>
-    <h2>Patient Registration Slip</h2>
 
-    <div class="info">
-      <p><strong>MRN:</strong> <span id="mrnText">---</span></p>
-      <p><strong>Sample No:</strong> <span id="sampleText">---</span></p>
-      <p><strong>Patient Name:</strong> <span id="nameText">---</span></p>
-      <p><strong>CNIC:</strong> <span id="cnicText">---</span></p>
-      <p><strong>Phone:</strong> <span id="phoneText">---</span></p>
-      <p><strong>Selected Sections:</strong> <span id="sectionText">---</span></p>
-    </div>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const patient = {
+            name: params.get("name") || "",
+            mrn: params.get("mrn") || "",
+            cnic: params.get("cnic") || "",
+            age: params.get("age") || "",
+            gender: params.get("gender") || "",
+            phone: params.get("phone") || "",
+            section: params.get("section") || "",
+            tests: params.get("tests") || "",
+            sample: params.get("sample") || "",
+            date: new Date().toLocaleDateString(),
+            recommended: params.get("recommended") || "Consultant"
+        };
 
-    <div class="barcode">
-      <svg id="barcode"></svg>
-    </div>
+        document.getElementById("name").textContent = patient.name;
+        document.getElementById("mrn").textContent = patient.mrn;
+        document.getElementById("cnic").textContent = patient.cnic;
+        document.getElementById("age").textContent = patient.age;
+        document.getElementById("gender").textContent = patient.gender;
+        document.getElementById("phone").textContent = patient.phone;
+        document.getElementById("section").textContent = patient.section;
+        document.getElementById("tests").textContent = patient.tests;
+        document.getElementById("sample").textContent = patient.sample;
+        document.getElementById("date").textContent = patient.date;
+        document.getElementById("recommended").textContent = patient.recommended;
 
-    <div class="footer-note">
-      This slip is computer generated and does not require a signature.
-    </div>
-  </div>
+        const barcodeText = `
+        MRN: ${patient.mrn}
+        Name: ${patient.name}
+        CNIC: ${patient.cnic}
+        Section: ${patient.section}
+        Test: ${patient.tests}
+        Dept: ${patient.recommended}`.replace(/\s+/g, ' ').trim();
 
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const mrn = params.get("mrn");
-
-    const patients = JSON.parse(localStorage.getItem("patients") || "[]");
-    const patient = patients.find(p => p.mrn === mrn);
-
-    if (patient) {
-      document.getElementById("mrnText").innerText = patient.mrn;
-      document.getElementById("nameText").innerText = patient.fullName;
-      document.getElementById("cnicText").innerText = patient.cnic;
-      document.getElementById("phoneText").innerText = patient.phone;
-      document.getElementById("sectionText").innerText = patient.sections.join(", ");
-      document.getElementById("sampleText").innerText = `SMP-${patient.mrn.slice(-5)}`;
-      JsBarcode("#barcode", patient.mrn, {
-        format: "CODE128",
-        width: 2,
-        height: 50,
-        displayValue: false
-      });
-    } else {
-      alert("Patient not found.");
-    }
-  </script>
+        JsBarcode("#barcode", barcodeText, {
+            format: "CODE128",
+            displayValue: false,
+            width: 2,
+            height: 100,
+            margin: 10,
+            background: "#ffffff",
+            lineColor: "#000000"
+        });
+    </script>
 </body>
 </html>
