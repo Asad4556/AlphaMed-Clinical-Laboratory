@@ -2,164 +2,148 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Patient Report</title>
+  <title>Report - AlphaMed Clinical Laboratory</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+</head>
+<body class="dark-theme">
+
+  <div id="report-container" class="watermark-logo">
+    <div class="report-header">
+      <img src="logo.png" alt="AlphaMed Logo" class="lab-logo" />
+      <h1>AlphaMed Clinical Laboratory</h1>
+      <h3>Quality Assurance Through Advanced Technology</h3>
+      <hr />
+    </div>
+
+    <div class="patient-info">
+      <p><strong>Patient Name:</strong> <span id="patientName"></span></p>
+      <p><strong>MRN:</strong> <span id="patientMRN"></span></p>
+      <p><strong>Age/Gender:</strong> <span id="patientAgeGender"></span></p>
+      <p><strong>Test Date:</strong> <span id="testDate"></span></p>
+      <p><strong>Department:</strong> <span id="recommendedDepartment"></span></p>
+    </div>
+
+    <div class="test-results">
+      <h3>Test Results</h3>
+      <table id="testTable">
+        <thead>
+          <tr>
+            <th>Test Name</th>
+            <th>Result</th>
+            <th>Normal Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Filled by script.js -->
+        </tbody>
+      </table>
+    </div>
+
+    <div class="barcode-section">
+      <svg id="barcode"></svg>
+    </div>
+
+    <div class="footer-note">
+      <p>This report is computer generated and does not require signature.</p>
+    </div>
+
+    <div class="export-buttons">
+      <button onclick="window.print()">🖨️ Print</button>
+      <button onclick="exportToPDF()">📄 Export PDF</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    // Load report data
+    loadReportData();
+
+    function exportToPDF() {
+      const element = document.getElementById('report-container');
+      const opt = {
+        margin:       0.3,
+        filename:     'AlphaMed_Report.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+      };
+      html2pdf().from(element).set(opt).save();
+    }
+  </script>
+
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #121212;
-      color: white;
-      margin: 0;
-      padding: 40px;
+    body.dark-theme {
+      background: #111;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
     }
 
-    .container {
-      background-color: #1c1c1c;
-      padding: 30px;
-      border-radius: 10px;
-      max-width: 800px;
-      margin: auto;
-      position: relative;
-    }
-
-    .watermark {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      font-size: 75px;
-      color: rgba(255, 255, 255, 0.05);
-      transform: translate(-50%, -50%);
-      white-space: nowrap;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .header {
-      text-align: center;
-      z-index: 2;
-    }
-
-    .header img {
+    .lab-logo {
       width: 100px;
+      height: auto;
     }
 
-    .header h2 {
-      margin: 10px 0;
-      color: #00ffaa;
-    }
-
-    .info, .test-table, .footer-note {
+    .watermark-logo {
       position: relative;
-      z-index: 2;
+      background: url('logo.png') no-repeat center center;
+      background-size: 90%;
+      background-repeat: no-repeat;
     }
 
-    .info {
-      text-align: left;
-      margin: 20px 0;
+    .report-header {
+      text-align: center;
+      margin-bottom: 20px;
     }
 
-    .info p {
-      margin: 5px 0;
+    .patient-info, .test-results {
+      padding: 10px 40px;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 30px;
+      margin-top: 15px;
     }
 
-    th, td {
-      border: 1px solid #444;
+    table th, table td {
+      border: 1px solid #888;
       padding: 10px;
       text-align: center;
     }
 
-    th {
-      background-color: #282828;
-      color: #00ffaa;
+    .barcode-section {
+      text-align: center;
+      margin: 20px 0;
     }
 
     .footer-note {
-      margin-top: 40px;
-      font-size: 12px;
-      color: #ccc;
       text-align: center;
+      font-style: italic;
+      margin-top: 30px;
     }
 
-    @media print {
-      .no-print {
-        display: none;
-      }
+    .export-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    .export-buttons button {
+      padding: 8px 16px;
+      font-weight: bold;
+      border: none;
+      background: #06b6d4;
+      color: #fff;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .export-buttons button:hover {
+      background: #0891b2;
     }
   </style>
-</head>
-<body>
-  <div class="container">
-    <div class="watermark">AlphaMed Clinical Laboratory</div>
-
-    <div class="header">
-      <img src="logo.png" alt="Lab Logo" />
-      <h2>AlphaMed Clinical Laboratory</h2>
-    </div>
-
-    <div class="info" id="patientInfo">
-      <!-- Patient info goes here -->
-    </div>
-
-    <div class="test-table">
-      <table id="resultTable">
-        <thead>
-          <tr>
-            <th>Test</th>
-            <th>Result</th>
-            <th>Normal (Male)</th>
-            <th>Normal (Female)</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-
-    <div class="footer-note">
-      This report is computer generated and does not require signature.
-    </div>
-  </div>
-
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const mrn = params.get("mrn");
-
-    const patients = JSON.parse(localStorage.getItem("patients") || "[]");
-    const reports = JSON.parse(localStorage.getItem("labReports") || "[]");
-
-    const patient = patients.find(p => p.mrn === mrn);
-    const report = reports.find(r => r.mrn === mrn);
-
-    const infoDiv = document.getElementById("patientInfo");
-    const tableBody = document.querySelector("#resultTable tbody");
-
-    if (!patient || !report) {
-      infoDiv.innerHTML = "<p>Patient report not found.</p>";
-    } else {
-      infoDiv.innerHTML = `
-        <p><strong>MRN:</strong> ${patient.mrn}</p>
-        <p><strong>Name:</strong> ${patient.fullName}</p>
-        <p><strong>CNIC:</strong> ${patient.cnic}</p>
-        <p><strong>Phone:</strong> ${patient.phone}</p>
-        <p><strong>Section:</strong> ${report.section}</p>
-        <p><strong>Date:</strong> ${report.timestamp}</p>
-      `;
-
-      report.results.forEach(r => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${r.test}</td>
-          <td>${r.result}</td>
-          <td>${r.male}</td>
-          <td>${r.female}</td>
-        `;
-        tableBody.appendChild(row);
-      });
-    }
-  </script>
 </body>
 </html>
