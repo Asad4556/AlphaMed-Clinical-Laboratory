@@ -1,154 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Admin Dashboard</title>
-  <style>
-    body {
-      background-color: #121212;
-      color: white;
-      font-family: Arial, sans-serif;
-      direction: ltr;
-      padding: 20px;
-    }
-    h2, h3 {
-      color: #00ffaa;
-    }
-    input, select, button {
-      padding: 10px;
-      margin: 10px 0;
-      font-size: 16px;
-      border-radius: 5px;
-      border: none;
-      background-color: #1e1e1e;
-      color: white;
-    }
-    button {
-      background-color: #00aaff;
-      cursor: pointer;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    th, td {
-      border: 1px solid #444;
-      padding: 8px;
-      text-align: center;
-    }
-    .form-section {
-      background-color: #1c1c1c;
-      padding: 20px;
-      border-radius: 10px;
-      margin-bottom: 30px;
-    }
-    .logout-button {
-      background-color: crimson;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      margin-bottom: 10px;
-      float: right;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel - AlphaMed Lab</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-
-  <button class="logout-button" onclick="logout()">🔒 Logout</button>
-  <h2>Admin Dashboard</h2>
-
-  <div class="form-section">
-    <h3>Add New User</h3>
-    <form id="addUserForm">
-      <select id="newUserRole" required>
-        <option value="">Select Role</option>
-        <option value="Reception">Reception</option>
-        <option value="Technician">Technician</option>
-      </select><br>
-      <input type="text" id="newUserCnic" placeholder="CNIC" required><br>
-      <input type="password" id="newUserPassword" placeholder="Password" required><br>
-      <button type="submit">Add User</button>
-    </form>
+<body class="dark-theme">
+  <div class="header">
+    <img src="logo.png" alt="AlphaMed Logo" class="logo" />
+    <h1>AlphaMed Clinical Laboratory</h1>
+    <p class="tagline">Quality Assurance Through Advance Technology</p>
   </div>
 
-  <div class="form-section">
+  <div class="container">
+    <h2>Admin Panel: User Management</h2>
+
+    <form id="createUserForm">
+      <h3>Create New User</h3>
+      <label for="cnic">CNIC:</label>
+      <input type="text" id="cnic" placeholder="xxxxx-xxxxxxx-x" required />
+
+      <label for="password">Password:</label>
+      <input type="password" id="password" placeholder="Enter password" required />
+
+      <label for="role">Select Role:</label>
+      <select id="role" required>
+        <option value="">-- Select Role --</option>
+        <option value="reception">Reception</option>
+        <option value="technician">Technician</option>
+      </select>
+
+      <button type="submit" class="btn">Create User</button>
+    </form>
+
+    <hr/>
+
     <h3>All Users</h3>
     <table id="userTable">
       <thead>
         <tr>
-          <th>Role</th>
           <th>CNIC</th>
-          <th>Delete</th>
+          <th>Role</th>
+          <th>Actions</th>
         </tr>
       </thead>
-      <tbody></tbody>
+      <tbody>
+        <!-- Dynamically filled -->
+      </tbody>
     </table>
+
+    <div class="note">
+      <p>⚠️ Admin account cannot be deleted or modified.</p>
+    </div>
   </div>
 
+  <footer>
+    <p>&copy; 2025 AlphaMed Clinical Laboratory. All rights reserved.</p>
+  </footer>
+
+  <script src="script.js"></script>
   <script>
-    const currentAdmin = JSON.parse(localStorage.getItem("loggedIn"));
-    if (!currentAdmin || currentAdmin.role !== "Admin") {
-      window.location.href = "login.html";
-    }
-
-    const userTable = document.getElementById("userTable").querySelector("tbody");
-
-    function loadUsers() {
-      const users = JSON.parse(localStorage.getItem("users") || "[]");
-      userTable.innerHTML = "";
-      users.forEach(user => {
-        if (user.role === "Admin") return;
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${user.role}</td>
-          <td>${user.cnic}</td>
-          <td><button onclick="deleteUser('${user.cnic}')">❌</button></td>
-        `;
-        userTable.appendChild(row);
-      });
-    }
-
-    function deleteUser(cnic) {
-      let users = JSON.parse(localStorage.getItem("users") || "[]");
-      users = users.filter(u => u.cnic !== cnic);
-      localStorage.setItem("users", JSON.stringify(users));
-      loadUsers();
-    }
-
-    document.getElementById("addUserForm").addEventListener("submit", function(e) {
+    loadUsers(); // load all user accounts
+    document.getElementById('createUserForm').addEventListener('submit', function (e) {
       e.preventDefault();
-      const role = document.getElementById("newUserRole").value;
-      const cnic = document.getElementById("newUserCnic").value;
-      const password = document.getElementById("newUserPassword").value;
-
-      if (role === "Admin") {
-        alert("You cannot create a new Admin.");
-        return;
-      }
-
-      let users = JSON.parse(localStorage.getItem("users") || "[]");
-      if (users.find(u => u.cnic === cnic)) {
-        alert("This CNIC already exists.");
-        return;
-      }
-
-      users.push({ role, cnic, password });
-      localStorage.setItem("users", JSON.stringify(users));
-      alert("User added successfully.");
-      document.getElementById("addUserForm").reset();
-      loadUsers();
+      createUser(); // call function in script.js
     });
-
-    function logout() {
-      localStorage.removeItem("loggedIn");
-      window.location.href = "login.html";
-    }
-
-    loadUsers();
   </script>
-
 </body>
 </html>
