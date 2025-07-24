@@ -2,75 +2,54 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Admin Dashboard - AlphaMed</title>
-  <style>
-    body {
-      background-color: #121212;
-      color: #ffffff;
-      font-family: sans-serif;
-      padding: 30px;
-      direction: ltr;
-    }
-    h1 {
-      color: #00ffaa;
-    }
-    .section {
-      background-color: #1e1e1e;
-      padding: 20px;
-      border-radius: 10px;
-      margin-bottom: 30px;
-    }
-    .section h2 {
-      color: #00aaff;
-    }
-    .link-button {
-      display: inline-block;
-      background-color: #00aaff;
-      color: white;
-      padding: 10px 20px;
-      margin: 10px;
-      border-radius: 6px;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    .link-button:hover {
-      background-color: #0088cc;
-    }
-    .logout-btn {
-      background-color: crimson;
-      float: right;
-      padding: 10px 20px;
-      border-radius: 8px;
-      color: white;
-      font-weight: bold;
-      border: none;
-      cursor: pointer;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard - AlphaMed Clinical Laboratory</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-
-  <button class="logout-btn" onclick="logout()">Logout</button>
-
-  <h1>Admin Dashboard</h1>
-
-  <div class="section">
-    <h2>Quick Access</h2>
-    <a class="link-button" href="manage_users.html">👥 Manage Users</a>
-    <a class="link-button" href="register_patient.html">📝 Reception (Register Patient)</a>
-    <a class="link-button" href="technician.html">🧪 Technician (Add Reports)</a>
-    <a class="link-button" href="view_reports.html">📄 View All Reports</a>
-    <a class="link-button" href="change_password.html">🔐 Change Password</a>
-    <a class="link-button" href="export.html">📤 Export PDF</a>
-    <a class="link-button" href="settings.html">⚙️ Settings</a>
+<body class="dark-theme">
+  <div class="header">
+    <img src="logo.png" alt="AlphaMed Logo" class="logo" />
+    <h1>AlphaMed Clinical Laboratory</h1>
+    <p class="tagline">Quality Assurance Through Advance Technology</p>
   </div>
 
-  <script>
-    function logout() {
-      localStorage.removeItem("loggedIn");
-      window.location.href = "login.html";
-    }
-  </script>
+  <div class="dashboard">
+    <h2>Admin Dashboard</h2>
 
+    <div class="stats">
+      <div class="card">
+        <h3>Total Patients</h3>
+        <p id="total-patients">0</p>
+      </div>
+      <div class="card">
+        <h3>Today Registered</h3>
+        <p id="today-registered">0</p>
+      </div>
+      <div class="card">
+        <h3>Total Reports</h3>
+        <p id="total-reports">0</p>
+      </div>
+    </div>
+
+    <div class="admin-actions">
+      <a href="register_patient.html" class="btn">Register New Patient</a>
+      <a href="view_reports.html" class="btn">View Reports</a>
+      <a href="manage_users.html" class="btn">Manage Users</a>
+      <a href="settings.html" class="btn">Settings</a>
+      <a href="export.html" class="btn">Export Reports</a>
+      <a href="change_password.html" class="btn">Change Password</a>
+      <a href="login.html" class="btn logout">Logout</a>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 AlphaMed Clinical Laboratory. All rights reserved.</p>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+    // Call dashboard summary logic
+    updateAdminStats();
+  </script>
 </body>
 </html>
