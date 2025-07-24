@@ -2,117 +2,73 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Technician Dashboard - AlphaMed</title>
-  <style>
-    body {
-      background-color: #121212;
-      color: #ffffff;
-      font-family: sans-serif;
-      padding: 30px;
-      direction: ltr;
-    }
-    h1 {
-      color: #00ffaa;
-    }
-    .section {
-      background-color: #1e1e1e;
-      padding: 20px;
-      border-radius: 10px;
-      margin-bottom: 30px;
-    }
-    .section h2 {
-      color: #00aaff;
-    }
-    .link-button {
-      display: inline-block;
-      background-color: #00aaff;
-      color: white;
-      padding: 10px 20px;
-      margin: 10px;
-      border-radius: 6px;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    .link-button:hover {
-      background-color: #0088cc;
-    }
-    .logout-btn {
-      background-color: crimson;
-      float: right;
-      padding: 10px 20px;
-      border-radius: 8px;
-      color: white;
-      font-weight: bold;
-      border: none;
-      cursor: pointer;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    th, td {
-      border: 1px solid #444;
-      padding: 10px;
-      text-align: center;
-    }
-    th {
-      background-color: #222;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Technician Dashboard - AlphaMed Lab</title>
+  <link rel="stylesheet" href="style.css"/>
 </head>
-<body>
+<body class="dark-theme">
+  <header>
+    <h1>AlphaMed Clinical Laboratory</h1>
+    <p>Technician Dashboard</p>
+  </header>
 
-  <button class="logout-btn" onclick="logout()">Logout</button>
+  <nav>
+    <ul>
+      <li><a href="technician_dashboard.html">Home</a></li>
+      <li><a href="add_test_result.html">Add Test Result</a></li>
+      <li><a href="view_reports.html">View Reports</a></li>
+      <li><a href="change_password.html">Change Password</a></li>
+      <li><a href="index.html" onclick="logout()">Logout</a></li>
+    </ul>
+  </nav>
 
-  <h1>Technician Dashboard</h1>
+  <main>
+    <section class="dashboard">
+      <div class="card">
+        <h2>Total Patients</h2>
+        <p id="totalPatients">0</p>
+      </div>
+      <div class="card">
+        <h2>Today's Registered</h2>
+        <p id="todaysPatients">0</p>
+      </div>
+      <div class="card">
+        <h2>Reports Entered</h2>
+        <p id="reportsCount">0</p>
+      </div>
+    </section>
+  </main>
 
-  <div class="section">
-    <h2>Assigned Tests (From Reception)</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>MRN</th>
-          <th>Patient Name</th>
-          <th>Test Section</th>
-          <th>Tests</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody id="assignedTests"></tbody>
-    </table>
-  </div>
-
-  <div class="section">
-    <h2>Actions</h2>
-    <a class="link-button" href="add_test_result.html">🧪 Add Test Result</a>
-    <a class="link-button" href="view_reports.html">📄 View Reports</a>
-  </div>
+  <footer>
+    <p>&copy; 2025 AlphaMed Clinical Laboratory</p>
+  </footer>
 
   <script>
     function logout() {
-      localStorage.removeItem("loggedIn");
+      localStorage.removeItem("loggedInUser");
+      localStorage.removeItem("loggedInRole");
+    }
+
+    // Access Restriction
+    const role = localStorage.getItem("loggedInRole");
+    if (role !== "Technician") {
+      alert("Unauthorized access!");
       window.location.href = "login.html";
     }
 
-    const assignedTable = document.getElementById("assignedTests");
+    // Load and Count Data
+    window.onload = () => {
+      const patients = JSON.parse(localStorage.getItem("patients")) || [];
+      const reports = JSON.parse(localStorage.getItem("reports")) || [];
 
-    function loadAssignedTests() {
-      const patients = JSON.parse(localStorage.getItem("patients") || "[]");
-      const rows = patients.map(p => `
-        <tr>
-          <td>${p.mrn}</td>
-          <td>${p.fullName}</td>
-          <td>${p.section || '-'}</td>
-          <td>${(p.tests || []).join(", ")}</td>
-          <td><a class='link-button' href='add_test_result.html?mrn=${p.mrn}'>Add Result</a></td>
-        </tr>
-      `).join("");
-      assignedTable.innerHTML = rows;
-    }
+      document.getElementById("totalPatients").textContent = patients.length;
 
-    window.onload = loadAssignedTests;
+      const today = new Date().toISOString().split('T')[0];
+      const todaysCount = patients.filter(p => p.date === today).length;
+      document.getElementById("todaysPatients").textContent = todaysCount;
+
+      document.getElementById("reportsCount").textContent = reports.length;
+    };
   </script>
-
 </body>
 </html>
