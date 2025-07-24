@@ -1,131 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Reception Dashboard</title>
-  <style>
-    body {
-      background-color: #121212;
-      color: white;
-      font-family: Arial, sans-serif;
-      padding: 30px;
-    }
-
-    h2 {
-      color: #00ffaa;
-      text-align: center;
-    }
-
-    .logout-btn {
-      background-color: crimson;
-      padding: 10px 20px;
-      color: white;
-      font-weight: bold;
-      float: left;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    table {
-      width: 100%;
-      margin-top: 20px;
-      border-collapse: collapse;
-    }
-
-    th, td {
-      border: 1px solid #333;
-      padding: 8px;
-      text-align: center;
-    }
-
-    th {
-      background-color: #1e1e1e;
-      color: #00ffaa;
-    }
-
-    input[type="text"] {
-      width: 300px;
-      padding: 10px;
-      background-color: #1e1e1e;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      margin-bottom: 20px;
-    }
-
-    .watermark {
-      position: fixed;
-      top: 40%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 60px;
-      color: rgba(255, 255, 255, 0.08);
-      z-index: -1;
-      white-space: nowrap;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <title>Reception Dashboard - AlphaMed Lab</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <div class="watermark">AlphaMed Clinical Laboratory</div>
+<body class="dark-theme">
+  <div class="header">
+    <img src="logo.png" alt="AlphaMed Logo" class="logo">
+    <h1>AlphaMed Clinical Laboratory</h1>
+    <p class="tagline">Quality Assurance Through Advance Technology</p>
+  </div>
 
-  <button class="logout-btn" onclick="logout()">Logout</button>
-  <h2>Reception Dashboard</h2>
+  <nav class="nav-bar">
+    <a href="reception_dashboard.html" class="active">Dashboard</a>
+    <a href="register_patient.html">Register Patient</a>
+    <a href="view_reports.html">View Reports</a>
+    <a href="change_password.html">Change Password</a>
+    <a href="login.html" onclick="logout()">Logout</a>
+  </nav>
 
-  <input type="text" id="searchInput" placeholder="Search by MRN or Name" onkeyup="filterPatients()" />
+  <main class="main-content">
+    <h2>Reception Dashboard</h2>
 
-  <table>
-    <thead>
-      <tr>
-        <th>MRN</th>
-        <th>Name</th>
-        <th>CNIC</th>
-        <th>Phone</th>
-        <th>Sections</th>
-      </tr>
-    </thead>
-    <tbody id="patientTableBody"></tbody>
-  </table>
+    <div class="dashboard-cards">
+      <div class="card">
+        <h3>Register New Patient</h3>
+        <p>Add patient details and print slip with barcode.</p>
+        <a href="register_patient.html" class="btn">Go</a>
+      </div>
+
+      <div class="card">
+        <h3>View Reports</h3>
+        <p>Search and view all patient reports.</p>
+        <a href="view_reports.html" class="btn">View</a>
+      </div>
+
+      <div class="card">
+        <h3>Change Password</h3>
+        <p>Update your login credentials.</p>
+        <a href="change_password.html" class="btn">Update</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2025 AlphaMed Clinical Laboratory | All rights reserved</p>
+  </footer>
 
   <script>
-    const receptionUser = JSON.parse(localStorage.getItem("loggedIn"));
-    if (!receptionUser || receptionUser.role !== "Reception") {
-      window.location.href = "login.html";
-    }
-
-    function loadPatients() {
-      const patients = JSON.parse(localStorage.getItem("patients") || "[]");
-      const tbody = document.getElementById("patientTableBody");
-      tbody.innerHTML = "";
-
-      patients.forEach(patient => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${patient.mrn}</td>
-          <td>${patient.fullName}</td>
-          <td>${patient.cnic}</td>
-          <td>${patient.phone}</td>
-          <td>${patient.sections.join(", ")}</td>
-        `;
-        tbody.appendChild(row);
-      });
-    }
-
-    function filterPatients() {
-      const value = document.getElementById("searchInput").value.toLowerCase();
-      const rows = document.querySelectorAll("#patientTableBody tr");
-      rows.forEach(row => {
-        const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(value) ? "" : "none";
-      });
-    }
-
     function logout() {
-      localStorage.removeItem("loggedIn");
-      window.location.href = "login.html";
+      localStorage.removeItem("loggedInUser");
     }
 
-    loadPatients();
+    window.onload = function () {
+      const user = JSON.parse(localStorage.getItem("loggedInUser"));
+      if (!user || user.role !== "Reception") {
+        alert("Unauthorized access. Redirecting to login.");
+        window.location.href = "login.html";
+      }
+    };
   </script>
 </body>
 </html>
