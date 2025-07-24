@@ -1,101 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Patient Slip - AlphaMed Lab</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Patient Slip - AlphaMed Clinical Laboratory</title>
+  <link rel="stylesheet" href="style.css" />
   <style>
     body {
-      background-color: #121212;
-      color: white;
-      font-family: sans-serif;
-      direction: rtl;
-      text-align: center;
-      padding: 40px;
+      font-family: Arial, sans-serif;
+      background-color: #111;
+      color: #fff;
+      margin: 20px;
       position: relative;
     }
 
     .watermark {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      font-size: 80px;
-      color: rgba(255, 255, 255, 0.08);
-      transform: translate(-50%, -50%) rotate(-30deg);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('logo.png') center center no-repeat;
+      background-size: 80%;
+      opacity: 0.08;
       z-index: 0;
-      pointer-events: none;
     }
 
     .slip-container {
-      background-color: #1e1e1e;
-      border: 1px solid #444;
-      padding: 30px;
-      border-radius: 10px;
-      display: inline-block;
-      text-align: right;
       position: relative;
-      z-index: 2;
-      width: 90%;
-      max-width: 600px;
+      background-color: #222;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px #333;
+      z-index: 1;
     }
 
-    .logo {
-      width: 80px;
-      height: auto;
-    }
-
-    h2 {
-      color: #00ffaa;
-      margin-top: 10px;
+    h1 {
+      text-align: center;
+      color: #0ff;
     }
 
     .barcode {
-      margin-top: 15px;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .barcode img {
+      max-width: 200px;
+    }
+
+    .info {
+      margin-top: 20px;
+    }
+
+    .info p {
+      margin: 5px 0;
+      font-size: 16px;
+    }
+
+    .footer {
+      margin-top: 30px;
+      font-size: 12px;
+      text-align: center;
+      color: #888;
     }
 
     .print-btn {
-      margin-top: 30px;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .print-btn button {
       padding: 10px 20px;
-      background-color: #00aaff;
-      color: white;
+      background-color: #0ff;
+      color: #000;
       border: none;
       border-radius: 6px;
-      font-size: 16px;
       cursor: pointer;
     }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
 </head>
 <body>
+  <div class="watermark"></div>
+  <div class="slip-container" id="slip">
+    <h1>AlphaMed Clinical Laboratory</h1>
 
-  <div class="watermark">AlphaMed Lab</div>
+    <div class="info" id="patient-info">
+      <!-- Populated by JS -->
+    </div>
 
-  <div class="slip-container" id="slipBox">
-    <img src="logo.png" alt="Lab Logo" class="logo" />
-    <h2>AlphaMed Clinical Laboratory</h2>
-    <p><strong>MRN:</strong> <span id="mrn"></span></p>
-    <p><strong>Sample No:</strong> <span id="sample"></span></p>
+    <div class="barcode" id="barcode">
+      <!-- Barcode Image Here -->
+    </div>
 
-    <svg id="barcode" class="barcode"></svg>
+    <div class="footer">
+      This slip is computer generated and does not require a signature.
+    </div>
   </div>
 
-  <button class="print-btn" onclick="window.print()">🖨️ پرنٹ کریں</button>
+  <div class="print-btn">
+    <button onclick="window.print()">🖨️ Print Slip</button>
+  </div>
 
+  <script src="script.js"></script>
   <script>
-    // Example: Load from query parameters (slip.html?mrn=ACL-25-00005)
-    const urlParams = new URLSearchParams(window.location.search);
-    const mrn = urlParams.get("mrn") || "ACL-25-00000";
-    const sample = "SMP-" + mrn.split("-").slice(1).join("");
+    document.addEventListener("DOMContentLoaded", function () {
+      const data = JSON.parse(localStorage.getItem("slipData"));
 
-    document.getElementById("mrn").textContent = mrn;
-    document.getElementById("sample").textContent = sample;
+      if (!data) {
+        document.getElementById("patient-info").innerHTML = "<p>No slip data found.</p>";
+        return;
+      }
 
-    JsBarcode("#barcode", mrn, {
-      format: "CODE128",
-      displayValue: false,
-      lineColor: "#ffffff",
-      width: 2,
-      height: 50
+      const info = `
+        <p><strong>Patient Name:</strong> ${data.name}</p>
+        <p><strong>MRN:</strong> ${data.mrn}</p>
+        <p><strong>Sample #:</strong> ${data.sample}</p>
+        <p><strong>Age/Gender:</strong> ${data.age} / ${data.gender}</p>
+        <p><strong>Department:</strong> ${data.department}</p>
+        <p><strong>Tests:</strong> ${data.tests.join(", ")}</p>
+      `;
+
+      document.getElementById("patient-info").innerHTML = info;
+
+      // Generate barcode
+      const barcodeCanvas = document.createElement("canvas");
+      JsBarcode(barcodeCanvas, `${data.mrn}-${data.sample}`, {
+        format: "CODE128",
+        displayValue: false,
+        width: 2,
+        height: 60,
+        background: "#fff",
+        lineColor: "#000"
+      });
+      document.getElementById("barcode").appendChild(barcodeCanvas);
     });
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
 </body>
 </html>
