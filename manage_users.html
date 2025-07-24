@@ -1,165 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Manage Users - AlphaMed Clinical Laboratory</title>
-  <style>
-    body {
-      background-color: #121212;
-      color: white;
-      font-family: Arial, sans-serif;
-      padding: 30px;
-    }
-
-    h2, h3 {
-      color: #00ffaa;
-      text-align: center;
-    }
-
-    .container {
-      max-width: 600px;
-      margin: auto;
-      background-color: #1e1e1e;
-      padding: 20px;
-      border-radius: 10px;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      background-color: #2a2a2a;
-      color: white;
-      border: none;
-      border-radius: 5px;
-    }
-
-    button {
-      background-color: #00aaff;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    table {
-      width: 100%;
-      margin-top: 20px;
-      border-collapse: collapse;
-      background-color: #1b1b1b;
-    }
-
-    th, td {
-      border: 1px solid #333;
-      padding: 10px;
-      text-align: center;
-    }
-
-    th {
-      background-color: #2b2b2b;
-    }
-
-    .delete-btn {
-      background-color: red;
-      padding: 6px 10px;
-      color: white;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <title>Manage Users - AlphaMed Lab</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body>
-
-  <h2>AlphaMed Clinical Laboratory</h2>
-  <h3>Manage Users</h3>
-
+<body class="dark-theme">
   <div class="container">
-    <select id="role">
-      <option value="">Select Role</option>
-      <option value="Reception">Reception</option>
-      <option value="Technician">Technician</option>
-    </select>
+    <h1>🔐 Manage Users</h1>
+    
+    <form id="addUserForm">
+      <label for="cnic">CNIC:</label>
+      <input type="text" id="cnic" required placeholder="e.g. 34501-8971113-7" />
 
-    <input type="text" id="cnic" placeholder="Enter CNIC (e.g. 34501-XXXXXXX-X)">
-    <input type="password" id="password" placeholder="Enter Password">
-    <button onclick="addUser()">Add User</button>
+      <label for="password">Password:</label>
+      <input type="password" id="password" required />
 
-    <table>
+      <label for="role">Role:</label>
+      <select id="role" required>
+        <option value="">Select Role</option>
+        <option value="Reception">Reception</option>
+        <option value="Technician">Technician</option>
+      </select>
+
+      <button type="submit">Add User</button>
+    </form>
+
+    <h2>👥 Existing Users</h2>
+    <table id="userTable">
       <thead>
         <tr>
-          <th>Role</th>
           <th>CNIC</th>
+          <th>Role</th>
           <th>Action</th>
         </tr>
       </thead>
-      <tbody id="userTableBody"></tbody>
+      <tbody>
+        <!-- Users will be populated here -->
+      </tbody>
     </table>
+    <a href="admin-dashboard.html" class="btn">⬅️ Back to Dashboard</a>
   </div>
 
   <script>
-    const masterAdminCNIC = "34501-8971113-7";
+    const form = document.getElementById('addUserForm');
+    const userTableBody = document.querySelector('#userTable tbody');
 
     function loadUsers() {
-      const users = JSON.parse(localStorage.getItem("users") || "[]");
-      const tbody = document.getElementById("userTableBody");
-      tbody.innerHTML = "";
-
-      users.forEach(user => {
-        if (user.cnic === masterAdminCNIC && user.role === "Admin") return;
-
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${user.role}</td>
+      userTableBody.innerHTML = '';
+      const users = JSON.parse(localStorage.getItem('users')) || [];
+      users.forEach((user, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
           <td>${user.cnic}</td>
-          <td><button class="delete-btn" onclick="deleteUser('${user.cnic}')">Delete</button></td>
+          <td>${user.role}</td>
+          <td>
+            ${user.role !== 'Admin' ? `<button onclick="deleteUser(${index})">🗑 Delete</button>` : '<em>Protected</em>'}
+          </td>
         `;
-        tbody.appendChild(row);
+        userTableBody.appendChild(tr);
       });
     }
 
-    function addUser() {
-      const role = document.getElementById("role").value;
-      const cnic = document.getElementById("cnic").value.trim();
-      const password = document.getElementById("password").value.trim();
+    function deleteUser(index) {
+      const users = JSON.parse(localStorage.getItem('users')) || [];
+      if (users[index].role === 'Admin') return;
+      users.splice(index, 1);
+      localStorage.setItem('users', JSON.stringify(users));
+      loadUsers();
+    }
 
-      if (!role || !cnic || !password) {
-        alert("Please fill all fields");
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const cnic = document.getElementById('cnic').value.trim();
+      const password = document.getElementById('password').value;
+      const role = document.getElementById('role').value;
+
+      if (!cnic || !password || !role) {
+        alert('Please fill all fields.');
         return;
       }
 
-      if (role === "Admin") {
-        alert("You cannot add another Admin.");
-        return;
-      }
-
-      let users = JSON.parse(localStorage.getItem("users") || "[]");
+      const users = JSON.parse(localStorage.getItem('users')) || [];
 
       if (users.find(u => u.cnic === cnic)) {
-        alert("User with this CNIC already exists.");
+        alert('User already exists.');
         return;
       }
 
-      users.push({ role, cnic, password });
-      localStorage.setItem("users", JSON.stringify(users));
-      alert("User added successfully");
+      users.push({ cnic, password, role });
+      localStorage.setItem('users', JSON.stringify(users));
+      form.reset();
       loadUsers();
-    }
+    });
 
-    function deleteUser(cnic) {
-      if (cnic === masterAdminCNIC) {
-        alert("You cannot delete the master admin.");
-        return;
-      }
-
-      let users = JSON.parse(localStorage.getItem("users") || "[]");
-      users = users.filter(u => u.cnic !== cnic);
-      localStorage.setItem("users", JSON.stringify(users));
-      loadUsers();
-    }
-
-    loadUsers();
+    window.onload = loadUsers;
   </script>
-
 </body>
 </html>
