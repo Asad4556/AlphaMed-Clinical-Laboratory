@@ -1,140 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Reception - Register Patient</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      background-color: #121212;
-      color: white;
-      padding: 20px;
-      direction: ltr;
-    }
-    h2 {
-      color: #00ffaa;
-    }
-    .form-section {
-      background-color: #1e1e1e;
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 30px;
-    }
-    label {
-      display: block;
-      margin-top: 10px;
-    }
-    input, select, button {
-      padding: 10px;
-      margin-top: 5px;
-      width: 100%;
-      font-size: 16px;
-      border-radius: 5px;
-      border: none;
-      background-color: #2c2c2c;
-      color: white;
-    }
-    button {
-      background-color: #00aaff;
-      cursor: pointer;
-    }
-    .checkbox-group {
-      display: flex;
-      flex-wrap: wrap;
-    }
-    .checkbox-group label {
-      width: 45%;
-      margin: 5px 2.5%;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Add Test Result - AlphaMed Lab</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode"></script>
+    <script src="test-data.js" defer></script>
+    <script src="script.js" defer></script>
+    <style>
+        body {
+            background: #111;
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            position: relative;
+        }
+
+        .watermark {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('logo.png') center center no-repeat;
+            background-size: cover;
+            opacity: 0.05;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            margin: 50px auto;
+            width: 90%;
+            max-width: 1000px;
+        }
+
+        input, select, button {
+            padding: 10px;
+            margin: 5px 0;
+            width: 100%;
+            border-radius: 5px;
+            border: none;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            background-color: #222;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #444;
+        }
+
+        th {
+            background-color: #333;
+        }
+
+        #barcode {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-  <h2>Register Patient</h2>
-  <div class="form-section">
-    <form id="registerForm">
-      <label>Full Name:
-        <input type="text" id="fullName" required>
-      </label>
-      <label>CNIC:
-        <input type="text" id="cnic" required>
-      </label>
-      <label>Phone:
-        <input type="text" id="phone" required>
-      </label>
-      <label>Select Department:
-        <select id="department" onchange="loadTests()">
-          <option value="">-- Select Department --</option>
-          <option value="Hematology">Hematology</option>
-          <option value="Serology">Serology</option>
-          <option value="Biochemistry">Biochemistry</option>
-          <option value="Urine">Urine</option>
-          <option value="Stool">Stool</option>
-        </select>
-      </label>
+    <div class="watermark"></div>
 
-      <div id="testSelection" class="checkbox-group"></div>
+    <div class="container">
+        <h2>Add Test Result</h2>
+        <input type="text" id="searchMRN" placeholder="Enter MRN to Search" onkeyup="searchPatient()">
+        <div id="patientDetails"></div>
 
-      <button type="submit">Register Patient</button>
-    </form>
-  </div>
+        <form id="testResultForm" onsubmit="saveTestResults(event)">
+            <div id="testFields"></div>
+            <button type="submit">Save Results</button>
+        </form>
 
-  <script>
-    const tests = {
-      Hematology: ["Hemoglobin", "WBC", "Platelet Count"],
-      Serology: ["CRP", "Typhidot IgM"],
-      Biochemistry: ["Glucose (F)", "Urea", "Creatinine"],
-      Urine: ["Urine pH", "Protein", "Sugar"],
-      Stool: ["Occult Blood", "Consistency", "Mucus"]
-    };
+        <svg id="barcode"></svg>
+    </div>
 
-    function loadTests() {
-      const section = document.getElementById("department").value;
-      const testContainer = document.getElementById("testSelection");
-      testContainer.innerHTML = "";
+    <script>
+        let selectedPatient = null;
 
-      if (section && tests[section]) {
-        tests[section].forEach(test => {
-          const label = document.createElement("label");
-          const checkbox = document.createElement("input");
-          checkbox.type = "checkbox";
-          checkbox.value = test;
-          checkbox.name = "tests";
-          label.appendChild(checkbox);
-          label.append(" " + test);
-          testContainer.appendChild(label);
-        });
-      }
-    }
+        function searchPatient() {
+            const mrn = document.getElementById('searchMRN').value.trim();
+            const patients = JSON.parse(localStorage.getItem('patients') || '[]');
+            selectedPatient = patients.find(p => p.mrn === mrn);
 
-    document.getElementById("registerForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const fullName = document.getElementById("fullName").value;
-      const cnic = document.getElementById("cnic").value;
-      const phone = document.getElementById("phone").value;
-      const department = document.getElementById("department").value;
-      const selectedTests = Array.from(document.querySelectorAll("input[name='tests']:checked")).map(cb => cb.value);
+            const detailsDiv = document.getElementById('patientDetails');
+            const testFieldsDiv = document.getElementById('testFields');
+            testFieldsDiv.innerHTML = '';
+            if (selectedPatient) {
+                let sectionTests = '';
+                selectedPatient.sections.forEach(section => {
+                    const tests = allTests[section] || [];
+                    sectionTests += `<h3>${section}</h3>`;
+                    tests.forEach(test => {
+                        sectionTests += `
+                            <label>${test.name} (${test.normal}):</label>
+                            <input type="text" name="${section}_${test.name}" required>
+                        `;
+                    });
+                });
 
-      if (!selectedTests.length) {
-        alert("Please select at least one test");
-        return;
-      }
+                detailsDiv.innerHTML = `
+                    <p><strong>Name:</strong> ${selectedPatient.name}</p>
+                    <p><strong>Gender:</strong> ${selectedPatient.gender}</p>
+                    <p><strong>Age:</strong> ${selectedPatient.age}</p>
+                    <p><strong>MRN:</strong> ${selectedPatient.mrn}</p>
+                    <p><strong>Sections:</strong> ${selectedPatient.sections.join(', ')}</p>
+                `;
+                testFieldsDiv.innerHTML = sectionTests;
 
-      const patient = {
-        id: Date.now(),
-        fullName,
-        cnic,
-        phone,
-        department,
-        tests: selectedTests
-      };
+                // Generate unique barcode with full patient info
+                const barcodeText = `MRN:${selectedPatient.mrn}|Name:${selectedPatient.name}|Age:${selectedPatient.age}|Gender:${selectedPatient.gender}|Sections:${selectedPatient.sections.join(',')}`;
+                JsBarcode("#barcode", barcodeText, {
+                    format: "CODE128",
+                    width: 2,
+                    height: 80,
+                    displayValue: false
+                });
+            } else {
+                detailsDiv.innerHTML = '<p style="color:red">Patient not found.</p>';
+            }
+        }
 
-      const saved = JSON.parse(localStorage.getItem("patients") || "[]");
-      saved.push(patient);
-      localStorage.setItem("patients", JSON.stringify(saved));
+        function saveTestResults(event) {
+            event.preventDefault();
+            if (!selectedPatient) {
+                alert("No patient selected.");
+                return;
+            }
 
-      alert("Patient Registered Successfully ✅");
-      location.reload();
-    });
-  </script>
+            const results = {};
+            const inputs = document.querySelectorAll("#testResultForm input");
+            inputs.forEach(input => {
+                results[input.name] = input.value;
+            });
+
+            // Save results to localStorage
+            let reports = JSON.parse(localStorage.getItem('reports') || '[]');
+            reports.push({
+                mrn: selectedPatient.mrn,
+                name: selectedPatient.name,
+                results: results,
+                sections: selectedPatient.sections,
+                date: new Date().toLocaleDateString()
+            });
+
+            localStorage.setItem('reports', JSON.stringify(reports));
+            alert("Test results saved successfully.");
+            document.getElementById('testResultForm').reset();
+            document.getElementById('patientDetails').innerHTML = '';
+            document.getElementById('testFields').innerHTML = '';
+            document.getElementById('searchMRN').value = '';
+            document.getElementById('barcode').innerHTML = '';
+        }
+    </script>
 </body>
 </html>
