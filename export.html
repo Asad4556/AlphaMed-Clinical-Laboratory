@@ -1,60 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Patient Report</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <meta charset="UTF-8">
+  <title>Export Report - AlphaMed Clinical Laboratory</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     body {
       background-color: #121212;
-      color: white;
-      font-family: Arial, sans-serif;
+      color: #ffffff;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
       padding: 20px;
     }
 
     .report-container {
-      background-color: #1e1e1e;
-      padding: 20px;
-      border-radius: 10px;
       position: relative;
+      background: url('logo.png') no-repeat center center;
+      background-size: contain;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px #444;
+      margin: auto;
+      width: 80%;
     }
 
-    .header {
+    .report-header {
       text-align: center;
       margin-bottom: 20px;
     }
 
-    .header img {
-      height: 80px;
+    .barcode {
+      margin-top: 20px;
+      text-align: center;
     }
 
-    .watermark {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      opacity: 0.1;
-      font-size: 100px;
-      pointer-events: none;
-      z-index: 0;
+    .report-footer {
+      font-style: italic;
+      text-align: center;
+      margin-top: 40px;
+      font-size: 0.9em;
     }
 
-    .details {
-      margin-bottom: 20px;
-      z-index: 1;
-      position: relative;
+    .btn {
+      margin: 10px 5px;
+      padding: 10px 20px;
+      background-color: #03dac5;
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
     }
 
-    .details p {
-      margin: 5px 0;
+    .btn:hover {
+      background-color: #018786;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
-      z-index: 1;
-      position: relative;
+      background-color: #1e1e1e;
     }
 
     th, td {
@@ -66,102 +74,96 @@
     th {
       background-color: #333;
     }
-
-    .footer {
-      margin-top: 30px;
-      font-size: 12px;
-      color: #aaa;
-      text-align: center;
-    }
-
-    #downloadBtn {
-      background-color: #00aaff;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      font-size: 16px;
-      margin-bottom: 20px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
   </style>
 </head>
 <body>
-
-  <button id="downloadBtn" onclick="downloadPDF()">📄 Download PDF</button>
-
-  <div class="report-container" id="report">
-    <div class="header">
-      <img src="logo.png" alt="Lab Logo">
+  <div class="report-container" id="reportContent">
+    <div class="report-header">
+      <img src="logo.png" alt="Lab Logo" height="80">
       <h2>AlphaMed Clinical Laboratory</h2>
-      <h4>Quality Assurance Through Advance Technology</h4>
+      <p>Quality Assurance Through Advanced Technology</p>
     </div>
 
-    <div class="watermark">AlphaMed</div>
-
-    <div class="details" id="patientDetails">
-      <!-- Filled by JS -->
+    <div id="patientInfo">
+      <p><strong>Name:</strong> John Doe</p>
+      <p><strong>Age/Gender:</strong> 32 / Male</p>
+      <p><strong>MRN:</strong> MRN20250724001</p>
+      <p><strong>Sample No:</strong> SMP-72822</p>
+      <p><strong>Department:</strong> Molecular Biology</p>
     </div>
 
-    <table id="testResults">
+    <table>
       <thead>
         <tr>
-          <th>Test</th>
+          <th>Test Name</th>
+          <th>Normal Range</th>
           <th>Result</th>
-          <th>Normal (Male)</th>
-          <th>Normal (Female)</th>
         </tr>
       </thead>
-      <tbody>
-        <!-- Test rows inserted here -->
+      <tbody id="testResults">
+        <tr>
+          <td>HCV PCR</td>
+          <td>Negative</td>
+          <td>Negative</td>
+        </tr>
+        <tr>
+          <td>HBV PCR</td>
+          <td>Negative</td>
+          <td>Negative</td>
+        </tr>
+        <tr>
+          <td>Anti-HCV</td>
+          <td>Negative</td>
+          <td>Negative</td>
+        </tr>
+        <tr>
+          <td>Anti-HBV</td>
+          <td>Negative</td>
+          <td>Negative</td>
+        </tr>
       </tbody>
     </table>
 
-    <div class="footer">
-      This report is computer generated and does not require signature.
+    <div class="barcode">
+      <svg id="barcode"></svg>
+    </div>
+
+    <div class="report-footer">
+      This report is computer-generated and does not require a signature.
     </div>
   </div>
 
+  <div style="text-align:center;">
+    <button class="btn" onclick="window.print()">🖨️ Print</button>
+    <button class="btn" onclick="exportPDF()">📄 Export PDF</button>
+  </div>
+
   <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const mrn = urlParams.get('mrn');
+    // Sample Barcode with full patient + test info
+    JsBarcode("#barcode", "MRN20250724001|John Doe|HCV PCR|HBV PCR|Molecular Biology", {
+      format: "CODE128",
+      lineColor: "#0ff",
+      width: 2,
+      height: 60,
+      displayValue: false
+    });
 
-    const reports = JSON.parse(localStorage.getItem("labReports") || "[]");
-    const patients = JSON.parse(localStorage.getItem("patientList") || "[]");
-    const report = reports.find(r => r.mrn === mrn);
-    const patient = patients.find(p => p.mrn === mrn);
+    async function exportPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF('p', 'pt', 'a4');
+      const content = document.getElementById("reportContent");
 
-    const patientDiv = document.getElementById("patientDetails");
-    const testTable = document.querySelector("#testResults tbody");
-
-    if (patient) {
-      patientDiv.innerHTML = `
-        <p><strong>MRN:</strong> ${patient.mrn}</p>
-        <p><strong>Name:</strong> ${patient.fullName}</p>
-        <p><strong>CNIC:</strong> ${patient.cnic}</p>
-        <p><strong>Phone:</strong> ${patient.phone}</p>
-        <p><strong>Section:</strong> ${patient.testType}</p>
-      `;
-    }
-
-    if (report) {
-      report.results.forEach(test => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${test.test}</td>
-          <td>${test.result}</td>
-          <td>${test.male}</td>
-          <td>${test.female}</td>
-        `;
-        testTable.appendChild(row);
+      await html2canvas(content, {
+        scale: 2,
+        backgroundColor: "#121212"
+      }).then((canvas) => {
+        const imgData = canvas.toDataURL("image/png");
+        doc.addImage(imgData, "PNG", 20, 20, 555, 780);
+        doc.save("AlphaMed_Report.pdf");
       });
-    }
-
-    function downloadPDF() {
-      const element = document.getElementById("report");
-      html2pdf().from(element).save(`Report_${mrn}.pdf`);
     }
   </script>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </body>
 </html>
