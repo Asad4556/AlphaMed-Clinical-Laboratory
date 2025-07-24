@@ -4,53 +4,56 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AlphaMed Clinical Laboratory</title>
+  <link rel="stylesheet" href="style.css"/>
   <style>
     body {
-      margin: 0;
-      background-color: #0d0d0d;
+      background: linear-gradient(to bottom right, #001F3F, #0074D9);
       color: white;
-      font-family: 'Segoe UI', sans-serif;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+      font-family: Arial, sans-serif;
       text-align: center;
-      background-image: radial-gradient(circle, #121212, #0d0d0d);
+      padding: 100px 20px;
     }
-    img {
-      max-width: 180px;
-      margin-bottom: 20px;
+    .container {
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 50px;
+      border-radius: 20px;
+      display: inline-block;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
     }
     h1 {
-      font-size: 2.5rem;
-      color: #00ffaa;
-      margin-bottom: 10px;
+      font-size: 36px;
+      margin-bottom: 20px;
+      text-transform: uppercase;
     }
     p {
-      font-size: 1.1rem;
-      color: #cccccc;
+      font-size: 18px;
       margin-bottom: 30px;
     }
-    a.login-button {
-      background-color: #00aaff;
-      color: white;
+    a.button {
+      display: inline-block;
+      background-color: #39CCCC;
+      color: black;
       padding: 12px 24px;
-      font-size: 16px;
-      text-decoration: none;
       border-radius: 8px;
+      text-decoration: none;
       font-weight: bold;
-      transition: background 0.3s ease;
+      transition: background-color 0.3s;
     }
-    a.login-button:hover {
-      background-color: #008ecc;
+    a.button:hover {
+      background-color: #2ECC40;
+    }
+    .logo {
+      width: 150px;
+      margin-bottom: 20px;
     }
   </style>
 </head>
 <body>
-  <img src="logo.png" alt="AlphaMed Logo">
-  <h1>AlphaMed Clinical Laboratory</h1>
-  <p>Quality Assurance Through Advance Technology</p>
-  <a class="login-button" href="login.html">🔐 Login</a>
+  <div class="container">
+    <img src="logo.png" alt="AlphaMed Logo" class="logo" />
+    <h1>AlphaMed Clinical Laboratory</h1>
+    <p>Quality Assurance Through Advance Technology</p>
+    <a href="login.html" class="button">Login to System</a>
+  </div>
 </body>
 </html>
