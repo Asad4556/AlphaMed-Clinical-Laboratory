@@ -6,80 +6,76 @@
   <link rel="stylesheet" href="style.css">
   <style>
     body {
+      background-color: #ffffff;
+      color: #000000;
       font-family: 'Segoe UI', sans-serif;
-      background-color: #f4f4f4;
-      padding: 40px;
+      padding: 20px;
     }
 
-    .slip {
-      max-width: 600px;
+    .slip-container {
+      width: 600px;
       margin: auto;
-      background: white;
-      padding: 30px;
+      border: 2px dashed #000;
+      padding: 20px;
       border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
-      position: relative;
     }
 
-    h2 {
+    .slip-container h2 {
       text-align: center;
-      color: #00aaaa;
+      color: #007bff;
+      margin-bottom: 20px;
     }
 
-    .slip-details {
-      margin-top: 20px;
-    }
-
-    .slip-details p {
-      font-size: 18px;
-      margin: 10px 0;
+    .slip-container p {
+      font-size: 16px;
+      margin: 8px 0;
     }
 
     .barcode {
       text-align: center;
+      margin-top: 20px;
+    }
+
+    .actions {
+      text-align: center;
       margin-top: 30px;
     }
 
-    canvas {
-      margin-top: 10px;
-    }
-
-    .print-btn {
-      display: block;
-      margin: 30px auto 0;
-      padding: 10px 30px;
-      background-color: #00aaaa;
-      color: white;
+    .actions button {
+      padding: 10px 20px;
       font-weight: bold;
       border: none;
       border-radius: 5px;
+      background-color: #007bff;
+      color: #fff;
       cursor: pointer;
     }
 
-    .print-btn:hover {
-      background-color: #007777;
+    .actions button:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>
-<body>
-  <div class="slip">
-    <h2>Patient Registration Slip</h2>
-    <div class="slip-details">
-      <p><strong>Name:</strong> <span id="slipName"></span></p>
-      <p><strong>MRN:</strong> <span id="slipMRN"></span></p>
-      <p><strong>Sample Number:</strong> <span id="slipSample"></span></p>
-      <p><strong>Sections:</strong> <span id="slipSection"></span></p>
-    </div>
+<body onload="loadSlip()">
+
+  <div class="slip-container">
+    <h2>AlphaMed Clinical Laboratory</h2>
+
+    <p><strong>Patient Name:</strong> <span id="slipName"></span></p>
+    <p><strong>MRN:</strong> <span id="slipMRN"></span></p>
+    <p><strong>Sample Number:</strong> <span id="slipSample"></span></p>
+    <p><strong>Section(s):</strong> <span id="slipSection"></span></p>
+
     <div class="barcode">
       <canvas id="barcodeCanvas"></canvas>
     </div>
-    <button class="print-btn" onclick="window.print()">Print Slip</button>
+
+    <div class="actions">
+      <button onclick="window.print()">Print Slip</button>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
   <script src="test-data.js"></script>
-  <script>
-    loadSlip();
-  </script>
 </body>
 </html>
