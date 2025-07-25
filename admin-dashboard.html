@@ -4,34 +4,45 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Dashboard - AlphaMed Lab</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css"/>
 </head>
-<body>
-  <div class="dashboard-container">
-    <h1>Admin Dashboard</h1>
+<body class="dark-theme">
+  <header>
+    <h1>AlphaMed Clinical Laboratory</h1>
+    <p>Admin Dashboard</p>
+  </header>
 
-    <div class="dashboard-buttons">
-      <button onclick="location.href='register_patient.html'">Register Patient</button>
-      <button onclick="location.href='add_test_result.html'">Add Test Result</button>
-      <button onclick="location.href='view_reports.html'">View Reports</button>
-      <button onclick="location.href='manage_users.html'">Manage Users</button>
-      <button onclick="location.href='change_password.html'">Change Password</button>
-      <button onclick="logout()">Logout</button>
-    </div>
-  </div>
+  <nav>
+    <ul>
+      <li><a href="admin-dashboard.html">Dashboard</a></li>
+      <li><a href="manage_users.html">Manage Users</a></li>
+      <li><a href="settings.html">Settings</a></li>
+      <li><a href="index.html" onclick="logout()">Logout</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <section class="dashboard-welcome">
+      <h2>Welcome, Admin</h2>
+      <p>Select an option from the menu to manage the system.</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 AlphaMed Clinical Laboratory</p>
+  </footer>
 
   <script>
-    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-
-    // Allow only Admin access
-    if (!currentUser || currentUser.role !== "admin") {
-      alert("Unauthorized access. Redirecting to login.");
-      window.location.href = "login.html";
+    function logout() {
+      localStorage.removeItem("loggedInUser");
+      localStorage.removeItem("loggedInRole");
     }
 
-    function logout() {
-      localStorage.removeItem("currentUser");
-      window.location.href = "login.html";
+    // Admin Access Restriction
+    const role = localStorage.getItem("loggedInRole");
+    if (role !== "admin") {
+      alert("Unauthorized access!");
+      window.location.href = "login.html?role=admin";
     }
   </script>
 </body>
