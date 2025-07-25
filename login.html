@@ -4,6 +4,47 @@
   <meta charset="UTF-8" />
   <title>Login - AlphaMed Lab</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    body { font-family: Arial, sans-serif; background: #f0f2f5; }
+    .centered {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .login-box {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      width: 320px;
+      text-align: center;
+    }
+    .login-box input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0 20px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .login-box button {
+      width: 100%;
+      padding: 10px;
+      background: #007bff;
+      border: none;
+      color: white;
+      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .login-box button:hover {
+      background: #0056b3;
+    }
+    .logo {
+      width: 80px;
+      margin-bottom: 20px;
+    }
+  </style>
 </head>
 <body class="centered">
   <div class="login-box">
@@ -11,7 +52,7 @@
     <h2 id="roleTitle">Login</h2>
 
     <label for="cnic">CNIC</label>
-    <input type="text" id="cnic" placeholder="Enter CNIC (e.g. 34501-8971113-7)" required />
+    <input type="text" id="cnic" placeholder="Enter CNIC (e.g. 12345-1234567-1)" required />
 
     <label for="password">Password</label>
     <input type="password" id="password" placeholder="Enter Password" required />
@@ -22,33 +63,65 @@
   </div>
 
   <script>
-    const role = new URLSearchParams(window.location.search).get("role");
-    const roleTitle = document.getElementById("roleTitle");
-    roleTitle.innerText = `Login as ${role?.charAt(0).toUpperCase() + role?.slice(1)}`;
+    // Get role from URL query param
+    const role = new URLSearchParams(window.location.search).get('role') || '';
 
+    // Show role in title
+    const roleTitle = document.getElementById("roleTitle");
+    if(role) {
+      roleTitle.innerText = `Login as ${role.charAt(0).toUpperCase() + role.slice(1)}`;
+    } else {
+      roleTitle.innerText = "Login";
+    }
+
+    // Function to perform login
     function performLogin() {
       const cnic = document.getElementById("cnic").value.trim();
       const password = document.getElementById("password").value.trim();
+
+      if(!cnic || !password) {
+        alert("Please enter both CNIC and Password.");
+        return;
+      }
+
+      // Get users from localStorage or empty array
       const users = JSON.parse(localStorage.getItem("users")) || [];
 
-      const user = users.find(
-        (u) => u.cnic === cnic && u.password === password && u.role === role
-      );
+      // Find user with matching cnic, password and role
+      const user = users.find(u => u.cnic === cnic && u.password === password && u.role === role);
 
-      if (user) {
+      if(user) {
+        // Save logged in user info
         localStorage.setItem("loggedInUser", JSON.stringify(user));
         localStorage.setItem("loggedInRole", role);
-        if (role === "admin") {
+
+        // Redirect to proper dashboard based on role
+        if(role === "admin") {
           window.location.href = "admin-dashboard.html";
-        } else if (role === "reception") {
+        } else if(role === "reception") {
           window.location.href = "reception_dashboard.html";
-        } else if (role === "technician") {
+        } else if(role === "technician") {
           window.location.href = "technician_dashboard.html";
+        } else {
+          alert("Role is invalid!");
         }
       } else {
-        alert("Invalid CNIC, Password or Role!");
+        alert("Invalid CNIC, Password, or Role!");
       }
     }
+
+    // Set default users to localStorage if none exist (for testing)
+    (function setDefaultUsers() {
+      if(!localStorage.getItem("users")) {
+        const defaultUsers = [
+          { cnic: "12345-1234567-1", password: "admin123", role: "admin" },
+          { cnic: "98765-9876543-2", password: "reception123", role: "reception" },
+          { cnic: "11223-4455667-8", password: "tech123", role: "technician" }
+        ];
+        localStorage.setItem("users", JSON.stringify(defaultUsers));
+        console.log("Default users set in localStorage");
+      }
+    })();
   </script>
 </body>
 </html>
