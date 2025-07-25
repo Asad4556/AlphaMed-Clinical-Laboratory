@@ -14,9 +14,15 @@ function login(role) {
   if (user) {
     localStorage.setItem("loggedInUser", JSON.stringify(user));
     switch (role) {
-      case "admin": window.location.href = "admin_dashboard.html"; break;
-      case "reception": window.location.href = "reception_dashboard.html"; break;
-      case "technician": window.location.href = "technician_dashboard.html"; break;
+      case "admin":
+        window.location.href = "admin_dashboard.html";
+        break;
+      case "reception":
+        window.location.href = "reception_dashboard.html";
+        break;
+      case "technician":
+        window.location.href = "technician_dashboard.html";
+        break;
     }
   } else {
     alert("Invalid CNIC, password or role!");
@@ -27,6 +33,15 @@ function login(role) {
 function logout() {
   localStorage.removeItem("loggedInUser");
   window.location.href = "index.html";
+}
+
+// ====== ACCESS CONTROL FUNCTION ======
+function allowAccess(roles) {
+  const user = JSON.parse(localStorage.getItem("loggedInUser"));
+  if (!user || !roles.includes(user.role)) {
+    alert("Unauthorized access. Redirecting to login.");
+    window.location.href = "login.html";
+  }
 }
 
 // ====== USER MANAGEMENT ======
@@ -62,7 +77,7 @@ function registerPatient() {
 
   const mrn = "MRN-" + Date.now();
   const sampleNo = "SMP-" + Math.floor(100000 + Math.random() * 900000);
-  const barcodeId = "BC-" + btoa(cnic + test + mrn).slice(0, 10); // simple non-duplicate barcode
+  const barcodeId = "BC-" + btoa(cnic + test + mrn).slice(0, 10);
 
   const patient = { mrn, sampleNo, barcodeId, name, cnic, age, gender, section, test, report: null };
   patients.push(patient);
@@ -119,7 +134,12 @@ function saveTestResult() {
     localStorage.setItem("patients", JSON.stringify(patients));
     localStorage.setItem("reports", JSON.stringify(reports));
     alert("Result saved!");
-    window.location.href = "technician_dashboard.html";
+    const user = JSON.parse(localStorage.getItem("loggedInUser"));
+    if (user.role === "admin") {
+      window.location.href = "admin_dashboard.html";
+    } else {
+      window.location.href = "technician_dashboard.html";
+    }
   }
 }
 
