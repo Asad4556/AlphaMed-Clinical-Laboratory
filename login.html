@@ -4,51 +4,8 @@
   <meta charset="UTF-8" />
   <title>Login - AlphaMed Lab</title>
   <link rel="stylesheet" href="style.css" />
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #121212;
-      color: #fff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
-    .login-box {
-      background: #222;
-      padding: 30px;
-      border-radius: 8px;
-      width: 320px;
-      box-shadow: 0 0 10px #00ffff;
-      text-align: center;
-    }
-    .login-box input {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 5px;
-      border: none;
-    }
-    .login-box button {
-      width: 100%;
-      padding: 10px;
-      background: #00ffff;
-      border: none;
-      color: #000;
-      font-weight: bold;
-      cursor: pointer;
-      border-radius: 5px;
-      margin-top: 10px;
-    }
-    .logo {
-      max-width: 100px;
-      margin-bottom: 15px;
-    }
-  </style>
 </head>
-<body>
-
+<body class="centered">
   <div class="login-box">
     <img src="logo.png" alt="AlphaMed Logo" class="logo" />
     <h2 id="roleTitle">Login</h2>
@@ -61,57 +18,37 @@
 
     <button onclick="performLogin()">Login</button>
 
-    <p><a href="index.html" style="color:#00ffff;">Back to Home</a></p>
+    <p><a href="index.html">Back to Home</a></p>
   </div>
 
   <script>
-    // Get the role from URL query param
-    const role = new URLSearchParams(window.location.search).get('role') || 'admin';
+    const role = new URLSearchParams(window.location.search).get("role");
     const roleTitle = document.getElementById("roleTitle");
-    roleTitle.innerText = `Login as ${role.charAt(0).toUpperCase() + role.slice(1)}`;
-
-    // Sample users data (if none in localStorage, set some dummy users)
-    if (!localStorage.getItem("users")) {
-      const defaultUsers = [
-        { cnic: "34501-8971113-7", password: "admin123", role: "admin" },
-        { cnic: "12345-1234567-1", password: "reception123", role: "reception" },
-        { cnic: "67890-7654321-9", password: "tech123", role: "technician" }
-      ];
-      localStorage.setItem("users", JSON.stringify(defaultUsers));
-    }
+    roleTitle.innerText = `Login as ${role?.charAt(0).toUpperCase() + role?.slice(1)}`;
 
     function performLogin() {
       const cnic = document.getElementById("cnic").value.trim();
       const password = document.getElementById("password").value.trim();
-
-      if (!cnic || !password) {
-        alert("Please enter both CNIC and Password.");
-        return;
-      }
-
       const users = JSON.parse(localStorage.getItem("users")) || [];
-      const user = users.find(u => u.cnic === cnic && u.password === password && u.role === role);
+
+      const user = users.find(
+        (u) => u.cnic === cnic && u.password === password && u.role === role
+      );
 
       if (user) {
-        // Save logged in user info
         localStorage.setItem("loggedInUser", JSON.stringify(user));
         localStorage.setItem("loggedInRole", role);
-
-        // Redirect based on role
         if (role === "admin") {
           window.location.href = "admin-dashboard.html";
         } else if (role === "reception") {
           window.location.href = "reception_dashboard.html";
         } else if (role === "technician") {
           window.location.href = "technician_dashboard.html";
-        } else {
-          alert("Role not recognized.");
         }
       } else {
         alert("Invalid CNIC, Password or Role!");
       }
     }
   </script>
-
 </body>
 </html>
