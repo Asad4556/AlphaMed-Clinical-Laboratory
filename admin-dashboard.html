@@ -1,82 +1,36 @@
-<!-- File: admin-dashboard.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Admin Dashboard - AlphaMed Clinical Laboratory</title>
+  <title>Admin Dashboard - AlphaMed</title>
   <link rel="stylesheet" href="style.css">
-  <style>
-    body {
-      background-color: #121212;
-      color: #fff;
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background-color: #1f1f1f;
-      padding: 20px;
-      text-align: center;
-      border-bottom: 1px solid #333;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 28px;
-      color: #00bcd4;
-    }
-    .dashboard-container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-      padding: 40px 20px;
-    }
-    .dashboard-button {
-      background: linear-gradient(135deg, #00bcd4, #2196f3);
-      color: #fff;
-      border: none;
-      padding: 20px 30px;
-      font-size: 18px;
-      border-radius: 12px;
-      cursor: pointer;
-      width: 250px;
-      transition: transform 0.3s ease, background 0.3s ease;
-      text-align: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-    }
-    .dashboard-button:hover {
-      transform: scale(1.05);
-      background: linear-gradient(135deg, #2196f3, #00bcd4);
-    }
-    footer {
-      text-align: center;
-      padding: 15px;
-      background-color: #1f1f1f;
-      border-top: 1px solid #333;
-      color: #777;
-      font-size: 14px;
-    }
-  </style>
 </head>
 <body>
-
-  <header>
-    <h1>Admin Dashboard - AlphaMed Clinical Laboratory</h1>
-  </header>
-
   <div class="dashboard-container">
-    <button class="dashboard-button" onclick="location.href='register_patient.html'">Register New Patient</button>
-    <button class="dashboard-button" onclick="location.href='view_reports.html'">View Reports</button>
-    <button class="dashboard-button" onclick="location.href='manage_users.html'">Manage Users</button>
-    <button class="dashboard-button" onclick="location.href='settings.html'">Settings</button>
-    <button class="dashboard-button" onclick="location.href='export.html'">Export Reports</button>
-    <button class="dashboard-button" onclick="location.href='change_password.html'">Change Password</button>
-    <button class="dashboard-button" onclick="location.href='index.html'">Logout</button>
+    <h1>Welcome Admin</h1>
+
+    <div class="dashboard-buttons">
+      <a href="register_patient.html" class="dashboard-button">📄 Register New Patient</a>
+      <a href="add_test_result.html" class="dashboard-button">🧪 Add Test Result</a>
+      <a href="view_reports.html" class="dashboard-button">📋 View Reports</a>
+      <a href="manage_users.html" class="dashboard-button">👥 Manage Users</a>
+      <a href="settings.html" class="dashboard-button">⚙️ Settings</a>
+      <a href="export.html" class="dashboard-button">⬇️ Export Reports</a>
+      <a href="change_password.html" class="dashboard-button">🔒 Change Password</a>
+      <a href="login.html" onclick="logout()" class="dashboard-button logout">🚪 Logout</a>
+    </div>
   </div>
 
-  <footer>
-    &copy; 2025 AlphaMed Clinical Laboratory. All rights reserved.
-  </footer>
+  <script>
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    if (!currentUser || currentUser.role !== "admin") {
+      alert("Unauthorized access. Redirecting to login.");
+      window.location.href = "login.html";
+    }
 
+    function logout() {
+      localStorage.removeItem("currentUser");
+    }
+  </script>
 </body>
 </html>
