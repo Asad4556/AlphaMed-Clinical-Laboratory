@@ -1,47 +1,50 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ur">
 <head>
   <meta charset="UTF-8">
-  <title>Settings - Change Password</title>
+  <title>Settings - AlphaMed Lab</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="dark-theme">
-  <header>
-    <h1>AlphaMed Clinical Laboratory</h1>
-    <p>Change Password</p>
-  </header>
+<body>
+  <div class="container">
+    <h1>سیٹنگز</h1>
 
-  <nav>
-    <ul>
-      <li><a href="admin-dashboard.html">Dashboard</a></li>
-      <li><a href="manage_users.html">Manage Users</a></li>
-      <li><a href="settings.html">Settings</a></li>
-      <li><a href="index.html" onclick="logout()">Logout</a></li>
-    </ul>
-  </nav>
+    <div class="card">
+      <h2>پاسورڈ تبدیل کریں</h2>
+      <form onsubmit="event.preventDefault(); changePassword();">
+        <label for="oldPassword">پرانا پاسورڈ:</label>
+        <input type="password" id="oldPassword" required>
 
-  <main>
-    <section>
-      <h2>Change Password</h2>
-      <form onsubmit="event.preventDefault(); changePassword('admin');">
-        <label for="oldPassword">Old Password:</label>
-        <input type="password" id="oldPassword" required><br><br>
+        <label for="newPassword">نیا پاسورڈ:</label>
+        <input type="password" id="newPassword" required>
 
-        <label for="newPassword">New Password:</label>
-        <input type="password" id="newPassword" required><br><br>
+        <label for="confirmPassword">پاسورڈ کی تصدیق کریں:</label>
+        <input type="password" id="confirmPassword" required>
 
-        <label for="confirmPassword">Confirm Password:</label>
-        <input type="password" id="confirmPassword" required><br><br>
-
-        <button type="submit">Change Password</button>
+        <button type="submit">پاسورڈ تبدیل کریں</button>
       </form>
-    </section>
-  </main>
+    </div>
 
-  <footer>
-    <p>&copy; 2025 AlphaMed Clinical Laboratory</p>
-  </footer>
+    <button onclick="logout()">لاگ آؤٹ</button>
+  </div>
 
   <script src="test-data.js"></script>
+  <script src="script.js"></script>
+  <script>
+    const user = JSON.parse(localStorage.getItem("loggedInUser"));
+    if (!user) {
+      alert("برائے مہربانی پہلے لاگ ان کریں۔");
+      window.location.href = "login.html";
+    }
+
+    function changePassword() {
+      const role = localStorage.getItem("loggedInRole");
+      if (!role) {
+        alert("رول کی معلومات دستیاب نہیں۔");
+        return;
+      }
+      changePassword(role);
+    }
+  </script>
 </body>
 </html>
