@@ -1,32 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Add Test Result - AlphaMed Lab</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>Add Test Results - AlphaMed Lab</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <h1>Add Test Results</h1>
 
-  <div class="card">
-    <h3>Patient: <span id="patientName"></span></h3>
-    <p>MRN: <span id="patientMRN"></span></p>
-
-    <div id="resultInputs"></div>
-
-    <button onclick="saveTestResults()">Save Results</button>
+  <div>
+    <p><strong>Patient Name:</strong> <span id="patientName"></span></p>
+    <p><strong>MRN:</strong> <span id="patientMRN"></span></p>
   </div>
+
+  <form id="testResultForm">
+    <div id="resultInputs"></div>
+    <br>
+    <button type="button" onclick="saveTestResults()">Save Results</button>
+  </form>
 
   <script src="test-data.js"></script>
   <script>
-    // Technician Access Check
-    const user = JSON.parse(localStorage.getItem("loggedInUser"));
-    if (!user || user.role !== "technician") {
-      alert("Unauthorized access!");
-      window.location.href = "login.html";
+    function loadAddResultPage() {
+      const mrn = localStorage.getItem("selectedMRN");
+      const patients = JSON.parse(localStorage.getItem("patients")) || [];
+      const patient = patients.find(p => p.mrn === mrn);
+      if (!patient) return;
+
+      document.getElementById("patientName").innerText = patient.name;
+      document.getElementById("patientMRN").innerText = patient.mrn;
+
+      const container = document.getElementById("resultInputs");
+      container.innerHTML = "";
+
+      patient.section.forEach(section => {
+        const tests = testData[section];
+        if (!tests) return;
+
+        const sectionTitle = document.createElement("h3");
+        sectionTitle.innerText = section;
+        container.appendChild(sectionTitle);
+
+        tests.forEach(test => {
+          const div = document.createElement("div");
+          div.innerHTML = `
+            <label>${test.test} (${test.normal}): </label>
+            <input type="text" id="${test.test.replace(/\s+/g, "_")}"><br>
+          `;
+          container.appendChild(div);
+        });
+      });
     }
 
-    // Load patient data and input fields
+    function saveTestResults() {
+      const mrn = localStorage.getItem("selectedMRN");
+      let patients = JSON.parse(localStorage.getItem("patients")) || [];
+      const patient = patients.find(p => p.mrn === mrn);
+      if (!patient) return;
+
+      patient.results = {};
+
+      patient.section.forEach(section => {
+        const tests = testData[section];
+        if (!tests) return;
+
+        tests.forEach(test => {
+          const val = document.getElementById(test.test.replace(/\s+/g, "_")).value;
+          patient.results[test.test] = val;
+        });
+      });
+
+      localStorage.setItem("patients", JSON.stringify(patients));
+      alert("Results saved successfully!");
+      window.location.href = "technician_dashboard.html";
+    }
+
+    // Load page
     loadAddResultPage();
   </script>
 </body>
