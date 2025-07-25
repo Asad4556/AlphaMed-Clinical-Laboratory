@@ -1,29 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ur">
 <head>
   <meta charset="UTF-8">
-  <title>Lab Report - AlphaMed Clinical Laboratory</title>
+  <title>Patient Report - AlphaMed Lab</title>
   <link rel="stylesheet" href="style.css">
   <style>
     body {
-      background-color: #ffffff;
-      color: #000000;
       font-family: 'Segoe UI', sans-serif;
-      padding: 20px;
-    }
-
-    .report-container {
-      max-width: 800px;
-      margin: 0 auto;
+      background-color: #f8f8f8;
       padding: 30px;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+      color: #333;
     }
 
-    h1, h2 {
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #00aaaa60;
+    }
+
+    h2 {
       text-align: center;
-      color: #008080;
+      color: #00aaaa;
+      margin-bottom: 30px;
+    }
+
+    .info {
+      margin-bottom: 20px;
+    }
+
+    .info p {
+      margin: 5px 0;
+      font-size: 16px;
     }
 
     table {
@@ -33,36 +43,45 @@
     }
 
     table, th, td {
-      border: 1px solid #ccc;
+      border: 1px solid #00aaaa;
     }
 
     th, td {
-      padding: 12px;
+      padding: 10px;
       text-align: center;
     }
 
-    .patient-info {
-      margin-bottom: 20px;
+    th {
+      background-color: #00aaaa;
+      color: white;
     }
 
-    .patient-info p {
-      margin: 5px 0;
+    .print-btn {
+      margin-top: 30px;
+      text-align: center;
     }
 
-    @media print {
-      .no-print {
-        display: none;
-      }
+    .print-btn button {
+      padding: 10px 20px;
+      background-color: #00aaaa;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .print-btn button:hover {
+      background-color: #007777;
     }
   </style>
 </head>
-<body onload="loadReport()">
+<body>
 
-  <div class="report-container">
-    <h1>AlphaMed Clinical Laboratory</h1>
-    <h2>Patient Lab Report</h2>
+  <div class="container">
+    <h2>AlphaMed Laboratory - Patient Report</h2>
 
-    <div class="patient-info">
+    <div class="info">
       <p><strong>Name:</strong> <span id="reportName"></span></p>
       <p><strong>MRN:</strong> <span id="reportMRN"></span></p>
       <p><strong>Age:</strong> <span id="reportAge"></span></p>
@@ -71,15 +90,17 @@
     </div>
 
     <table id="reportTable">
-      <!-- Test results will populate here -->
+      <!-- Test Results will be loaded here -->
     </table>
 
-    <div class="no-print" style="text-align: center; margin-top: 20px;">
+    <div class="print-btn">
       <button onclick="window.print()">Print Report</button>
-      <button onclick="window.location.href='view_reports.html'">Back</button>
     </div>
   </div>
 
   <script src="test-data.js"></script>
+  <script>
+    loadReport();
+  </script>
 </body>
 </html>
