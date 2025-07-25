@@ -1,171 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Add Test Result - AlphaMed Lab</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/jsbarcode"></script>
-    <script src="test-data.js" defer></script>
-    <script src="script.js" defer></script>
-    <style>
-        body {
-            background: #111;
-            color: white;
-            font-family: 'Segoe UI', sans-serif;
-            position: relative;
-        }
-
-        .watermark {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('logo.png') center center no-repeat;
-            background-size: cover;
-            opacity: 0.05;
-            z-index: 0;
-        }
-
-        .container {
-            position: relative;
-            z-index: 1;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 10px;
-            margin: 50px auto;
-            width: 90%;
-            max-width: 1000px;
-        }
-
-        input, select, button {
-            padding: 10px;
-            margin: 5px 0;
-            width: 100%;
-            border-radius: 5px;
-            border: none;
-        }
-
-        button {
-            background-color: #28a745;
-            color: white;
-            cursor: pointer;
-        }
-
-        table {
-            width: 100%;
-            margin-top: 20px;
-            background-color: #222;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            padding: 10px;
-            border: 1px solid #444;
-        }
-
-        th {
-            background-color: #333;
-        }
-
-        #barcode {
-            margin-top: 20px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Add Test Result - AlphaMed</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="watermark"></div>
+  <div class="form-container">
+    <h2>Add Test Result</h2>
+    <form id="testResultForm">
+      <label for="mrn">Enter MRN:</label>
+      <input type="text" id="mrn" name="mrn" required>
+      <button type="button" onclick="fetchPatient()">Search</button>
+      <div id="patientDetails"></div>
+      <div id="testFields"></div>
+      <button type="submit">Submit Results</button>
+    </form>
+  </div>
 
-    <div class="container">
-        <h2>Add Test Result</h2>
-        <input type="text" id="searchMRN" placeholder="Enter MRN to Search" onkeyup="searchPatient()">
-        <div id="patientDetails"></div>
+  <script>
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    if (!currentUser || (currentUser.role !== "technician" && currentUser.role !== "admin")) {
+      alert("Unauthorized access. Redirecting to login.");
+      window.location.href = "login.html";
+    }
 
-        <form id="testResultForm" onsubmit="saveTestResults(event)">
-            <div id="testFields"></div>
-            <button type="submit">Save Results</button>
-        </form>
+    const patients = JSON.parse(localStorage.getItem("patients")) || [];
 
-        <svg id="barcode"></svg>
-    </div>
+    function fetchPatient() {
+      const mrn = document.getElementById("mrn").value.trim();
+      const patient = patients.find(p => p.mrn === mrn);
 
-    <script>
-        let selectedPatient = null;
+      const detailsDiv = document.getElementById("patientDetails");
+      const testFieldsDiv = document.getElementById("testFields");
 
-        function searchPatient() {
-            const mrn = document.getElementById('searchMRN').value.trim();
-            const patients = JSON.parse(localStorage.getItem('patients') || '[]');
-            selectedPatient = patients.find(p => p.mrn === mrn);
+      if (!patient) {
+        detailsDiv.innerHTML = "<p>Patient not found.</p>";
+        testFieldsDiv.innerHTML = "";
+        return;
+      }
 
-            const detailsDiv = document.getElementById('patientDetails');
-            const testFieldsDiv = document.getElementById('testFields');
-            testFieldsDiv.innerHTML = '';
-            if (selectedPatient) {
-                let sectionTests = '';
-                selectedPatient.sections.forEach(section => {
-                    const tests = allTests[section] || [];
-                    sectionTests += `<h3>${section}</h3>`;
-                    tests.forEach(test => {
-                        sectionTests += `
-                            <label>${test.name} (${test.normal}):</label>
-                            <input type="text" name="${section}_${test.name}" required>
-                        `;
-                    });
-                });
+      detailsDiv.innerHTML = `
+        <p><strong>Name:</strong> ${patient.name}</p>
+        <p><strong>Age:</strong> ${patient.age}</p>
+        <p><strong>Gender:</strong> ${patient.gender}</p>
+      `;
 
-                detailsDiv.innerHTML = `
-                    <p><strong>Name:</strong> ${selectedPatient.name}</p>
-                    <p><strong>Gender:</strong> ${selectedPatient.gender}</p>
-                    <p><strong>Age:</strong> ${selectedPatient.age}</p>
-                    <p><strong>MRN:</strong> ${selectedPatient.mrn}</p>
-                    <p><strong>Sections:</strong> ${selectedPatient.sections.join(', ')}</p>
-                `;
-                testFieldsDiv.innerHTML = sectionTests;
+      let fieldsHtml = "";
+      patient.tests.forEach(test => {
+        fieldsHtml += `
+          <label for="${test.name}">${test.name} (${test.normal})</label>
+          <input type="text" id="${test.name}" name="${test.name}" required>
+        `;
+      });
+      testFieldsDiv.innerHTML = fieldsHtml;
+    }
 
-                // Generate unique barcode with full patient info
-                const barcodeText = `MRN:${selectedPatient.mrn}|Name:${selectedPatient.name}|Age:${selectedPatient.age}|Gender:${selectedPatient.gender}|Sections:${selectedPatient.sections.join(',')}`;
-                JsBarcode("#barcode", barcodeText, {
-                    format: "CODE128",
-                    width: 2,
-                    height: 80,
-                    displayValue: false
-                });
-            } else {
-                detailsDiv.innerHTML = '<p style="color:red">Patient not found.</p>';
-            }
-        }
+    document.getElementById("testResultForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const mrn = document.getElementById("mrn").value.trim();
+      const patientIndex = patients.findIndex(p => p.mrn === mrn);
+      if (patientIndex === -1) return alert("Patient not found.");
 
-        function saveTestResults(event) {
-            event.preventDefault();
-            if (!selectedPatient) {
-                alert("No patient selected.");
-                return;
-            }
+      const formData = new FormData(this);
+      const results = {};
+      for (let [key, value] of formData.entries()) {
+        if (key !== "mrn") results[key] = value;
+      }
 
-            const results = {};
-            const inputs = document.querySelectorAll("#testResultForm input");
-            inputs.forEach(input => {
-                results[input.name] = input.value;
-            });
-
-            // Save results to localStorage
-            let reports = JSON.parse(localStorage.getItem('reports') || '[]');
-            reports.push({
-                mrn: selectedPatient.mrn,
-                name: selectedPatient.name,
-                results: results,
-                sections: selectedPatient.sections,
-                date: new Date().toLocaleDateString()
-            });
-
-            localStorage.setItem('reports', JSON.stringify(reports));
-            alert("Test results saved successfully.");
-            document.getElementById('testResultForm').reset();
-            document.getElementById('patientDetails').innerHTML = '';
-            document.getElementById('testFields').innerHTML = '';
-            document.getElementById('searchMRN').value = '';
-            document.getElementById('barcode').innerHTML = '';
-        }
-    </script>
+      patients[patientIndex].results = results;
+      localStorage.setItem("patients", JSON.stringify(patients));
+      alert("Results submitted successfully.");
+      location.reload();
+    });
+  </script>
 </body>
 </html>
