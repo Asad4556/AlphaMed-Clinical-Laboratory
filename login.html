@@ -8,48 +8,56 @@
 </head>
 <body>
   <div class="login-container">
-    <h2>Login</h2>
-    <input type="text" id="cnic" placeholder="Enter CNIC (xxxxx-xxxxxxx-x)" />
-    <input type="password" id="password" placeholder="Enter Password" />
-    
-    <div class="role-buttons">
-      <button onclick="login('Admin')">Admin Login</button>
-      <button onclick="login('Reception')">Reception Login</button>
-      <button onclick="login('Technician')">Technician Login</button>
-    </div>
-    
-    <p id="error-msg" style="color:red;"></p>
+    <h2>Login to AlphaMed Clinical Laboratory</h2>
+    <form id="loginForm">
+      <label for="cnic">CNIC:</label>
+      <input type="text" id="cnic" name="cnic" placeholder="XXXXX-XXXXXXX-X" required />
+
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required />
+
+      <div class="role-buttons">
+        <button type="button" onclick="login('admin')">Admin Login</button>
+        <button type="button" onclick="login('reception')">Reception Login</button>
+        <button type="button" onclick="login('technician')">Technician Login</button>
+      </div>
+    </form>
   </div>
 
   <script>
-    // Default Admin User (hardcoded only once)
     const defaultAdmin = {
       cnic: "34501-8971113-7",
       password: "Asad@2723",
-      role: "Admin"
+      role: "admin",
+      name: "Main Admin"
     };
 
-    // Initialize users list if not already stored
     if (!localStorage.getItem("users")) {
       localStorage.setItem("users", JSON.stringify([defaultAdmin]));
     }
 
-    function login(role) {
+    function login(selectedRole) {
       const cnic = document.getElementById("cnic").value.trim();
       const password = document.getElementById("password").value.trim();
       const users = JSON.parse(localStorage.getItem("users")) || [];
 
-      const user = users.find(u => u.cnic === cnic && u.password === password && u.role === role);
+      const user = users.find(
+        u => u.cnic === cnic && u.password === password && u.role === selectedRole
+      );
 
-      if (user) {
-        localStorage.setItem("currentUser", JSON.stringify(user));
-        
-        // Redirect based on role
-        if (role === "Admin") window.location.href = "admin-dashboard.html";
-        else if (role === "Reception") window.location.href = "reception_dashboard.html";
-        else if (role === "Technician") window.location.href = "technician_dashboard.html";
-      } else {
-        document.getElementById("error-msg").innerText = "Invalid CNIC, Password, or Role.";
+      if (!user) {
+        alert("Invalid CNIC, password or role.");
+        return;
+      }
+
+      localStorage.setItem("currentUser", JSON.stringify(user));
+
+      if (user.role === "admin") {
+        window.location.href = "admin-dashboard.html";
+      } else if (user.role === "reception") {
+        window.location.href = "reception_dashboard.html";
+      } else if (user.role === "technician") {
+        window.location.href = "technician_dashboard.html";
       }
     }
   </script>
