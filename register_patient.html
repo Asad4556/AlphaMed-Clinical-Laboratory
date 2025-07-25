@@ -1,116 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Register Patient - AlphaMed Lab</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body class="dark-theme">
-  <div class="header">
-    <img src="logo.png" alt="AlphaMed Logo" class="logo">
+  <header>
     <h1>AlphaMed Clinical Laboratory</h1>
-    <p class="tagline">Quality Assurance Through Advance Technology</p>
-  </div>
+    <p>Register New Patient</p>
+  </header>
 
-  <nav class="nav-bar">
-    <a href="reception_dashboard.html">Dashboard</a>
-    <a href="register_patient.html" class="active">Register Patient</a>
-    <a href="view_reports.html">View Reports</a>
-    <a href="change_password.html">Change Password</a>
-    <a href="login.html" onclick="logout()">Logout</a>
-  </nav>
+  <main>
+    <form onsubmit="event.preventDefault(); registerPatient();">
+      <label for="patientName">Patient Name:</label>
+      <input type="text" id="patientName" required />
 
-  <main class="main-content">
-    <h2>Patient Registration</h2>
-    <form id="registerForm" onsubmit="registerPatient(event)">
-      <div class="form-group">
-        <label>Patient Name:</label>
-        <input type="text" id="name" required>
+      <label for="patientAge">Age:</label>
+      <input type="number" id="patientAge" required />
+
+      <label for="patientGender">Gender:</label>
+      <select id="patientGender" required>
+        <option value="">Select Gender</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="Other">Other</option>
+      </select>
+
+      <label for="patientContact">Contact Number:</label>
+      <input type="text" id="patientContact" required />
+
+      <label>Test Sections:</label>
+      <div class="checkbox-group">
+        <label><input type="checkbox" name="section" value="Hematology" /> Hematology</label>
+        <label><input type="checkbox" name="section" value="Biochemistry" /> Biochemistry</label>
+        <label><input type="checkbox" name="section" value="Serology" /> Serology</label>
+        <label><input type="checkbox" name="section" value="Microbiology" /> Microbiology</label>
+        <label><input type="checkbox" name="section" value="Urinalysis" /> Urinalysis</label>
       </div>
-      <div class="form-group">
-        <label>Age:</label>
-        <input type="number" id="age" required>
-      </div>
-      <div class="form-group">
-        <label>Gender:</label>
-        <select id="gender" required>
-          <option value="">Select</option>
-          <option>Male</option>
-          <option>Female</option>
-          <option>Other</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Contact Number:</label>
-        <input type="text" id="contact" required>
-      </div>
-      <div class="form-group">
-        <label>Test Sections:</label>
-        <select id="sections" multiple required>
-          <option>Hematology</option>
-          <option>Biochemistry</option>
-          <option>Microbiology</option>
-          <option>Serology</option>
-          <option>Immunology</option>
-          <option>Urine Examination</option>
-          <option>Stool Examination</option>
-          <option>Hormones</option>
-          <option>Histopathology</option>
-        </select>
-        <small>Hold Ctrl (Windows) or ⌘ (Mac) to select multiple</small>
-      </div>
-      <button type="submit" class="btn">Register & Generate Slip</button>
-    </form>
-  </main>
 
-  <footer class="footer">
-    <p>&copy; 2025 AlphaMed Clinical Laboratory | All rights reserved</p>
-  </footer>
-
-  <script>
-    function logout() {
-      localStorage.removeItem("loggedInUser");
-    }
-
-    function generateMRN() {
-      return 'MRN' + Date.now();
-    }
-
-    function registerPatient(event) {
-      event.preventDefault();
-
-      const name = document.getElementById("name").value.trim();
-      const age = document.getElementById("age").value;
-      const gender = document.getElementById("gender").value;
-      const contact = document.getElementById("contact").value.trim();
-      const sections = Array.from(document.getElementById("sections").selectedOptions).map(option => option.value);
-
-      const mrn = generateMRN();
-      const sampleNumber = "SMP" + Math.floor(100000 + Math.random() * 900000);
-      const registrationData = {
-        mrn,
-        name,
-        age,
-        gender,
-        contact,
-        sections,
-        sampleNumber,
-        date: new Date().toLocaleString()
-      };
-
-      localStorage.setItem(`patient_${mrn}`, JSON.stringify(registrationData));
-      localStorage.setItem("last_registered_patient", JSON.stringify(registrationData));
-
-      window.location.href = "registration-slip.html";
-    }
-
-    window.onload = function () {
-      const user = JSON.parse(localStorage.getItem("loggedInUser"));
-      if (!user || (user.role !== "Reception" && user.role !== "Admin")) {
-        alert("Unauthorized access. Redirecting to login.");
-        window.location.href = "login.html";
-      }
-    };
-  </script>
-</body>
-</html>
+      <button type="submit">Register Pat
