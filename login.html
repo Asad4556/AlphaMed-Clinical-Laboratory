@@ -1,143 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login - AlphaMed Lab</title>
-  <link rel="stylesheet" href="style.css"/>
-  <style>
-    body {
-      background: linear-gradient(to bottom right, #001f3f, #0074D9);
-      font-family: Arial, sans-serif;
-      color: white;
-      text-align: center;
-      padding: 40px 20px;
-    }
-
-    .login-container {
-      background-color: rgba(0, 0, 0, 0.75);
-      padding: 30px;
-      border-radius: 20px;
-      display: inline-block;
-      max-width: 400px;
-      width: 100%;
-      box-shadow: 0 0 15px rgba(0,0,0,0.5);
-    }
-
-    .login-container h2 {
-      margin-bottom: 20px;
-    }
-
-    input[type="text"], input[type="password"] {
-      width: 90%;
-      padding: 10px;
-      margin: 10px 0;
-      border: none;
-      border-radius: 8px;
-    }
-
-    select {
-      width: 95%;
-      padding: 10px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-    }
-
-    button {
-      background-color: #39CCCC;
-      color: black;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #2ECC40;
-    }
-
-    .role-buttons {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 30px;
-    }
-
-    .role-buttons a {
-      flex: 1;
-      margin: 0 5px;
-      text-decoration: none;
-      background-color: #FF851B;
-      padding: 10px;
-      border-radius: 8px;
-      color: white;
-      font-weight: bold;
-    }
-
-    .logo {
-      width: 100px;
-      margin-bottom: 15px;
-    }
-  </style>
+  <title>Login - AlphaMed Clinical Laboratory</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="login-container">
-    <img src="logo.png" class="logo" alt="Logo"/>
-    <h2>Login to AlphaMed System</h2>
-    <form onsubmit="return loginUser()">
-      <input type="text" id="cnic" placeholder="Enter CNIC (e.g. 34501-8971113-7)" required />
-      <input type="password" id="password" placeholder="Enter Password" required />
-      <select id="role" required>
-        <option value="">Select Role</option>
-        <option value="admin">Admin</option>
-        <option value="reception">Reception</option>
-        <option value="technician">Technician</option>
-      </select>
-      <button type="submit">Login</button>
-    </form>
-
+    <h2>Login</h2>
+    <input type="text" id="cnic" placeholder="Enter CNIC (xxxxx-xxxxxxx-x)" />
+    <input type="password" id="password" placeholder="Enter Password" />
+    
     <div class="role-buttons">
-      <a onclick="setRole('admin')">Admin</a>
-      <a onclick="setRole('reception')">Reception</a>
-      <a onclick="setRole('technician')">Technician</a>
+      <button onclick="login('Admin')">Admin Login</button>
+      <button onclick="login('Reception')">Reception Login</button>
+      <button onclick="login('Technician')">Technician Login</button>
     </div>
+    
+    <p id="error-msg" style="color:red;"></p>
   </div>
 
   <script>
-    function setRole(role) {
-      document.getElementById('role').value = role;
+    // Default Admin User (hardcoded only once)
+    const defaultAdmin = {
+      cnic: "34501-8971113-7",
+      password: "Asad@2723",
+      role: "Admin"
+    };
+
+    // Initialize users list if not already stored
+    if (!localStorage.getItem("users")) {
+      localStorage.setItem("users", JSON.stringify([defaultAdmin]));
     }
 
-    function loginUser() {
-      const cnic = document.getElementById("cnic").value;
-      const password = document.getElementById("password").value;
-      const role = document.getElementById("role").value;
+    function login(role) {
+      const cnic = document.getElementById("cnic").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const users = JSON.parse(localStorage.getItem("users")) || [];
 
-      // Default admin login
-      if (cnic === "34501-8971113-7" && password === "Asad@2723" && role === "admin") {
-        window.location.href = "admin-dashboard.html";
-        return false;
-      }
+      const user = users.find(u => u.cnic === cnic && u.password === password && u.role === role);
 
-      // Check local storage for other logins
-      const users = JSON.parse(localStorage.getItem("users") || "[]");
-      const found = users.find(
-        u => u.cnic === cnic && u.password === password && u.role === role
-      );
-
-      if (found) {
-        if (role === "reception") {
-          window.location.href = "reception_dashboard.html";
-        } else if (role === "technician") {
-          window.location.href = "technician_dashboard.html";
-        } else {
-          alert("Invalid role.");
-        }
+      if (user) {
+        localStorage.setItem("currentUser", JSON.stringify(user));
+        
+        // Redirect based on role
+        if (role === "Admin") window.location.href = "admin-dashboard.html";
+        else if (role === "Reception") window.location.href = "reception_dashboard.html";
+        else if (role === "Technician") window.location.href = "technician_dashboard.html";
       } else {
-        alert("Invalid credentials or role.");
+        document.getElementById("error-msg").innerText = "Invalid CNIC, Password, or Role.";
       }
-
-      return false;
     }
   </script>
 </body>
