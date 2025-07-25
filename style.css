@@ -1,169 +1,109 @@
-/* Reset and Base */
+/* General Reset */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
+
 body {
   font-family: 'Segoe UI', sans-serif;
-  background-color: #121212;
-  color: #ffffff;
-}
-a {
-  text-decoration: none;
-  color: inherit;
+  background-color: #f5f5f5;
+  color: #333;
 }
 
-/* Container and Layout */
-.container {
-  padding: 20px;
-  max-width: 1200px;
-  margin: auto;
-}
-.card {
-  background-color: #1e1e1e;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 0 10px #00000070;
-  margin-bottom: 20px;
-}
-header,
-footer {
+/* Header Styles */
+h1, h2, h3 {
   text-align: center;
-  padding: 15px;
-  background: #1f1f1f;
-  color: #ddd;
+  margin-bottom: 20px;
+  color: #004d4d;
+}
+
+/* Form and Input Styles */
+form {
+  max-width: 600px;
+  margin: auto;
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 128, 128, 0.1);
+}
+
+label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
 /* Buttons */
-button,
-input[type="submit"] {
-  background-color: #6200ea;
-  color: white;
+button {
   padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-button:hover,
-input[type="submit"]:hover {
-  background-color: #3700b3;
-}
-
-/* Forms */
-input[type="text"],
-input[type="password"],
-input[type="date"],
-input[type="number"],
-select,
-textarea {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #444;
-  border-radius: 6px;
-  background: #222;
+  background-color: #009999;
   color: white;
-  margin-bottom: 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
 }
 
-/* Tables */
+button:hover {
+  background-color: #007777;
+}
+
+/* Table */
 table {
   width: 100%;
   border-collapse: collapse;
-  background: #1e1e1e;
-  color: #fff;
+  margin-top: 20px;
+  background-color: #fff;
+  box-shadow: 0 0 5px #ccc;
 }
+
 th, td {
   padding: 10px;
-  border: 1px solid #333;
-  text-align: left;
-}
-th {
-  background-color: #292929;
-}
-
-/* Headings */
-h1, h2, h3, h4 {
-  color: #f1f1f1;
-}
-
-/* Barcode */
-.barcode {
-  width: 200px;
-  height: auto;
-}
-
-/* Watermark */
-.watermark {
-  position: absolute;
-  top: 35%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  opacity: 0.1;
-  z-index: 0;
-  width: 90%;
-}
-
-/* Report & Slip Styling */
-.report-box, .slip-box {
-  position: relative;
-  background: #1c1c1c;
-  padding: 30px;
-  border-radius: 10px;
-  margin: 20px 0;
-}
-
-/* Footer Note */
-.footer-note {
+  border: 1px solid #ddd;
   text-align: center;
-  font-size: 12px;
-  color: #aaa;
-  margin-top: 30px;
-  font-style: italic;
 }
 
-/* Role-Specific Colors */
-.admin {
-  border-left: 5px solid #bb86fc;
-}
-.reception {
-  border-left: 5px solid #03dac6;
-}
-.technician {
-  border-left: 5px solid #ffb300;
+/* Dashboard container */
+.dashboard {
+  padding: 20px;
 }
 
-/* Dashboard Summary */
-.dashboard-summary {
-  display: flex;
-  justify-content: space-around;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-.summary-card {
-  background: #272727;
-  padding: 15px;
-  border-radius: 8px;
-  text-align: center;
-  flex: 1;
-  min-width: 200px;
+.dashboard h2 {
+  margin-bottom: 30px;
 }
 
-/* Color Themes (Apply via JavaScript if needed) */
-.theme-purple { background: #6200ea; }
-.theme-teal { background: #018786; }
-.theme-orange { background: #ff6f00; }
-.theme-green { background: #00c853; }
-.theme-blue { background: #2962ff; }
-.theme-pink { background: #d500f9; }
-.theme-red { background: #d32f2f; }
-.theme-yellow { background: #fbc02d; }
-.theme-grey { background: #757575; }
+.user-card {
+  background-color: #e0f7fa;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-left: 5px solid #009999;
+  border-radius: 5px;
+}
 
-/* Responsive */
-@media screen and (max-width: 768px) {
-  .dashboard-summary {
-    flex-direction: column;
-  }
+/* Centered container */
+.centered {
+  max-width: 600px;
+  margin: auto;
+}
+
+/* Alerts and messages */
+.alert {
+  background-color: #fdd;
+  padding: 10px;
+  margin-bottom: 20px;
+  border-left: 5px solid red;
+  border-radius: 3px;
 }
