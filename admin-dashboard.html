@@ -3,24 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <title>Admin Dashboard - AlphaMed Lab</title>
-  <link rel="stylesheet" href="style.css" />
   <style>
     body {
       background-color: #111;
       color: white;
       font-family: Arial, sans-serif;
       padding: 20px;
+      text-align: center;
     }
 
     h1 {
-      text-align: center;
       color: #00ffff;
     }
 
     .admin-links {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
       margin-top: 30px;
     }
 
@@ -32,6 +28,7 @@
       padding: 15px 25px;
       border-radius: 8px;
       font-weight: bold;
+      display: inline-block;
       transition: 0.3s;
     }
 
@@ -41,12 +38,14 @@
 
     .logout {
       text-align: right;
+      margin-bottom: 20px;
     }
 
     .logout a {
       color: #00ffff;
       font-weight: bold;
       text-decoration: none;
+      cursor: pointer;
     }
 
     .logout a:hover {
@@ -57,7 +56,7 @@
 <body>
 
   <div class="logout">
-    <a href="login.html" onclick="logout()">Logout</a>
+    <a onclick="logout()">Logout</a>
   </div>
 
   <h1>Admin Dashboard</h1>
@@ -72,14 +71,15 @@
   </div>
 
   <script>
+    const user = JSON.parse(localStorage.getItem("loggedInUser"));
+    if (!user || user.role.toLowerCase() !== "admin") {
+      alert("Unauthorized access. Redirecting to login.");
+      window.location.href = "login.html";
+    }
+
     function logout() {
       localStorage.removeItem("loggedInUser");
       localStorage.removeItem("loggedInRole");
-    }
-
-    const user = JSON.parse(localStorage.getItem("loggedInUser"));
-    if (!user || user.role !== "Admin") {
-      alert("Unauthorized access. Redirecting to login.");
       window.location.href = "login.html";
     }
   </script>
