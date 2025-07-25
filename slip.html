@@ -1,94 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Registration Slip - AlphaMed Lab</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
   <style>
     body {
-      background-color: white;
-      color: black;
-      font-family: 'Segoe UI', sans-serif;
-      padding: 40px;
+      background-color: #121212;
+      color: #00ffff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 30px;
+      text-align: center;
     }
-
     .slip-container {
-      border: 1px solid #000;
+      background-color: #222;
+      border-radius: 15px;
       padding: 20px;
-      width: 600px;
+      max-width: 400px;
       margin: 0 auto;
+      box-shadow: 0 0 20px #00ffffaa;
       position: relative;
     }
-
-    .slip-header {
-      text-align: center;
-      margin-bottom: 20px;
+    h2 {
+      margin-bottom: 15px;
+      color: #00ffff;
     }
-
-    .slip-header h2 {
-      margin: 0;
+    .info {
+      text-align: left;
+      margin: 10px 0;
+      font-size: 18px;
     }
-
-    .slip-content p {
-      font-size: 16px;
-      margin: 8px 0;
+    #barcodeCanvas {
+      margin-top: 20px;
     }
-
-    .print-btn {
-      display: block;
-      margin: 20px auto;
+    button {
+      margin-top: 25px;
       padding: 10px 20px;
-      background-color: #00bcd4;
-      color: white;
+      background-color: #00ffff;
       border: none;
-      cursor: pointer;
+      border-radius: 8px;
+      color: #000;
       font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
     }
-
-    @media print {
-      .print-btn {
-        display: none;
-      }
+    button:hover {
+      background-color: #00bbbb;
     }
   </style>
 </head>
 <body>
 
-  <div class="slip-container" id="slipData">
-    <div class="slip-header">
-      <h2>AlphaMed Clinical Laboratory</h2>
-      <p>Registration Slip</p>
-    </div>
-    <div class="slip-content" id="slipContent">
-      <!-- Dynamic content will be inserted here -->
-    </div>
+  <div class="slip-container">
+    <h2>Patient Registration Slip</h2>
+    <div class="info"><strong>Name:</strong> <span id="slipName">Loading...</span></div>
+    <div class="info"><strong>MRN:</strong> <span id="slipMRN">Loading...</span></div>
+    <div class="info"><strong>Sample No:</strong> <span id="slipSample">Loading...</span></div>
+    <div class="info"><strong>Sections:</strong> <span id="slipSection">Loading...</span></div>
+    <canvas id="barcodeCanvas"></canvas>
+
+    <button onclick="window.print()">Print Slip</button>
   </div>
 
-  <button class="print-btn" onclick="window.print()">🖨️ Print Slip</button>
-
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const mrn = params.get("mrn");
+    function loadSlip() {
+      const patient = JSON.parse(localStorage.getItem("lastRegistered"));
+      if (!patient) {
+        alert("No registration data found.");
+        window.location.href = "register_patient.html";
+        return;
+      }
 
-    const patients = JSON.parse(localStorage.getItem("patientList")) || [];
-    const patient = patients.find(p => p.mrn === mrn);
+      document.getElementById("slipName").innerText = patient.name;
+      document.getElementById("slipMRN").innerText = patient.mrn;
+      document.getElementById("slipSample").innerText = patient.sample;
+      document.getElementById("slipSection").innerText = patient.section.join(", ");
 
-    if (!patient) {
-      document.getElementById("slipContent").innerHTML = "<p>Patient not found.</p>";
-    } else {
-      const html = `
-        <p><strong>Name:</strong> ${patient.name}</p>
-        <p><strong>CNIC:</strong> ${patient.cnic}</p>
-        <p><strong>MRN:</strong> ${patient.mrn}</p>
-        <p><strong>Gender:</strong> ${patient.gender}</p>
-        <p><strong>Age:</strong> ${patient.age}</p>
-        <p><strong>Contact:</strong> ${patient.contact}</p>
-        <p><strong>Selected Tests:</strong> ${patient.selectedTests.map(t => t.name).join(", ")}</p>
-        <p><strong>Test Type:</strong> ${patient.testType}</p>
-        <p><strong>Date:</strong> ${new Date().toLocaleString()}</p>
-      `;
-      document.getElementById("slipContent").innerHTML = html;
+      JsBarcode("#barcodeCanvas", patient.mrn + "-" + patient.sample, {
+        format: "CODE128",
+        displayValue: true,
+        width: 2,
+        height: 40,
+        fontSize: 14
+      });
     }
+
+    loadSlip();
   </script>
+
 </body>
 </html>
