@@ -1,98 +1,103 @@
 <!DOCTYPE html>
-<html lang="ur">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Settings - AlphaMed Lab</title>
   <link rel="stylesheet" href="style.css">
   <style>
     body {
-      background-color: #1c1c1c;
-      color: #ffffff;
-      font-family: 'Segoe UI', sans-serif;
+      background-color: #111;
+      color: #fff;
+      font-family: Arial, sans-serif;
       padding: 20px;
     }
 
-    h1 {
+    h2 {
       text-align: center;
-      margin-bottom: 20px;
-      color: #00ffff;
+      color: #00bcd4;
     }
 
-    .form-container {
-      max-width: 500px;
-      margin: auto;
-      background-color: #2b2b2b;
-      padding: 30px;
+    .settings-container {
+      max-width: 600px;
+      margin: 20px auto;
+      background-color: #222;
+      padding: 20px;
       border-radius: 10px;
-      box-shadow: 0 0 10px #00ffff55;
     }
 
     label {
       display: block;
-      margin-bottom: 10px;
-      color: #ffffff;
+      margin-top: 15px;
+      font-weight: bold;
     }
 
-    input[type="password"] {
+    input, textarea, button {
       width: 100%;
       padding: 10px;
-      margin-bottom: 20px;
-      border: none;
+      margin-top: 5px;
       border-radius: 5px;
-      outline: none;
+      border: none;
+      font-size: 16px;
+    }
+
+    input, textarea {
+      background-color: #333;
+      color: white;
     }
 
     button {
-      width: 100%;
-      padding: 10px;
-      background-color: #00ffff;
-      color: #000;
-      font-weight: bold;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #00cccc;
-    }
-
-    .back-link {
-      text-align: center;
+      background-color: #00bcd4;
+      color: white;
       margin-top: 20px;
-    }
-
-    .back-link a {
-      color: #00ffff;
-      text-decoration: none;
-    }
-
-    .back-link a:hover {
-      text-decoration: underline;
+      font-weight: bold;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
 
-  <h1>Change Password</h1>
+  <h2>System Settings</h2>
 
-  <div class="form-container">
-    <label for="oldPassword">Old Password</label>
-    <input type="password" id="oldPassword" placeholder="Enter old password">
+  <div class="settings-container">
+    <label for="labName">Lab Name:</label>
+    <input type="text" id="labName" placeholder="Enter Lab Name" />
 
-    <label for="newPassword">New Password</label>
-    <input type="password" id="newPassword" placeholder="Enter new password">
+    <label for="labAddress">Lab Address:</label>
+    <textarea id="labAddress" rows="3" placeholder="Enter Address"></textarea>
 
-    <label for="confirmPassword">Confirm New Password</label>
-    <input type="password" id="confirmPassword" placeholder="Confirm new password">
+    <label for="contactNumber">Contact Number:</label>
+    <input type="text" id="contactNumber" placeholder="Enter Phone Number" />
 
-    <button onclick="changePassword('admin')">Change Password</button>
+    <label for="footerNote">Footer Note:</label>
+    <textarea id="footerNote" rows="2" placeholder="Enter Footer Note"></textarea>
 
-    <div class="back-link">
-      <a href="admin-dashboard.html">← Back to Dashboard</a>
-    </div>
+    <button onclick="saveSettings()">Save Settings</button>
   </div>
 
-  <script src="test-data.js"></script>
+  <script>
+    function loadSettings() {
+      const settings = JSON.parse(localStorage.getItem("labSettings") || "{}");
+
+      document.getElementById("labName").value = settings.labName || "";
+      document.getElementById("labAddress").value = settings.labAddress || "";
+      document.getElementById("contactNumber").value = settings.contactNumber || "";
+      document.getElementById("footerNote").value = settings.footerNote || "";
+    }
+
+    function saveSettings() {
+      const settings = {
+        labName: document.getElementById("labName").value.trim(),
+        labAddress: document.getElementById("labAddress").value.trim(),
+        contactNumber: document.getElementById("contactNumber").value.trim(),
+        footerNote: document.getElementById("footerNote").value.trim()
+      };
+
+      localStorage.setItem("labSettings", JSON.stringify(settings));
+      alert("Settings saved successfully ✅");
+    }
+
+    loadSettings();
+  </script>
+
 </body>
 </html>
