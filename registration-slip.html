@@ -1,37 +1,81 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ur">
 <head>
-  <meta charset="UTF-8" />
-  <title>Registration Slip - AlphaMed Lab</title>
-  <link rel="stylesheet" href="style.css" />
-  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+  <meta charset="UTF-8">
+  <title>Registration Slip - AlphaMed Clinical Laboratory</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0f0f0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #00ffff60;
+      text-align: center;
+    }
+
+    h2 {
+      color: #00aaaa;
+      margin-bottom: 20px;
+    }
+
+    .info {
+      font-size: 18px;
+      margin: 10px 0;
+    }
+
+    .barcode {
+      margin-top: 20px;
+    }
+
+    canvas {
+      margin-top: 10px;
+    }
+
+    .btn {
+      margin-top: 30px;
+      padding: 10px 20px;
+      background-color: #00aaaa;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background-color: #007777;
+    }
+  </style>
 </head>
-<body class="dark-theme">
-  <header>
-    <h1>AlphaMed Lab</h1>
-    <p>Patient Registration Slip</p>
-  </header>
+<body>
 
-  <main>
-    <div class="slip-card">
-      <h2>Patient: <span id="slipName"></span></h2>
-      <p><strong>MRN:</strong> <span id="slipMRN"></span></p>
-      <p><strong>Sample No:</strong> <span id="slipSample"></span></p>
-      <p><strong>Section(s):</strong> <span id="slipSection"></span></p>
+  <div class="container">
+    <h2>Registration Slip</h2>
+    <div class="info"><strong>Name:</strong> <span id="slipName"></span></div>
+    <div class="info"><strong>MRN:</strong> <span id="slipMRN"></span></div>
+    <div class="info"><strong>Sample #:</strong> <span id="slipSample"></span></div>
+    <div class="info"><strong>Sections:</strong> <span id="slipSection"></span></div>
 
-      <svg id="barcodeCanvas"></svg>
+    <div class="barcode">
+      <canvas id="barcodeCanvas"></canvas>
     </div>
 
-    <div class="center">
-      <button onclick="window.print()">Print Slip</button>
-      <button onclick="window.location.href='reception_dashboard.html'">Back to Dashboard</button>
-    </div>
-  </main>
+    <button class="btn" onclick="window.print()">Print Slip</button>
+  </div>
 
-  <footer>
-    <p>&copy; 2025 AlphaMed Clinical Laboratory</p>
-  </footer>
-
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
   <script src="test-data.js"></script>
+  <script>
+    loadSlip();
+  </script>
+
 </body>
 </html>
