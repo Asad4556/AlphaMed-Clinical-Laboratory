@@ -1,28 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Admin Dashboard - AlphaMed</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard - AlphaMed Lab</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="dashboard-container">
-    <h1>Welcome Admin</h1>
+    <h1>Admin Dashboard</h1>
 
     <div class="dashboard-buttons">
-      <a href="register_patient.html" class="dashboard-button">📄 Register New Patient</a>
-      <a href="add_test_result.html" class="dashboard-button">🧪 Add Test Result</a>
-      <a href="view_reports.html" class="dashboard-button">📋 View Reports</a>
-      <a href="manage_users.html" class="dashboard-button">👥 Manage Users</a>
-      <a href="settings.html" class="dashboard-button">⚙️ Settings</a>
-      <a href="export.html" class="dashboard-button">⬇️ Export Reports</a>
-      <a href="change_password.html" class="dashboard-button">🔒 Change Password</a>
-      <a href="login.html" onclick="logout()" class="dashboard-button logout">🚪 Logout</a>
+      <button onclick="location.href='register_patient.html'">Register Patient</button>
+      <button onclick="location.href='add_test_result.html'">Add Test Result</button>
+      <button onclick="location.href='view_reports.html'">View Reports</button>
+      <button onclick="location.href='manage_users.html'">Manage Users</button>
+      <button onclick="location.href='change_password.html'">Change Password</button>
+      <button onclick="logout()">Logout</button>
     </div>
   </div>
 
   <script>
     const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+    // Allow only Admin access
     if (!currentUser || currentUser.role !== "admin") {
       alert("Unauthorized access. Redirecting to login.");
       window.location.href = "login.html";
@@ -30,6 +31,7 @@
 
     function logout() {
       localStorage.removeItem("currentUser");
+      window.location.href = "login.html";
     }
   </script>
 </body>
