@@ -1,71 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Panel - AlphaMed Lab</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>Admin Login - AlphaMed Lab</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body class="dark-theme">
-  <div class="header">
-    <img src="logo.png" alt="AlphaMed Logo" class="logo" />
+  <header>
     <h1>AlphaMed Clinical Laboratory</h1>
-    <p class="tagline">Quality Assurance Through Advance Technology</p>
-  </div>
+    <p>Admin Login</p>
+  </header>
 
-  <div class="container">
-    <h2>Admin Panel: User Management</h2>
-
-    <form id="createUserForm">
-      <h3>Create New User</h3>
-      <label for="cnic">CNIC:</label>
-      <input type="text" id="cnic" placeholder="xxxxx-xxxxxxx-x" required />
-
-      <label for="password">Password:</label>
-      <input type="password" id="password" placeholder="Enter password" required />
-
-      <label for="role">Select Role:</label>
-      <select id="role" required>
-        <option value="">-- Select Role --</option>
-        <option value="reception">Reception</option>
-        <option value="technician">Technician</option>
-      </select>
-
-      <button type="submit" class="btn">Create User</button>
-    </form>
-
-    <hr/>
-
-    <h3>All Users</h3>
-    <table id="userTable">
-      <thead>
-        <tr>
-          <th>CNIC</th>
-          <th>Role</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Dynamically filled -->
-      </tbody>
-    </table>
-
-    <div class="note">
-      <p>⚠️ Admin account cannot be deleted or modified.</p>
-    </div>
-  </div>
+  <main>
+    <section class="login-form">
+      <h2>Login</h2>
+      <input type="text" id="cnic" placeholder="Enter CNIC" required>
+      <input type="password" id="password" placeholder="Enter Password" required>
+      <button onclick="loginUser('admin')">Login as Admin</button>
+    </section>
+  </main>
 
   <footer>
-    <p>&copy; 2025 AlphaMed Clinical Laboratory. All rights reserved.</p>
+    <p>&copy; 2025 AlphaMed Clinical Laboratory</p>
   </footer>
 
-  <script src="script.js"></script>
-  <script>
-    loadUsers(); // load all user accounts
-    document.getElementById('createUserForm').addEventListener('submit', function (e) {
-      e.preventDefault();
-      createUser(); // call function in script.js
-    });
-  </script>
+  <script src="test-data.js"></script>
 </body>
 </html>
