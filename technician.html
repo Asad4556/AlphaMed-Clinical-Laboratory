@@ -1,48 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>Technician Panel - AlphaMed Lab</title>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body class="dark-theme">
-  <header>
-    <h1>AlphaMed Clinical Laboratory</h1>
-    <p>Technician Panel</p>
-  </header>
+<body>
+  <h1>Technician Panel</h1>
 
-  <nav>
-    <ul>
-      <li><a href="technician_dashboard.html">Dashboard</a></li>
-      <li><a href="add_test_result.html">Add Test Result</a></li>
-      <li><a href="view_reports.html">View Reports</a></li>
-      <li><a href="change_password.html">Change Password</a></li>
-      <li><a href="index.html" onclick="logout()">Logout</a></li>
-    </ul>
-  </nav>
+  <div class="centered">
+    <button onclick="window.location.href='technician_dashboard.html'">Dashboard</button>
+    <button onclick="window.location.href='change_password.html'">Change Password</button>
+    <button onclick="logout()">Logout</button>
+  </div>
 
-  <main>
-    <section class="dashboard-welcome">
-      <h2>Welcome, Technician</h2>
-      <p>Select an option from the menu to begin.</p>
-    </section>
-  </main>
-
-  <footer>
-    <p>&copy; 2025 AlphaMed Clinical Laboratory</p>
-  </footer>
-
+  <script src="test-data.js"></script>
   <script>
     function logout() {
       localStorage.removeItem("loggedInUser");
-      localStorage.removeItem("loggedInRole");
-    }
-
-    // Restrict access to logged-in technician only
-    const role = localStorage.getItem("loggedInRole");
-    if (role !== "Technician") {
-      alert("Unauthorized access!");
       window.location.href = "login.html";
     }
   </script>
