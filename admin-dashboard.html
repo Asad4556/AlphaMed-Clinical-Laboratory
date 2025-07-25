@@ -2,35 +2,74 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Dashboard - AlphaMed Lab</title>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #00ffff;
+    }
+
+    .admin-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 30px;
+    }
+
+    .admin-links a {
+      background-color: #00ffff;
+      color: black;
+      text-decoration: none;
+      margin: 10px;
+      padding: 15px 25px;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .admin-links a:hover {
+      background-color: #00cccc;
+    }
+
+    .logout {
+      text-align: right;
+    }
+
+    .logout a {
+      color: #00ffff;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .logout a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
-<body class="dark-theme">
-  <header>
-    <h1>AlphaMed Clinical Laboratory</h1>
-    <p>Admin Dashboard</p>
-  </header>
+<body>
 
-  <nav>
-    <ul>
-      <li><a href="admin-dashboard.html">Dashboard</a></li>
-      <li><a href="manage_users.html">Manage Users</a></li>
-      <li><a href="settings.html">Settings</a></li>
-      <li><a href="index.html" onclick="logout()">Logout</a></li>
-    </ul>
-  </nav>
+  <div class="logout">
+    <a href="login.html" onclick="logout()">Logout</a>
+  </div>
 
-  <main>
-    <section class="dashboard-welcome">
-      <h2>Welcome, Admin</h2>
-      <p>Select an option from the menu to manage the system.</p>
-    </section>
-  </main>
+  <h1>Admin Dashboard</h1>
 
-  <footer>
-    <p>&copy; 2025 AlphaMed Clinical Laboratory</p>
-  </footer>
+  <div class="admin-links">
+    <a href="manage_users.html">Manage Users</a>
+    <a href="register_patient.html">Register Patient</a>
+    <a href="view_reports.html">View Reports</a>
+    <a href="settings.html">Test Settings</a>
+    <a href="change_password.html">Change Password</a>
+    <a href="index.html">Home</a>
+  </div>
 
   <script>
     function logout() {
@@ -38,11 +77,10 @@
       localStorage.removeItem("loggedInRole");
     }
 
-    // Admin Access Restriction
-    const role = localStorage.getItem("loggedInRole");
-    if (role !== "admin") {
-      alert("Unauthorized access!");
-      window.location.href = "login.html?role=admin";
+    const user = JSON.parse(localStorage.getItem("loggedInUser"));
+    if (!user || user.role !== "Admin") {
+      alert("Unauthorized access. Redirecting to login.");
+      window.location.href = "login.html";
     }
   </script>
 </body>
