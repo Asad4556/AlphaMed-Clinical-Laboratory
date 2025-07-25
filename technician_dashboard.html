@@ -2,73 +2,127 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Technician Dashboard - AlphaMed Lab</title>
-  <link rel="stylesheet" href="style.css"/>
-</head>
-<body class="dark-theme">
-  <header>
-    <h1>AlphaMed Clinical Laboratory</h1>
-    <p>Technician Dashboard</p>
-  </header>
-
-  <nav>
-    <ul>
-      <li><a href="technician_dashboard.html">Home</a></li>
-      <li><a href="add_test_result.html">Add Test Result</a></li>
-      <li><a href="view_reports.html">View Reports</a></li>
-      <li><a href="change_password.html">Change Password</a></li>
-      <li><a href="index.html" onclick="logout()">Logout</a></li>
-    </ul>
-  </nav>
-
-  <main>
-    <section class="dashboard">
-      <div class="card">
-        <h2>Total Patients</h2>
-        <p id="totalPatients">0</p>
-      </div>
-      <div class="card">
-        <h2>Today's Registered</h2>
-        <p id="todaysPatients">0</p>
-      </div>
-      <div class="card">
-        <h2>Reports Entered</h2>
-        <p id="reportsCount">0</p>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <p>&copy; 2025 AlphaMed Clinical Laboratory</p>
-  </footer>
-
-  <script>
-    function logout() {
-      localStorage.removeItem("loggedInUser");
-      localStorage.removeItem("loggedInRole");
+  <title>Technician Dashboard - Add Test Results</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      background-color: #121212;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
     }
 
-    // Access Restriction
-    const role = localStorage.getItem("loggedInRole");
-    if (role !== "Technician") {
-      alert("Unauthorized access!");
+    h2 {
+      text-align: center;
+      color: #00bcd4;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 4px;
+    }
+
+    input {
+      background-color: #1e1e1e;
+      color: #fff;
+      border: 1px solid #555;
+    }
+
+    button {
+      background-color: #00bcd4;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .test-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    .test-table th, .test-table td {
+      border: 1px solid #444;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .test-table th {
+      background-color: #1e1e1e;
+      color: #00bcd4;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Add Test Results</h2>
+
+  <input type="text" id="mrn" placeholder="Enter MRN (e.g. ACL-25-00001)" />
+  <button onclick="loadAssignedTests()">Load Tests</button>
+
+  <div id="tests-area"></div>
+
+  <button onclick="saveReport()">Save Report</button>
+
+  <script>
+    const user = JSON.parse(localStorage.getItem("currentUser"));
+    if (!user || (user.role !== "Technician" && user.role !== "Admin")) {
+      alert("Unauthorized access. Redirecting to login.");
       window.location.href = "login.html";
     }
 
-    // Load and Count Data
-    window.onload = () => {
-      const patients = JSON.parse(localStorage.getItem("patients")) || [];
-      const reports = JSON.parse(localStorage.getItem("reports")) || [];
+    function loadAssignedTests() {
+      const mrn = document.getElementById("mrn").value.trim();
+      if (!mrn) return alert("Please enter MRN");
 
-      document.getElementById("totalPatients").textContent = patients.length;
+      const allPatients = JSON.parse(localStorage.getItem("patientList") || "[]");
+      const patient = allPatients.find(p => p.mrn === mrn);
+      if (!patient || !patient.selectedTests) {
+        document.getElementById("tests-area").innerHTML = "<p style='color:red;'>No tests assigned or invalid MRN</p>";
+        return;
+      }
 
-      const today = new Date().toISOString().split('T')[0];
-      const todaysCount = patients.filter(p => p.date === today).length;
-      document.getElementById("todaysPatients").textContent = todaysCount;
+      let html = `<table class="test-table"><tr><th>Test</th><th>Result</th><th>Male Normal</th><th>Female Normal</th></tr>`;
+      patient.selectedTests.forEach((test, index) => {
+        html += `
+          <tr>
+            <td>${test.name}</td>
+            <td><input type="text" id="result-${index}" placeholder="Enter result" /></td>
+            <td>${test.male}</td>
+            <td>${test.female}</td>
+          </tr>
+        `;
+      });
+      html += `</table>`;
+      document.getElementById("tests-area").innerHTML = html;
+    }
 
-      document.getElementById("reportsCount").textContent = reports.length;
-    };
+    function saveReport() {
+      const mrn = document.getElementById("mrn").value.trim();
+      const allPatients = JSON.parse(localStorage.getItem("patientList") || "[]");
+      const patient = allPatients.find(p => p.mrn === mrn);
+      if (!patient || !patient.selectedTests) return alert("Invalid MRN or no tests found");
+
+      const results = patient.selectedTests.map((t, i) => ({
+        test: t.name,
+        result: document.getElementById(`result-${i}`).value.trim(),
+        male: t.male,
+        female: t.female
+      }));
+
+      const reports = JSON.parse(localStorage.getItem("labReports") || "[]");
+      reports.push({ mrn, section: patient.testType, results, timestamp: new Date().toLocaleString() });
+      localStorage.setItem("labReports", JSON.stringify(reports));
+
+      alert("Report saved successfully ✅");
+      location.reload();
+    }
   </script>
 </body>
 </html>
