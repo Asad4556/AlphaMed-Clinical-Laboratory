@@ -1,72 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Settings - AlphaMed Clinical Laboratory</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>Settings - Change Password</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body class="dark-theme">
-  <div class="container">
-    <h1 class="title">🔐 Change Password</h1>
+  <header>
+    <h1>AlphaMed Clinical Laboratory</h1>
+    <p>Change Password</p>
+  </header>
 
-    <form id="changePasswordForm">
-      <div class="form-group">
-        <label for="currentPassword">Current Password:</label>
-        <input type="password" id="currentPassword" required />
-      </div>
+  <nav>
+    <ul>
+      <li><a href="admin-dashboard.html">Dashboard</a></li>
+      <li><a href="manage_users.html">Manage Users</a></li>
+      <li><a href="settings.html">Settings</a></li>
+      <li><a href="index.html" onclick="logout()">Logout</a></li>
+    </ul>
+  </nav>
 
-      <div class="form-group">
+  <main>
+    <section>
+      <h2>Change Password</h2>
+      <form onsubmit="event.preventDefault(); changePassword('admin');">
+        <label for="oldPassword">Old Password:</label>
+        <input type="password" id="oldPassword" required><br><br>
+
         <label for="newPassword">New Password:</label>
-        <input type="password" id="newPassword" required />
-      </div>
+        <input type="password" id="newPassword" required><br><br>
 
-      <div class="form-group">
-        <label for="confirmPassword">Confirm New Password:</label>
-        <input type="password" id="confirmPassword" required />
-      </div>
+        <label for="confirmPassword">Confirm Password:</label>
+        <input type="password" id="confirmPassword" required><br><br>
 
-      <button type="submit" class="btn">Update Password</button>
-      <p id="statusMessage"></p>
-    </form>
+        <button type="submit">Change Password</button>
+      </form>
+    </section>
+  </main>
 
-    <a href="index.html" class="back-link">← Back to Dashboard</a>
-  </div>
+  <footer>
+    <p>&copy; 2025 AlphaMed Clinical Laboratory</p>
+  </footer>
 
-  <script>
-    const changeForm = document.getElementById('changePasswordForm');
-    const currentUser = JSON.parse(localStorage.getItem('loggedInUser')) || {};
-    const status = document.getElementById('statusMessage');
-
-    changeForm.addEventListener('submit', function (e) {
-      e.preventDefault();
-      const currentPassword = document.getElementById('currentPassword').value;
-      const newPassword = document.getElementById('newPassword').value;
-      const confirmPassword = document.getElementById('confirmPassword').value;
-
-      let users = JSON.parse(localStorage.getItem('users')) || [];
-      let found = users.find(u => u.cnic === currentUser.cnic);
-
-      if (!found) {
-        status.textContent = "❌ User not found!";
-        return;
-      }
-
-      if (found.password !== currentPassword) {
-        status.textContent = "❌ Current password is incorrect!";
-        return;
-      }
-
-      if (newPassword !== confirmPassword) {
-        status.textContent = "❌ New passwords do not match!";
-        return;
-      }
-
-      found.password = newPassword;
-      localStorage.setItem('users', JSON.stringify(users));
-      status.textContent = "✅ Password updated successfully!";
-      changeForm.reset();
-    });
-  </script>
+  <script src="test-data.js"></script>
 </body>
 </html>
