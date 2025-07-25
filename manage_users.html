@@ -6,95 +6,63 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="dark-theme">
-  <div class="container">
-    <h1>🔐 Manage Users</h1>
-    
-    <form id="addUserForm">
-      <label for="cnic">CNIC:</label>
-      <input type="text" id="cnic" required placeholder="e.g. 34501-8971113-7" />
+  <header>
+    <h1>AlphaMed Clinical Laboratory</h1>
+    <p>Manage Users</p>
+  </header>
 
-      <label for="password">Password:</label>
-      <input type="password" id="password" required />
+  <nav>
+    <ul>
+      <li><a href="admin-dashboard.html">Dashboard</a></li>
+      <li><a href="manage_users.html">Manage Users</a></li>
+      <li><a href="settings.html">Settings</a></li>
+      <li><a href="index.html" onclick="logout()">Logout</a></li>
+    </ul>
+  </nav>
 
-      <label for="role">Role:</label>
-      <select id="role" required>
-        <option value="">Select Role</option>
-        <option value="Reception">Reception</option>
-        <option value="Technician">Technician</option>
-      </select>
+  <main>
+    <section>
+      <h2>Create New User</h2>
+      <form id="userForm" onsubmit="event.preventDefault(); createUser();">
+        <label for="newRole">Role:</label>
+        <select id="newRole">
+          <option value="reception">Receptionist</option>
+          <option value="technician">Technician</option>
+        </select><br><br>
 
-      <button type="submit">Add User</button>
-    </form>
+        <label for="newCnic">CNIC:</label>
+        <input type="text" id="newCnic" required><br><br>
 
-    <h2>👥 Existing Users</h2>
-    <table id="userTable">
-      <thead>
-        <tr>
-          <th>CNIC</th>
-          <th>Role</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Users will be populated here -->
-      </tbody>
-    </table>
-    <a href="admin-dashboard.html" class="btn">⬅️ Back to Dashboard</a>
-  </div>
+        <label for="newPassword">Password:</label>
+        <input type="password" id="newPassword" required><br><br>
 
+        <button type="submit">Create User</button>
+      </form>
+    </section>
+
+    <section>
+      <h2>Existing Users</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>CNIC</th>
+            <th>Role</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="userTableBody"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 AlphaMed Clinical Laboratory</p>
+  </footer>
+
+  <script src="test-data.js"></script>
   <script>
-    const form = document.getElementById('addUserForm');
-    const userTableBody = document.querySelector('#userTable tbody');
-
-    function loadUsers() {
-      userTableBody.innerHTML = '';
-      const users = JSON.parse(localStorage.getItem('users')) || [];
-      users.forEach((user, index) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${user.cnic}</td>
-          <td>${user.role}</td>
-          <td>
-            ${user.role !== 'Admin' ? `<button onclick="deleteUser(${index})">🗑 Delete</button>` : '<em>Protected</em>'}
-          </td>
-        `;
-        userTableBody.appendChild(tr);
-      });
-    }
-
-    function deleteUser(index) {
-      const users = JSON.parse(localStorage.getItem('users')) || [];
-      if (users[index].role === 'Admin') return;
-      users.splice(index, 1);
-      localStorage.setItem('users', JSON.stringify(users));
-      loadUsers();
-    }
-
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const cnic = document.getElementById('cnic').value.trim();
-      const password = document.getElementById('password').value;
-      const role = document.getElementById('role').value;
-
-      if (!cnic || !password || !role) {
-        alert('Please fill all fields.');
-        return;
-      }
-
-      const users = JSON.parse(localStorage.getItem('users')) || [];
-
-      if (users.find(u => u.cnic === cnic)) {
-        alert('User already exists.');
-        return;
-      }
-
-      users.push({ cnic, password, role });
-      localStorage.setItem('users', JSON.stringify(users));
-      form.reset();
-      loadUsers();
-    });
-
-    window.onload = loadUsers;
+    displayUsers();
   </script>
 </body>
 </html>
