@@ -1,47 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Reception - AlphaMed Clinical Laboratory</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reception Panel - AlphaMed Lab</title>
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body class="dark-theme">
-    <div class="header">
-        <img src="logo.png" alt="AlphaMed Logo" class="logo">
-        <h1>AlphaMed Clinical Laboratory</h1>
-        <p class="tagline">Quality Assurance Through Advance Technology</p>
-    </div>
+  <header>
+    <h1>AlphaMed Clinical Laboratory</h1>
+    <p>Reception Panel</p>
+  </header>
 
-    <nav class="nav-bar">
-        <a href="reception_dashboard.html">Dashboard</a>
-        <a href="register_patient.html">Register Patient</a>
-        <a href="view_reports.html">View Reports</a>
-        <a href="change_password.html">Change Password</a>
-        <a href="login.html" onclick="logout()">Logout</a>
-    </nav>
+  <nav>
+    <ul>
+      <li><a href="reception_dashboard.html">Dashboard</a></li>
+      <li><a href="register_patient.html">Register Patient</a></li>
+      <li><a href="change_password.html">Change Password</a></li>
+      <li><a href="index.html" onclick="logout()">Logout</a></li>
+    </ul>
+  </nav>
 
-    <main class="main-content">
-        <h2>Reception Panel</h2>
-        <p>Welcome to the reception portal. Use the menu above to navigate your tasks.</p>
-    </main>
+  <main>
+    <section class="dashboard-welcome">
+      <h2>Welcome, Receptionist</h2>
+      <p>Select an option from the menu to begin.</p>
+    </section>
+  </main>
 
-    <footer class="footer">
-        <p>&copy; 2025 AlphaMed Clinical Laboratory | All rights reserved</p>
-    </footer>
+  <footer>
+    <p>&copy; 2025 AlphaMed Clinical Laboratory</p>
+  </footer>
 
-    <script>
-        function logout() {
-            localStorage.removeItem("loggedInUser");
-        }
+  <script>
+    function logout() {
+      localStorage.removeItem("loggedInUser");
+      localStorage.removeItem("loggedInRole");
+    }
 
-        // Protect page from unauthorized access
-        window.onload = function () {
-            const user = JSON.parse(localStorage.getItem("loggedInUser"));
-            if (!user || user.role !== "Reception") {
-                alert("Unauthorized access. Redirecting to login.");
-                window.location.href = "login.html";
-            }
-        };
-    </script>
+    // Restrict access to logged-in receptionist only
+    const role = localStorage.getItem("loggedInRole");
+    if (role !== "reception") {
+      alert("Unauthorized access!");
+      window.location.href = "login.html";
+    }
+  </script>
 </body>
 </html>
