@@ -1,78 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Add Test Result - AlphaMed</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>Add Test Result - AlphaMed Lab</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="form-container">
-    <h2>Add Test Result</h2>
-    <form id="testResultForm">
-      <label for="mrn">Enter MRN:</label>
-      <input type="text" id="mrn" name="mrn" required>
-      <button type="button" onclick="fetchPatient()">Search</button>
-      <div id="patientDetails"></div>
-      <div id="testFields"></div>
-      <button type="submit">Submit Results</button>
-    </form>
+  <h1>Add Test Results</h1>
+
+  <div class="card">
+    <h3>Patient: <span id="patientName"></span></h3>
+    <p>MRN: <span id="patientMRN"></span></p>
+
+    <div id="resultInputs"></div>
+
+    <button onclick="saveTestResults()">Save Results</button>
   </div>
 
+  <script src="test-data.js"></script>
   <script>
-    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-    if (!currentUser || (currentUser.role !== "technician" && currentUser.role !== "admin")) {
-      alert("Unauthorized access. Redirecting to login.");
+    // Technician Access Check
+    const user = JSON.parse(localStorage.getItem("loggedInUser"));
+    if (!user || user.role !== "technician") {
+      alert("Unauthorized access!");
       window.location.href = "login.html";
     }
 
-    const patients = JSON.parse(localStorage.getItem("patients")) || [];
-
-    function fetchPatient() {
-      const mrn = document.getElementById("mrn").value.trim();
-      const patient = patients.find(p => p.mrn === mrn);
-
-      const detailsDiv = document.getElementById("patientDetails");
-      const testFieldsDiv = document.getElementById("testFields");
-
-      if (!patient) {
-        detailsDiv.innerHTML = "<p>Patient not found.</p>";
-        testFieldsDiv.innerHTML = "";
-        return;
-      }
-
-      detailsDiv.innerHTML = `
-        <p><strong>Name:</strong> ${patient.name}</p>
-        <p><strong>Age:</strong> ${patient.age}</p>
-        <p><strong>Gender:</strong> ${patient.gender}</p>
-      `;
-
-      let fieldsHtml = "";
-      patient.tests.forEach(test => {
-        fieldsHtml += `
-          <label for="${test.name}">${test.name} (${test.normal})</label>
-          <input type="text" id="${test.name}" name="${test.name}" required>
-        `;
-      });
-      testFieldsDiv.innerHTML = fieldsHtml;
-    }
-
-    document.getElementById("testResultForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const mrn = document.getElementById("mrn").value.trim();
-      const patientIndex = patients.findIndex(p => p.mrn === mrn);
-      if (patientIndex === -1) return alert("Patient not found.");
-
-      const formData = new FormData(this);
-      const results = {};
-      for (let [key, value] of formData.entries()) {
-        if (key !== "mrn") results[key] = value;
-      }
-
-      patients[patientIndex].results = results;
-      localStorage.setItem("patients", JSON.stringify(patients));
-      alert("Results submitted successfully.");
-      location.reload();
-    });
+    // Load patient data and input fields
+    loadAddResultPage();
   </script>
 </body>
 </html>
