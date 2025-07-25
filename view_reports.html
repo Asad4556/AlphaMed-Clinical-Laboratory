@@ -37,6 +37,7 @@
       border-radius: 10px;
       box-shadow: 0 0 10px #00ffff44;
       margin-bottom: 30px;
+      position: relative;
     }
 
     .report-container h3 {
@@ -87,7 +88,17 @@
     const searchInput = document.getElementById("searchInput");
     const reportsList = document.getElementById("reportsList");
 
-    const reportsData = JSON.parse(localStorage.getItem("labReports")) || [];
+    // Load patients with results
+    const allPatients = JSON.parse(localStorage.getItem("patients")) || [];
+
+    const reportsData = allPatients
+      .filter(p => p.results && Object.keys(p.results).length > 0)
+      .map(p => ({
+        mrn: p.mrn,
+        name: p.name,
+        cnic: p.contact || "N/A",
+        tests: Object.keys(p.results)
+      }));
 
     function renderReports(filteredReports) {
       reportsList.innerHTML = "";
@@ -116,11 +127,14 @@
     }
 
     function viewReport(mrn) {
-      window.location.href = `report.html?mrn=${mrn}`;
+      localStorage.setItem("selectedMRN", mrn);
+      window.location.href = "report.html";
     }
 
     function printReport(mrn) {
-      window.open(`report.html?mrn=${mrn}&print=true`, '_blank');
+      localStorage.setItem("selectedMRN", mrn);
+      const win = window.open("report.html", "_blank");
+      win.onload = () => win.print();
     }
 
     function searchReports() {
