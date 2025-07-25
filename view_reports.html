@@ -37,7 +37,6 @@
       border-radius: 10px;
       box-shadow: 0 0 10px #00ffff44;
       margin-bottom: 30px;
-      position: relative;
     }
 
     .report-container h3 {
@@ -88,17 +87,7 @@
     const searchInput = document.getElementById("searchInput");
     const reportsList = document.getElementById("reportsList");
 
-    // Load patients with results
-    const allPatients = JSON.parse(localStorage.getItem("patients")) || [];
-
-    const reportsData = allPatients
-      .filter(p => p.results && Object.keys(p.results).length > 0)
-      .map(p => ({
-        mrn: p.mrn,
-        name: p.name,
-        cnic: p.contact || "N/A",
-        tests: Object.keys(p.results)
-      }));
+    const reportsData = JSON.parse(localStorage.getItem("patients")) || [];
 
     function renderReports(filteredReports) {
       reportsList.innerHTML = "";
@@ -113,10 +102,10 @@
         div.classList.add("report-container");
         div.innerHTML = `
           <div class="watermark">AlphaMed Lab</div>
-          <h3>Patient: ${report.name}</h3>
+          <h3>${report.name}</h3>
           <p><strong>MRN:</strong> ${report.mrn}</p>
           <p><strong>CNIC:</strong> ${report.cnic}</p>
-          <p><strong>Tests:</strong> ${report.tests.join(", ")}</p>
+          <p><strong>Gender:</strong> ${report.gender}</p>
           <div class="report-buttons">
             <button onclick="viewReport('${report.mrn}')">View</button>
             <button onclick="printReport('${report.mrn}')">Print</button>
@@ -127,14 +116,11 @@
     }
 
     function viewReport(mrn) {
-      localStorage.setItem("selectedMRN", mrn);
-      window.location.href = "report.html";
+      window.location.href = `report.html?mrn=${mrn}`;
     }
 
     function printReport(mrn) {
-      localStorage.setItem("selectedMRN", mrn);
-      const win = window.open("report.html", "_blank");
-      win.onload = () => win.print();
+      window.open(`report.html?mrn=${mrn}`, '_blank');
     }
 
     function searchReports() {
