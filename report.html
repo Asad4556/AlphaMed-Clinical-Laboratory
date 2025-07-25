@@ -1,66 +1,134 @@
 <!DOCTYPE html>
-<html lang="ur">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Patient Report - AlphaMed Lab</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
   <style>
     body {
-      background: #fff;
-      color: #000;
-      padding: 40px;
+      background-color: #ffffff;
+      color: #000000;
       font-family: 'Segoe UI', sans-serif;
+      margin: 40px;
     }
-    h1, h2 {
+
+    .report-box {
+      border: 1px solid #ccc;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .report-header {
       text-align: center;
-      color: #006666;
+      margin-bottom: 20px;
     }
+
+    .report-header h1 {
+      margin: 0;
+      color: #00bcd4;
+    }
+
+    .report-details {
+      margin-bottom: 20px;
+    }
+
+    .report-details p {
+      margin: 5px 0;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 30px;
     }
-    table, th, td {
-      border: 1px solid #000;
-    }
+
     th, td {
       padding: 10px;
+      border: 1px solid #ccc;
       text-align: center;
     }
-    .info {
-      margin: 20px 0;
+
+    th {
+      background-color: #00bcd4;
+      color: white;
     }
-    .info strong {
-      display: inline-block;
-      width: 150px;
+
+    .print-button {
+      margin-top: 20px;
+      text-align: center;
     }
-    @media print {
-      button {
-        display: none;
-      }
+
+    .print-button button {
+      padding: 10px 20px;
+      background-color: #00bcd4;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
     }
   </style>
 </head>
-<body onload="loadReport()">
+<body>
 
-  <h1>AlphaMed Clinical Laboratory</h1>
-  <h2>Patient Report</h2>
+  <div class="report-box" id="reportArea">
+    <div class="report-header">
+      <h1>AlphaMed Clinical Laboratory</h1>
+      <p><strong>Patient Test Report</strong></p>
+    </div>
 
-  <div class="info">
-    <p><strong>Name:</strong> <span id="reportName"></span></p>
-    <p><strong>MRN:</strong> <span id="reportMRN"></span></p>
-    <p><strong>Age:</strong> <span id="reportAge"></span></p>
-    <p><strong>Gender:</strong> <span id="reportGender"></span></p>
-    <p><strong>Sample No:</strong> <span id="reportSample"></span></p>
+    <div class="report-details" id="patientInfo">
+      <!-- Patient details will be loaded here -->
+    </div>
+
+    <div id="testResults">
+      <!-- Test result table will be loaded here -->
+    </div>
   </div>
 
-  <table id="reportTable">
-    <!-- Dynamic test results will be inserted here -->
-  </table>
+  <div class="print-button">
+    <button onclick="window.print()">Print Report</button>
+  </div>
 
-  <br>
-  <button onclick="window.print()">Print Report</button>
+  <script>
+    const mrn = localStorage.getItem("selectedMRN");
+    const patients = JSON.parse(localStorage.getItem("patients")) || [];
+    const patient = patients.find(p => p.mrn === mrn);
 
-  <script src="test-data.js"></script>
+    if (!patient) {
+      document.getElementById("reportArea").innerHTML = "<h2>Patient report not found.</h2>";
+    } else {
+      const infoHTML = `
+        <p><strong>Name:</strong> ${patient.name}</p>
+        <p><strong>MRN:</strong> ${patient.mrn}</p>
+        <p><strong>Gender:</strong> ${patient.gender}</p>
+        <p><strong>Contact:</strong> ${patient.contact}</p>
+      `;
+      document.getElementById("patientInfo").innerHTML = infoHTML;
+
+      const tests = patient.results || {};
+      let tableHTML = `
+        <table>
+          <tr>
+            <th>Test</th>
+            <th>Result</th>
+            <th>Normal (Male)</th>
+            <th>Normal (Female)</th>
+          </tr>
+      `;
+      for (const [test, data] of Object.entries(tests)) {
+        tableHTML += `
+          <tr>
+            <td>${test}</td>
+            <td>${data.result}</td>
+            <td>${data.male}</td>
+            <td>${data.female}</td>
+          </tr>
+        `;
+      }
+      tableHTML += `</table>`;
+      document.getElementById("testResults").innerHTML = tableHTML;
+    }
+  </script>
 </body>
 </html>
