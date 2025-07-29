@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     body {
       background-color: #121212;
@@ -77,6 +78,7 @@
   </style>
 </head>
 <body>
+
   <div class="report-container" id="reportContent">
     <div class="report-header">
       <img src="logo.png" alt="Lab Logo" height="80">
@@ -139,7 +141,7 @@
   </div>
 
   <script>
-    // Sample Barcode with full patient + test info
+    // Generate barcode
     JsBarcode("#barcode", "MRN20250724001|John Doe|HCV PCR|HBV PCR|Molecular Biology", {
       format: "CODE128",
       lineColor: "#0ff",
@@ -148,22 +150,25 @@
       displayValue: false
     });
 
+    // Export to PDF
     async function exportPDF() {
       const { jsPDF } = window.jspdf;
-      const doc = new jsPDF('p', 'pt', 'a4');
       const content = document.getElementById("reportContent");
 
-      await html2canvas(content, {
+      const canvas = await html2canvas(content, {
         scale: 2,
-        backgroundColor: "#121212"
-      }).then((canvas) => {
-        const imgData = canvas.toDataURL("image/png");
-        doc.addImage(imgData, "PNG", 20, 20, 555, 780);
-        doc.save("AlphaMed_Report.pdf");
+        useCORS: true
       });
+
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF('p', 'pt', 'a4');
+
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+      pdf.save("AlphaMed_Report.pdf");
     }
   </script>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </body>
 </html>
