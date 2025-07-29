@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Register Patient - AlphaMed</title>
+  <title>مریض رجسٹریشن - AlphaMed</title>
   <link rel="stylesheet" href="style.css" />
   <style>
     body {
@@ -57,27 +57,27 @@
 </head>
 <body>
 
-  <h2>Register Patient</h2>
+  <h2>نیا مریض رجسٹر کریں</h2>
 
   <form id="patientForm">
-    <label>Patient Name:</label>
+    <label>مریض کا نام:</label>
     <input type="text" id="name" required>
 
     <label>CNIC:</label>
-    <input type="text" id="cnic" required placeholder="e.g. 12345-1234567-1">
+    <input type="text" id="cnic" required placeholder="مثال: 12345-1234567-1">
 
-    <label>Age:</label>
+    <label>عمر:</label>
     <input type="number" id="age" required>
 
-    <label>Gender:</label>
+    <label>جنس:</label>
     <select id="gender">
-      <option value="Male">Male</option>
-      <option value="Female">Female</option>
+      <option value="Male">مرد</option>
+      <option value="Female">خاتون</option>
     </select>
 
-    <label>Section:</label>
+    <label>سیکشن منتخب کریں:</label>
     <select id="section" onchange="populateTests()" required>
-      <option value="">-- Select Section --</option>
+      <option value="">-- سیکشن منتخب کریں --</option>
       <option value="Hematology">Hematology</option>
       <option value="Biochemistry">Biochemistry</option>
       <option value="Serology">Serology</option>
@@ -87,13 +87,14 @@
     </select>
 
     <div class="checkbox-group" id="testsArea">
-      <!-- Tests will be populated here -->
+      <!-- ٹیسٹ یہاں ظاہر ہوں گے -->
     </div>
 
-    <button type="submit">Register Patient</button>
+    <button type="submit">رجسٹر کریں</button>
   </form>
 
   <script>
+    // تمام ٹیسٹ
     const allTests = {
       Hematology: [
         { name: "CBC", male: "4.5-5.5", female: "4.0-5.0" },
@@ -125,6 +126,7 @@
       ]
     };
 
+    // سیکشن کے مطابق ٹیسٹ لوڈ کرنا
     function populateTests() {
       const section = document.getElementById("section").value;
       const area = document.getElementById("testsArea");
@@ -141,8 +143,10 @@
       });
     }
 
+    // مریض کو رجسٹر کرنا
     document.getElementById("patientForm").addEventListener("submit", function(e) {
       e.preventDefault();
+
       const name = document.getElementById("name").value.trim();
       const cnic = document.getElementById("cnic").value.trim();
       const age = parseInt(document.getElementById("age").value.trim());
@@ -151,27 +155,28 @@
       const checkboxes = document.querySelectorAll("input[name='selectedTests']:checked");
 
       if (!checkboxes.length) {
-        alert("Please select at least one test.");
+        alert("کم از کم ایک ٹیسٹ منتخب کریں۔");
         return;
       }
 
       const selectedTests = Array.from(checkboxes).map(cb => allTests[section][cb.value]);
 
-      const patients = JSON.parse(localStorage.getItem("patientList") || "[]");
+      const patients = JSON.parse(localStorage.getItem("patients") || "[]");
       const mrn = `ACL-25-${String(patients.length + 1).padStart(5, '0')}`;
 
-      patients.push({ mrn, name, cnic, age, gender, testType: section, selectedTests });
-      localStorage.setItem("patientList", JSON.stringify(patients));
+      const patient = { mrn, name, cnic, age, gender, testType: section, selectedTests };
+      patients.push(patient);
+      localStorage.setItem("patients", JSON.stringify(patients));
 
-      alert(`Patient registered successfully ✅\nMRN: ${mrn}`);
+      alert(`مریض کامیابی سے رجسٹر ہو گیا ✅\nMRN: ${mrn}`);
       this.reset();
       document.getElementById("testsArea").innerHTML = "";
     });
 
-    // Access control
+    // 🛡️ سیکیورٹی چیک
     const currentUser = JSON.parse(localStorage.getItem("loggedInUser"));
-    if (!currentUser || currentUser.role !== "Reception") {
-      alert("Unauthorized access");
+    if (!currentUser || currentUser.role.toLowerCase() !== "reception") {
+      alert("صرف ریسیپشن یوزر کو اجازت ہے۔");
       window.location.href = "login.html";
     }
   </script>
