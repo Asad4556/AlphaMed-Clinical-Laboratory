@@ -21,7 +21,6 @@
 
   <script src="test-data.js"></script>
   <script>
-    // Load patient info and tests for selected MRN from localStorage
     function loadAddResultPage() {
       const mrn = localStorage.getItem("selectedMRN");
       if (!mrn) {
@@ -44,7 +43,11 @@
       const container = document.getElementById("resultInputs");
       container.innerHTML = "";
 
-      // patient.section expected to be an array of section names
+      if (!Array.isArray(patient.section)) {
+        alert("Patient sections not defined properly.");
+        return;
+      }
+
       patient.section.forEach(section => {
         const tests = testData[section];
         if (!tests) return;
@@ -54,10 +57,11 @@
         container.appendChild(sectionTitle);
 
         tests.forEach(test => {
+          const id = test.test.replace(/\s+/g, "_");
           const div = document.createElement("div");
           div.innerHTML = `
-            <label for="${test.test.replace(/\s+/g, "_")}">${test.test} (${test.normal || ""}): </label>
-            <input type="text" id="${test.test.replace(/\s+/g, "_")}" name="${test.test.replace(/\s+/g, "_")}" />
+            <label for="${id}">${test.test} (${test.normal || "-"})</label>
+            <input type="text" id="${id}" name="${id}" />
             <br />
           `;
           container.appendChild(div);
@@ -65,7 +69,6 @@
       });
     }
 
-    // Save test results back to the patient object in localStorage
     function saveTestResults() {
       const mrn = localStorage.getItem("selectedMRN");
       if (!mrn) {
@@ -73,23 +76,26 @@
         return;
       }
 
-      let patients = JSON.parse(localStorage.getItem("patients")) || [];
+      const patients = JSON.parse(localStorage.getItem("patients")) || [];
       const patientIndex = patients.findIndex(p => p.mrn === mrn);
       if (patientIndex === -1) {
         alert("Patient not found!");
         return;
       }
 
-      // Initialize results object if it doesn't exist
-      patients[patientIndex].results = patients[patientIndex].results || {};
+      patients[patientIndex].results = {};
 
-      patients[patientIndex].section.forEach(section => {
+      const patient = patients[patientIndex];
+      if (!Array.isArray(patient.section)) return;
+
+      patient.section.forEach(section => {
         const tests = testData[section];
         if (!tests) return;
 
         tests.forEach(test => {
-          const val = document.getElementById(test.test.replace(/\s+/g, "_")).value;
-          patients[patientIndex].results[test.test] = val;
+          const id = test.test.replace(/\s+/g, "_");
+          const val = document.getElementById(id)?.value || "";
+          patient.results[test.test] = val;
         });
       });
 
@@ -98,6 +104,7 @@
       window.location.href = "technician_dashboard.html";
     }
 
+    // Load on page load
     loadAddResultPage();
   </script>
 </body>
