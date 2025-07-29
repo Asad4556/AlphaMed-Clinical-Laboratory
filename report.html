@@ -1,15 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ur">
 <head>
   <meta charset="UTF-8" />
-  <title>Patient Report - AlphaMed Lab</title>
+  <title>مریض کی رپورٹ - AlphaMed Lab</title>
   <link rel="stylesheet" href="style.css" />
   <style>
     body {
       background-color: #1c1c1c;
       color: #00ffff;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Noto Nastaliq Urdu', 'Segoe UI', Tahoma, sans-serif;
       padding: 30px;
+      direction: rtl;
     }
     h1 {
       text-align: center;
@@ -35,7 +36,7 @@
     th, td {
       border: 1px solid #00ffff;
       padding: 10px;
-      text-align: left;
+      text-align: right;
       font-size: 16px;
     }
     th {
@@ -50,7 +51,7 @@
         box-shadow: none;
         border: none;
       }
-      a, button {
+      .buttons {
         display: none;
       }
     }
@@ -76,28 +77,28 @@
 </head>
 <body>
 
-  <h1>Patient Test Report</h1>
+  <h1>مریض کی ٹیسٹ رپورٹ</h1>
 
   <div class="report-container">
     <div class="patient-info">
-      <p><strong>Name:</strong> <span id="reportName">Loading...</span></p>
-      <p><strong>MRN:</strong> <span id="reportMRN">Loading...</span></p>
-      <p><strong>Age:</strong> <span id="reportAge">Loading...</span></p>
-      <p><strong>Gender:</strong> <span id="reportGender">Loading...</span></p>
-      <p><strong>Sample No:</strong> <span id="reportSample">Loading...</span></p>
+      <p><strong>نام:</strong> <span id="reportName">لوڈ ہو رہا ہے...</span></p>
+      <p><strong>ایم آر این:</strong> <span id="reportMRN">لوڈ ہو رہا ہے...</span></p>
+      <p><strong>عمر:</strong> <span id="reportAge">لوڈ ہو رہا ہے...</span></p>
+      <p><strong>جنس:</strong> <span id="reportGender">لوڈ ہو رہا ہے...</span></p>
+      <p><strong>سیمپل نمبر:</strong> <span id="reportSample">لوڈ ہو رہا ہے...</span></p>
     </div>
 
     <table id="reportTable">
       <tr>
-        <th>Test</th>
-        <th>Normal Range</th>
-        <th>Result</th>
+        <th>ٹیسٹ</th>
+        <th>نارمل رینج</th>
+        <th>نتیجہ</th>
       </tr>
     </table>
 
     <div class="buttons">
-      <button onclick="window.print()">Print Report</button>
-      <button onclick="goBack()">Back</button>
+      <button onclick="window.print()">🖨️ پرنٹ کریں</button>
+      <button onclick="goBack()">🔙 واپس جائیں</button>
     </div>
   </div>
 
@@ -110,7 +111,7 @@
     function loadReport() {
       const mrn = getQueryParam("mrn");
       if (!mrn) {
-        alert("MRN not specified.");
+        alert("ایم آر این فراہم نہیں کیا گیا۔");
         window.location.href = "view_reports.html";
         return;
       }
@@ -119,7 +120,7 @@
       const patient = patients.find(p => p.mrn === mrn);
 
       if (!patient) {
-        alert("Patient data not found.");
+        alert("مریض کا ڈیٹا نہیں ملا۔");
         window.location.href = "view_reports.html";
         return;
       }
@@ -127,17 +128,16 @@
       document.getElementById("reportName").innerText = patient.name;
       document.getElementById("reportMRN").innerText = patient.mrn;
       document.getElementById("reportAge").innerText = patient.age;
-      document.getElementById("reportGender").innerText = patient.gender;
+      document.getElementById("reportGender").innerText = patient.gender === "Male" ? "مرد" : "خاتون";
       document.getElementById("reportSample").innerText = patient.sample;
 
       const table = document.getElementById("reportTable");
 
-      // Clear previous rows except headers
       table.innerHTML = `
         <tr>
-          <th>Test</th>
-          <th>Normal Range</th>
-          <th>Result</th>
+          <th>ٹیسٹ</th>
+          <th>نارمل رینج</th>
+          <th>نتیجہ</th>
         </tr>`;
 
       patient.section.forEach(section => {
@@ -160,7 +160,6 @@
       window.location.href = "view_reports.html";
     }
 
-    // Wait for testData to be available (test-data.js must be included in the HTML)
     if (typeof testData === "undefined") {
       const script = document.createElement("script");
       script.src = "test-data.js";
