@@ -4,6 +4,55 @@
   <meta charset="UTF-8">
   <title>AlphaMed Clinical Laboratory</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    body.centered {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #121212;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+
+    .login-box {
+      text-align: center;
+      background-color: #1e1e1e;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px #00ffff;
+    }
+
+    .login-box h1 {
+      color: #00ffff;
+      margin-bottom: 10px;
+    }
+
+    .login-box p {
+      margin-bottom: 20px;
+    }
+
+    .login-box button {
+      background-color: #00ffff;
+      color: black;
+      border: none;
+      padding: 12px 20px;
+      margin: 10px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .login-box button:hover {
+      background-color: #00cccc;
+    }
+
+    .logo {
+      height: 80px;
+      margin-bottom: 20px;
+    }
+  </style>
 </head>
 <body class="centered">
   <div class="login-box">
@@ -14,5 +63,36 @@
     <button onclick="window.location.href='login.html?role=reception'">Reception</button>
     <button onclick="window.location.href='login.html?role=technician'">Technician</button>
   </div>
+
+  <script>
+    // This script will go into login.html to complete your flow
+    // Example of login.html JavaScript that you must include:
+    // <script>
+    //   const urlParams = new URLSearchParams(window.location.search);
+    //   const selectedRole = urlParams.get('role') || 'admin';
+    //   function loginUser() {
+    //     const cnic = document.getElementById("cnic").value.trim();
+    //     const password = document.getElementById("password").value.trim();
+    //     const users = JSON.parse(localStorage.getItem("users")) || [];
+
+    //     const user = users.find(u => u.cnic === cnic && u.password === password && u.role === selectedRole);
+
+    //     if (user) {
+    //       localStorage.setItem("loggedInUser", JSON.stringify(user));
+    //       localStorage.setItem("loggedInRole", selectedRole);
+    //
+    //       if (selectedRole === 'admin') {
+    //         window.location.href = "admin_dashboard.html";
+    //       } else if (selectedRole === 'reception') {
+    //         window.location.href = "reception_dashboard.html";
+    //       } else if (selectedRole === 'technician') {
+    //         window.location.href = "technician_dashboard.html";
+    //       }
+    //     } else {
+    //       alert("Invalid credentials or role mismatch.");
+    //     }
+    //   }
+    // </script>
+  </script>
 </body>
 </html>
