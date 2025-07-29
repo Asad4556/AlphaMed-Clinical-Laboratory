@@ -4,8 +4,39 @@
   <meta charset="UTF-8" />
   <title>Technician Dashboard - AlphaMed Lab</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      background-color: #121212;
+      color: #00bcd4;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      text-align: center;
+      padding: 50px;
+    }
+
+    .centered {
+      margin-top: 50px;
+    }
+
+    button {
+      background-color: #00bcd4;
+      color: #fff;
+      border: none;
+      padding: 15px 30px;
+      margin: 10px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0196a0;
+    }
+  </style>
 </head>
 <body>
+
   <h1>Technician Dashboard</h1>
 
   <div class="centered">
@@ -14,19 +45,10 @@
     <button onclick="logout()">Logout</button>
   </div>
 
-  <script src="test-data.js"></script>
+  <script src="script.js"></script>
   <script>
-    // Access control
-    const user = JSON.parse(localStorage.getItem("loggedInUser"));
-    if (!user || user.role !== "technician") {
-      alert("Unauthorized access!");
-      window.location.href = "login.html";
-    }
-
-    function logout() {
-      localStorage.removeItem("loggedInUser");
-      window.location.href = "login.html";
-    }
+    // Role-based access control (technician only)
+    restrictAccess("technician");
   </script>
 </body>
 </html>
