@@ -1,28 +1,28 @@
 // script.js
 
-// Restrict unauthorized access based on role
+// 🛡️ مخصوص کردار (role) کی بنیاد پر غیر مجاز رسائی روکنے کا فنکشن
 function restrictAccess(expectedRole) {
   const role = localStorage.getItem("loggedInRole");
   if (role !== expectedRole) {
     alert("آپ کے پاس اس صفحے تک رسائی کی اجازت نہیں ہے۔");
-    window.location.href = "login.html";
+    window.location.href = "login.html"; // لاگ اِن صفحے پر ری ڈائریکٹ کریں
   }
 }
 
-// Logout function (can be reused across all pages)
+// 🔐 لاگ آؤٹ فنکشن (تمام صفحوں پر استعمال کیا جا سکتا ہے)
 function logout() {
-  localStorage.removeItem("loggedInUser");
-  localStorage.removeItem("loggedInRole");
-  window.location.href = "login.html";
+  localStorage.removeItem("loggedInUser"); // صارف کا ڈیٹا ختم کریں
+  localStorage.removeItem("loggedInRole"); // کردار ختم کریں
+  window.location.href = "login.html";     // لاگ اِن صفحے پر واپس جائیں
 }
 
-// Format current date (for slips, reports, etc.)
+// 📆 موجودہ تاریخ اور وقت کو فارمیٹ کرنے والا فنکشن
 function getFormattedDate() {
   const now = new Date();
-  return now.toLocaleDateString() + " " + now.toLocaleTimeString();
+  return now.toLocaleDateString() + " " + now.toLocaleTimeString(); // دن + وقت
 }
 
-// Example: Inject current date into any element with ID "currentDate"
+// 🕓 کسی HTML عنصر میں تاریخ ظاہر کرنے کا فنکشن (جس کا ID "currentDate" ہو)
 function displayCurrentDate() {
   const el = document.getElementById("currentDate");
   if (el) {
@@ -30,7 +30,7 @@ function displayCurrentDate() {
   }
 }
 
-// Call on page load if needed
+// 📌 صفحہ مکمل لوڈ ہونے کے بعد تاریخ ظاہر کریں
 document.addEventListener("DOMContentLoaded", () => {
   displayCurrentDate();
 });
