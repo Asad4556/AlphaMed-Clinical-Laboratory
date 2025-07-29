@@ -1,15 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ur">
 <head>
   <meta charset="UTF-8">
-  <title>Settings - AlphaMed Lab</title>
+  <title>سیٹنگز - الفا میڈ لیب</title>
   <link rel="stylesheet" href="style.css">
   <style>
     body {
       background-color: #111;
       color: #fff;
-      font-family: Arial, sans-serif;
+      font-family: 'Noto Nastaliq Urdu', Arial, sans-serif;
       padding: 20px;
+      direction: rtl; /* اہم: اردو کے لیے رائٹ ٹو لیفٹ */
     }
 
     h2 {
@@ -56,25 +57,26 @@
 </head>
 <body>
 
-  <h2>System Settings</h2>
+  <h2>سسٹم سیٹنگز</h2>
 
   <div class="settings-container">
-    <label for="labName">Lab Name:</label>
-    <input type="text" id="labName" placeholder="Enter Lab Name" />
+    <label for="labName">لیب کا نام:</label>
+    <input type="text" id="labName" placeholder="لیب کا نام درج کریں" />
 
-    <label for="labAddress">Lab Address:</label>
-    <textarea id="labAddress" rows="3" placeholder="Enter Address"></textarea>
+    <label for="labAddress">لیب کا پتہ:</label>
+    <textarea id="labAddress" rows="3" placeholder="پتہ درج کریں"></textarea>
 
-    <label for="contactNumber">Contact Number:</label>
-    <input type="text" id="contactNumber" placeholder="Enter Phone Number" />
+    <label for="contactNumber">رابطہ نمبر:</label>
+    <input type="text" id="contactNumber" placeholder="فون نمبر درج کریں" />
 
-    <label for="footerNote">Footer Note:</label>
-    <textarea id="footerNote" rows="2" placeholder="Enter Footer Note"></textarea>
+    <label for="footerNote">فوٹر نوٹ:</label>
+    <textarea id="footerNote" rows="2" placeholder="فوٹر نوٹ درج کریں"></textarea>
 
-    <button onclick="saveSettings()">Save Settings</button>
+    <button onclick="saveSettings()">محفوظ کریں</button>
   </div>
 
   <script>
+    // سیٹنگز لوڈ کریں
     function loadSettings() {
       const settings = JSON.parse(localStorage.getItem("labSettings") || "{}");
 
@@ -84,6 +86,7 @@
       document.getElementById("footerNote").value = settings.footerNote || "";
     }
 
+    // سیٹنگز کو محفوظ کریں
     function saveSettings() {
       const settings = {
         labName: document.getElementById("labName").value.trim(),
@@ -93,9 +96,10 @@
       };
 
       localStorage.setItem("labSettings", JSON.stringify(settings));
-      alert("Settings saved successfully ✅");
+      alert("سیٹنگز کامیابی سے محفوظ ہو گئیں ✅");
     }
 
+    // صفحہ لوڈ ہوتے ہی سیٹنگز دکھائیں
     loadSettings();
   </script>
 
