@@ -1,172 +1,140 @@
 <!DOCTYPE html>
-<html lang="ur">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>مریض کی رپورٹ - AlphaMed Lab</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>Patient Report - AlphaMed Lab</title>
+  <link rel="stylesheet" href="style.css">
   <style>
     body {
-      background-color: #1c1c1c;
-      color: #00ffff;
-      font-family: 'Noto Nastaliq Urdu', 'Segoe UI', Tahoma, sans-serif;
-      padding: 30px;
-      direction: rtl;
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 25px;
-    }
-    .report-container {
-      max-width: 700px;
-      margin: 0 auto;
-      background-color: #222;
+      background-color: #f2f2f2;
+      font-family: 'Segoe UI', sans-serif;
+      color: #000;
       padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 0 15px #00ffffaa;
     }
-    .patient-info p {
-      font-size: 18px;
-      margin: 5px 0;
+
+    .report-box {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+      max-width: 900px;
+      margin: auto;
     }
-    table {
+
+    .report-box h1 {
+      text-align: center;
+      color: #00aaaa;
+      margin-bottom: 20px;
+    }
+
+    .patient-info {
+      margin-bottom: 20px;
+    }
+
+    .test-table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
     }
-    th, td {
-      border: 1px solid #00ffff;
+
+    .test-table th, .test-table td {
+      border: 1px solid #ccc;
       padding: 10px;
-      text-align: right;
-      font-size: 16px;
-    }
-    th {
-      background-color: #00ffff33;
-    }
-    @media print {
-      body {
-        background: white;
-        color: black;
-      }
-      .report-container {
-        box-shadow: none;
-        border: none;
-      }
-      .buttons {
-        display: none;
-      }
-    }
-    .buttons {
-      margin-top: 20px;
       text-align: center;
     }
-    .buttons button {
-      background-color: #00ffff;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-weight: bold;
+
+    .test-table th {
+      background-color: #00dddd;
       color: #000;
-      cursor: pointer;
-      margin: 0 10px;
-      transition: background-color 0.3s ease;
     }
-    .buttons button:hover {
+
+    .print-button {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 30px;
+      font-weight: bold;
       background-color: #00bbbb;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    @media print {
+      .print-button {
+        display: none;
+      }
     }
   </style>
 </head>
 <body>
 
-  <h1>مریض کی ٹیسٹ رپورٹ</h1>
-
-  <div class="report-container">
-    <div class="patient-info">
-      <p><strong>نام:</strong> <span id="reportName">لوڈ ہو رہا ہے...</span></p>
-      <p><strong>ایم آر این:</strong> <span id="reportMRN">لوڈ ہو رہا ہے...</span></p>
-      <p><strong>عمر:</strong> <span id="reportAge">لوڈ ہو رہا ہے...</span></p>
-      <p><strong>جنس:</strong> <span id="reportGender">لوڈ ہو رہا ہے...</span></p>
-      <p><strong>سیمپل نمبر:</strong> <span id="reportSample">لوڈ ہو رہا ہے...</span></p>
+  <div class="report-box">
+    <h1>Patient Report</h1>
+    <div class="patient-info" id="patientInfo">
+      <!-- Patient info will be inserted here -->
     </div>
 
-    <table id="reportTable">
-      <tr>
-        <th>ٹیسٹ</th>
-        <th>نارمل رینج</th>
-        <th>نتیجہ</th>
-      </tr>
+    <table class="test-table" id="testTable">
+      <thead>
+        <tr>
+          <th>Test</th>
+          <th>Result</th>
+          <th>Normal Range</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Test results will be injected here -->
+      </tbody>
     </table>
 
-    <div class="buttons">
-      <button onclick="window.print()">🖨️ پرنٹ کریں</button>
-      <button onclick="goBack()">🔙 واپس جائیں</button>
-    </div>
+    <button class="print-button" onclick="window.print()">Print Report</button>
   </div>
 
   <script>
-    function getQueryParam(param) {
-      const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get(param);
-    }
+    const urlParams = new URLSearchParams(window.location.search);
+    const mrn = urlParams.get('mrn');
 
-    function loadReport() {
-      const mrn = getQueryParam("mrn");
-      if (!mrn) {
-        alert("ایم آر این فراہم نہیں کیا گیا۔");
-        window.location.href = "view_reports.html";
-        return;
-      }
+    const patients = JSON.parse(localStorage.getItem("patients")) || [];
+    const labSections = JSON.parse(localStorage.getItem("labSections")) || {};
+    const patient = patients.find(p => p.mrn === mrn);
 
-      const patients = JSON.parse(localStorage.getItem("patients")) || [];
-      const patient = patients.find(p => p.mrn === mrn);
-
-      if (!patient) {
-        alert("مریض کا ڈیٹا نہیں ملا۔");
-        window.location.href = "view_reports.html";
-        return;
-      }
-
-      document.getElementById("reportName").innerText = patient.name;
-      document.getElementById("reportMRN").innerText = patient.mrn;
-      document.getElementById("reportAge").innerText = patient.age;
-      document.getElementById("reportGender").innerText = patient.gender === "Male" ? "مرد" : "خاتون";
-      document.getElementById("reportSample").innerText = patient.sample;
-
-      const table = document.getElementById("reportTable");
-
-      table.innerHTML = `
-        <tr>
-          <th>ٹیسٹ</th>
-          <th>نارمل رینج</th>
-          <th>نتیجہ</th>
-        </tr>`;
-
-      patient.section.forEach(section => {
-        const tests = testData[section];
-        if (!tests) return;
-
-        tests.forEach(test => {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td>${test.test}</td>
-            <td>${test.normal}</td>
-            <td>${patient.results[test.test] || "-"}</td>
-          `;
-          table.appendChild(tr);
-        });
-      });
-    }
-
-    function goBack() {
-      window.location.href = "view_reports.html";
-    }
-
-    if (typeof testData === "undefined") {
-      const script = document.createElement("script");
-      script.src = "test-data.js";
-      script.onload = loadReport;
-      document.head.appendChild(script);
+    if (!patient) {
+      document.getElementById("patientInfo").innerHTML = '<p>Patient not found.</p>';
     } else {
-      loadReport();
+      const infoBox = document.getElementById("patientInfo");
+      infoBox.innerHTML = `
+        <p><strong>Name:</strong> ${patient.name}</p>
+        <p><strong>MRN:</strong> ${patient.mrn}</p>
+        <p><strong>CNIC:</strong> ${patient.cnic}</p>
+        <p><strong>Gender:</strong> ${patient.gender}</p>
+        <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+      `;
+
+      const testBody = document.querySelector("#testTable tbody");
+      if (patient.tests && patient.tests.length > 0) {
+        patient.tests.forEach(test => {
+          // Find normal range from labSections
+          let normal = "-";
+          for (const section of Object.values(labSections)) {
+            const match = section.find(t => t.test === test.name);
+            if (match) {
+              normal = patient.gender.toLowerCase() === "female" ? match.normalFemale : match.normalMale;
+              break;
+            }
+          }
+
+          testBody.innerHTML += `
+            <tr>
+              <td>${test.name}</td>
+              <td>${test.result}</td>
+              <td>${normal}</td>
+            </tr>
+          `;
+        });
+      } else {
+        testBody.innerHTML = '<tr><td colspan="3">No test results available.</td></tr>';
+      }
     }
   </script>
 
