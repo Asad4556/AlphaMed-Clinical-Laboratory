@@ -25,10 +25,12 @@
 
     .search-bar input {
       padding: 10px;
-      width: 300px;
+      width: 90%;
+      max-width: 400px;
       border-radius: 5px;
       border: none;
       outline: none;
+      font-size: 16px;
     }
 
     .report-container {
@@ -37,6 +39,7 @@
       border-radius: 10px;
       box-shadow: 0 0 10px #00ffff44;
       margin-bottom: 30px;
+      position: relative;
     }
 
     .report-container h3 {
@@ -57,17 +60,30 @@
       color: #000;
       font-weight: bold;
       cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .report-buttons button:hover {
+      background-color: #00cccc;
     }
 
     .watermark {
       position: absolute;
       top: 40%;
-      left: 35%;
+      left: 30%;
       font-size: 60px;
       opacity: 0.05;
       transform: rotate(-30deg);
       color: #00ffff;
       z-index: 0;
+      pointer-events: none;
+    }
+
+    @media (max-width: 600px) {
+      .report-buttons button {
+        margin: 5px 0;
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -92,14 +108,14 @@
     function renderReports(filteredReports) {
       reportsList.innerHTML = "";
 
-      if (filteredReports.length === 0) {
+      if (!filteredReports.length) {
         reportsList.innerHTML = "<p style='text-align:center;'>No reports found.</p>";
         return;
       }
 
       filteredReports.forEach(report => {
         const div = document.createElement("div");
-        div.classList.add("report-container");
+        div.className = "report-container";
         div.innerHTML = `
           <div class="watermark">AlphaMed Lab</div>
           <h3>${report.name}</h3>
@@ -123,17 +139,24 @@
       window.open(`report.html?mrn=${mrn}`, '_blank');
     }
 
-    function searchReports() {
-      const query = searchInput.value.toLowerCase();
+    function searchReports(query) {
+      const q = query.trim().toLowerCase();
       const filtered = reportsData.filter(r =>
-        r.mrn.toLowerCase().includes(query) ||
-        r.name.toLowerCase().includes(query) ||
-        r.cnic.toLowerCase().includes(query)
+        r.mrn?.toLowerCase().includes(q) ||
+        r.name?.toLowerCase().includes(q) ||
+        r.cnic?.toLowerCase().includes(q)
       );
       renderReports(filtered);
     }
 
-    searchInput.addEventListener("input", searchReports);
+    // Debounce search to avoid rapid firing
+    let debounceTimer;
+    searchInput.addEventListener("input", () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        searchReports(searchInput.value);
+      }, 300);
+    });
 
     // Initial render
     renderReports(reportsData);
