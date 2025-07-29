@@ -1,15 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ur">
 <head>
   <meta charset="UTF-8" />
-  <title>Registration Slip - AlphaMed Lab</title>
+  <title>رجسٹریشن سلِپ - AlphaMed Lab</title>
   <link rel="stylesheet" href="style.css" />
   <style>
     body {
       background-color: white;
       color: #000;
-      font-family: Arial, sans-serif;
+      font-family: 'Noto Nastaliq Urdu', Arial, sans-serif;
       padding: 20px;
+      direction: rtl;
     }
 
     .slip {
@@ -72,17 +73,17 @@
 <body>
 
   <div class="slip">
-    <h2>AlphaMed Clinical Laboratory</h2>
+    <h2>الفا میڈ کلینیکل لیبارٹری</h2>
     <div class="info" id="patientInfo">
-      <!-- Patient info here -->
+      <!-- مریض کی معلومات یہاں آئے گی -->
     </div>
 
     <div class="test-list" id="testList">
-      <!-- Tests here -->
+      <!-- ٹیسٹ کی فہرست یہاں ہو گی -->
     </div>
 
     <div class="print-btn">
-      <button onclick="window.print()">🖨️ Print Slip</button>
+      <button onclick="window.print()">🖨️ پرنٹ سلِپ</button>
     </div>
   </div>
 
@@ -90,25 +91,25 @@
     const urlParams = new URLSearchParams(window.location.search);
     const mrn = urlParams.get("mrn");
 
-    const patients = JSON.parse(localStorage.getItem("patientList") || "[]");
+    const patients = JSON.parse(localStorage.getItem("patients") || "[]");
     const patient = patients.find(p => p.mrn === mrn);
 
     if (!patient) {
-      document.body.innerHTML = "<h3 style='color:red;text-align:center;'>Patient not found</h3>";
+      document.body.innerHTML = "<h3 style='color:red;text-align:center;'>مریض نہیں ملا</h3>";
     } else {
       const infoHTML = `
-        <p><strong>MRN:</strong> ${patient.mrn}</p>
-        <p><strong>Name:</strong> ${patient.name}</p>
-        <p><strong>CNIC:</strong> ${patient.cnic}</p>
-        <p><strong>Age:</strong> ${patient.age}</p>
-        <p><strong>Gender:</strong> ${patient.gender}</p>
-        <p><strong>Section:</strong> ${patient.testType}</p>
-        <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+        <p><strong>ایم آر این:</strong> ${patient.mrn}</p>
+        <p><strong>نام:</strong> ${patient.name}</p>
+        <p><strong>شناختی کارڈ نمبر:</strong> ${patient.cnic}</p>
+        <p><strong>عمر:</strong> ${patient.age}</p>
+        <p><strong>جنس:</strong> ${patient.gender === "Male" ? "مرد" : "خاتون"}</p>
+        <p><strong>سیکشن:</strong> ${patient.testType}</p>
+        <p><strong>تاریخ:</strong> ${new Date().toLocaleDateString('ur-PK')}</p>
       `;
       document.getElementById("patientInfo").innerHTML = infoHTML;
 
       const testListHTML = `
-        <p><strong>Selected Tests:</strong></p>
+        <p><strong>منتخب کردہ ٹیسٹ:</strong></p>
         <ul>
           ${patient.selectedTests.map(t => `<li>${t.name}</li>`).join("")}
         </ul>
