@@ -71,8 +71,11 @@
   </div>
 
   <script>
+    // Validate Admin Access
     const user = JSON.parse(localStorage.getItem("loggedInUser"));
-    if (!user || user.role.toLowerCase() !== "admin") {
+    const role = localStorage.getItem("loggedInRole");
+
+    if (!user || !role || role.toLowerCase() !== "admin") {
       alert("Unauthorized access. Redirecting to login.");
       window.location.href = "login.html";
     }
