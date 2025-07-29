@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ur" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>Registration Slip - AlphaMed Lab</title>
+  <title>رجسٹریشن سلِپ - الفا میڈ لیب</title>
   <link rel="stylesheet" href="style.css" />
   <style>
     body {
       background-color: #121212;
       color: #00ffff;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Noto Nastaliq Urdu', 'Segoe UI', Tahoma, sans-serif;
       padding: 30px;
       text-align: center;
     }
@@ -26,7 +26,7 @@
       color: #00ffff;
     }
     .info {
-      text-align: left;
+      text-align: right;
       margin: 10px 0;
       font-size: 18px;
     }
@@ -52,14 +52,14 @@
 <body>
 
   <div class="slip-container">
-    <h2>Patient Registration Slip</h2>
-    <div class="info"><strong>Name:</strong> <span id="slipName">Loading...</span></div>
-    <div class="info"><strong>MRN:</strong> <span id="slipMRN">Loading...</span></div>
-    <div class="info"><strong>Sample No:</strong> <span id="slipSample">Loading...</span></div>
-    <div class="info"><strong>Sections:</strong> <span id="slipSection">Loading...</span></div>
+    <h2>مریض کی رجسٹریشن سلِپ</h2>
+    <div class="info"><strong>نام:</strong> <span id="slipName">...لوڈ ہو رہا ہے</span></div>
+    <div class="info"><strong>ایم آر این:</strong> <span id="slipMRN">...لوڈ ہو رہا ہے</span></div>
+    <div class="info"><strong>سیمپل نمبر:</strong> <span id="slipSample">...لوڈ ہو رہا ہے</span></div>
+    <div class="info"><strong>سیکشنز:</strong> <span id="slipSection">...لوڈ ہو رہا ہے</span></div>
     <canvas id="barcodeCanvas"></canvas>
 
-    <button onclick="window.print()">Print Slip</button>
+    <button onclick="window.print()">پرنٹ کریں</button>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
@@ -67,7 +67,7 @@
     function loadSlip() {
       const patient = JSON.parse(localStorage.getItem("lastRegistered"));
       if (!patient) {
-        alert("No registration data found.");
+        alert("کوئی رجسٹریشن ڈیٹا موجود نہیں۔");
         window.location.href = "register_patient.html";
         return;
       }
