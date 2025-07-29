@@ -1,29 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Admin Login - AlphaMed Lab</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body class="dark-theme">
-  <header>
-    <h1>AlphaMed Clinical Laboratory</h1>
-    <p>Admin Login</p>
-  </header>
+<script>
+  function loginUser(role) {
+    const cnic = document.getElementById("cnic").value.trim();
+    const password = document.getElementById("password").value.trim();
 
-  <main>
-    <section class="login-form">
-      <h2>Login</h2>
-      <input type="text" id="cnic" placeholder="Enter CNIC" required>
-      <input type="password" id="password" placeholder="Enter Password" required>
-      <button onclick="loginUser('admin')">Login as Admin</button>
-    </section>
-  </main>
+    if (!cnic || !password) {
+      alert("Please enter CNIC and Password.");
+      return;
+    }
 
-  <footer>
-    <p>&copy; 2025 AlphaMed Clinical Laboratory</p>
-  </footer>
+    // Get all users from localStorage
+    const users = JSON.parse(localStorage.getItem("users")) || [];
 
-  <script src="test-data.js"></script>
-</body>
-</html>
+    // Find the matching user
+    const user = users.find(u => u.cnic === cnic && u.password === password && u.role.toLowerCase() === role.toLowerCase());
+
+    if (!user) {
+      alert("Invalid CNIC, Password or Role!");
+      return;
+    }
+
+    // Store session
+    localStorage.setItem("loggedInUser", JSON.stringify(user));
+    localStorage.setItem("loggedInRole", role.toLowerCase());
+
+    // Redirect based on role
+    if (role.toLowerCase() === "admin") {
+      window.location.href = "admin-dashboard.html";
+    } else if (role.toLowerCase() === "technician") {
+      window.location.href = "technician_dashboard.html";
+    } else if (role.toLowerCase() === "reception") {
+      window.location.href = "reception_dashboard.html";
+    } else {
+      alert("Unknown role!");
+    }
+  }
+</script>
