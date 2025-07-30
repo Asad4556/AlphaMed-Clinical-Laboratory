@@ -1,98 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Manage Users - AlphaMed Clinical Laboratory</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manage Users - Alpha Med</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <header>
-    <h1>AlphaMed Clinical Laboratory</h1>
-    <h2>Manage Users</h2>
-    <nav>
-      <a href="admin-dashboard.html">Dashboard</a> |
-      <a href="settings.html">Settings</a> |
-      <a href="logout.php">Logout</a>
-    </nav>
+<body class="bg-gray-100 min-h-screen">
+
+  <!-- Header -->
+  <header class="bg-white shadow p-4 flex justify-between items-center">
+    <div class="flex items-center space-x-2">
+      <img src="logo.png" alt="Logo" class="w-10">
+      <h1 class="text-xl font-bold text-blue-700">Alpha Med - Manage Users</h1>
+    </div>
+    <a href="admin-dashboard.html" class="text-blue-600 hover:underline">← Back to Dashboard</a>
   </header>
 
-  <main>
-    <section>
-      <h3>Add New User</h3>
-      <form id="addUserForm">
-        <label for="username">Username:</label>
-        <input type="text" id="username" required>
-
-        <label for="password">Password:</label>
-        <input type="password" id="password" required>
-
-        <label for="role">Role:</label>
-        <select id="role">
-          <option value="Receptionist">Receptionist</option>
-          <option value="Technician">Technician</option>
-          <option value="Admin">Admin</option>
+  <!-- Main Content -->
+  <main class="p-6 max-w-5xl mx-auto">
+    <!-- Add User -->
+    <section class="bg-white p-4 rounded-lg shadow mb-6">
+      <h2 class="text-lg font-semibold mb-3">Add New User</h2>
+      <form id="addUserForm" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <input type="text" id="userName" placeholder="Full Name" required class="p-2 border rounded">
+        <input type="text" id="userCNIC" placeholder="CNIC (xxxxx-xxxxxxx-x)" required class="p-2 border rounded">
+        <input type="password" id="userPassword" placeholder="Password" required class="p-2 border rounded">
+        <select id="userRole" required class="p-2 border rounded col-span-1 md:col-span-2">
+          <option value="">Select Role</option>
+          <option value="admin">Admin</option>
+          <option value="receptionist">Receptionist</option>
+          <option value="technician">Technician</option>
         </select>
-
-        <button type="submit">Add User</button>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 col-span-1 md:col-span-3">Add User</button>
       </form>
     </section>
 
-    <section>
-      <h3>Existing Users</h3>
-      <table id="userTable">
+    <!-- User List -->
+    <section class="bg-white p-4 rounded-lg shadow">
+      <div class="flex justify-between items-center mb-3">
+        <h2 class="text-lg font-semibold">Registered Users</h2>
+        <select id="filterRole" class="p-2 border rounded">
+          <option value="">All Roles</option>
+          <option value="admin">Admin</option>
+          <option value="receptionist">Receptionist</option>
+          <option value="technician">Technician</option>
+        </select>
+      </div>
+
+      <table class="w-full text-left border-t">
         <thead>
-          <tr>
-            <th>Username</th>
-            <th>Role</th>
-            <th>Action</th>
+          <tr class="bg-gray-100 text-sm text-gray-700">
+            <th class="p-2">#</th>
+            <th class="p-2">Name</th>
+            <th class="p-2">CNIC</th>
+            <th class="p-2">Role</th>
+            <th class="p-2">Actions</th>
           </tr>
         </thead>
-        <tbody>
-          <!-- Users will be added here by JS -->
+        <tbody id="userTable" class="text-sm">
+          <!-- Filled by JS -->
         </tbody>
       </table>
     </section>
   </main>
 
   <script>
-    const form = document.getElementById('addUserForm');
-    const userTable = document.getElementById('userTable').querySelector('tbody');
-    let users = JSON.parse(localStorage.getItem('users')) || [];
+    const users = [
+      { name: "Asad", cnic: "34501-8971113-7", role: "admin" },
+      { name: "Sana", cnic: "35202-1234567-1", role: "receptionist" },
+      { name: "Ali", cnic: "35301-7654321-9", role: "technician" },
+    ];
 
-    function renderUsers() {
-      userTable.innerHTML = '';
-      users.forEach((user, index) => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${user.username}</td>
-          <td>${user.role}</td>
-          <td><button onclick="deleteUser(${index})">Delete</button></td>
-        `;
-        userTable.appendChild(row);
-      });
+    const userTable = document.getElementById("userTable");
+    const filterRole = document.getElementById("filterRole");
+
+    function renderUsers(role = "") {
+      userTable.innerHTML = "";
+      users
+        .filter(user => !role || user.role === role)
+        .forEach((user, index) => {
+          userTable.innerHTML += `
+            <tr class="border-b">
+              <td class="p-2">${index + 1}</td>
+              <td class="p-2">${user.name}</td>
+              <td class="p-2">${user.cnic}</td>
+              <td class="p-2 capitalize">${user.role}</td>
+              <td class="p-2">
+                <button class="text-blue-600 hover:underline mr-2" onclick="editUser(${index})">Edit</button>
+                <button class="text-red-600 hover:underline" onclick="deleteUser(${index})">Delete</button>
+              </td>
+            </tr>`;
+        });
     }
 
+    document.getElementById("addUserForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = document.getElementById("userName").value.trim();
+      const cnic = document.getElementById("userCNIC").value.trim();
+      const role = document.getElementById("userRole").value;
+
+      users.push({ name, cnic, role });
+      renderUsers(filterRole.value);
+      e.target.reset();
+    });
+
+    filterRole.addEventListener("change", () => renderUsers(filterRole.value));
+
     function deleteUser(index) {
-      if (confirm('Are you sure you want to delete this user?')) {
+      if (confirm("Delete this user?")) {
         users.splice(index, 1);
-        localStorage.setItem('users', JSON.stringify(users));
-        renderUsers();
+        renderUsers(filterRole.value);
       }
     }
 
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value;
-      const role = document.getElementById('role').value;
+    function editUser(index) {
+      const u = users[index];
+      const name = prompt("Enter new name", u.name);
+      const cnic = prompt("Enter new CNIC", u.cnic);
+      const role = prompt("Enter new role (admin/receptionist/technician)", u.role);
 
-      if (!username || !password) return;
-
-      users.push({ username, password, role });
-      localStorage.setItem('users', JSON.stringify(users));
-      form.reset();
-      renderUsers();
-    });
+      if (name && cnic && role) {
+        users[index] = { name, cnic, role };
+        renderUsers(filterRole.value);
+      }
+    }
 
     renderUsers();
   </script>
