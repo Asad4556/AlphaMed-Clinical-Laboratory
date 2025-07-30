@@ -3,175 +3,244 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Lab Report</title>
+  <title>Patient Report - Alpha Med</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #fff;
-      padding: 20px;
-    }
-
-    .report-container {
-      width: 800px;
-      margin: 0 auto;
-      position: relative;
-      padding: 30px;
-      border: 1px solid #ccc;
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: relative;
-    }
-
-    .logo-left {
-      width: 80px;
-    }
-
-    .lab-name {
-      text-align: center;
-      font-size: 24px;
-      font-weight: bold;
-      flex-grow: 1;
-    }
-
-    .barcode {
-      width: 100px;
-      text-align: right;
-    }
-
-    .watermark {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      opacity: 0.08;
-      font-size: 80px;
-      font-weight: bold;
-      z-index: 0;
-      pointer-events: none;
-      white-space: nowrap;
-    }
-
-    .patient-info {
-      margin-top: 30px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .patient-info p {
-      margin: 4px 0;
-    }
-
-    .test-results {
-      margin-top: 30px;
-      position: relative;
-      z-index: 1;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-
-    th, td {
-      padding: 10px;
-      border: 1px solid #aaa;
-      text-align: left;
-    }
-
-    th {
-      background: #f0f0f0;
-    }
-
-    .status-up {
-      color: red;
-      font-weight: bold;
-    }
-
-    .status-down {
-      color: blue;
-      font-weight: bold;
-    }
-
-    .status-normal {
-      color: green;
-      font-weight: bold;
-    }
-
     @media print {
-      body {
-        padding: 0;
-      }
-      .report-container {
-        border: none;
-        box-shadow: none;
-      }
+      .no-print { display: none !important; }
+      body { background: white !important; }
+      .print-border th, .print-border td { border: 1px solid #9ca3af !important; } /* gray-400 */
+      .print-border { border-collapse: collapse !important; }
+      .page-break { page-break-before: always; }
     }
   </style>
 </head>
-<body>
-  <div class="report-container">
-    <div class="header">
-      <img src="logo.png" alt="Logo" class="logo-left" />
-      <div class="lab-name">AlphaMed Clinical Laboratory</div>
-      <div class="barcode">
-        <img src="barcode.png" alt="Barcode" width="80" />
-      </div>
-    </div>
+<body class="bg-gray-100 text-gray-900 min-h-screen p-4">
 
-    <div class="watermark">AlphaMed</div>
-
-    <div class="patient-info">
-      <p><strong>Patient Name:</strong> John Doe</p>
-      <p><strong>MRN:</strong> AM-000123</p>
-      <p><strong>Sample No:</strong> SM-00145</p>
-      <p><strong>Date:</strong> 30-July-2025</p>
-      <p><strong>Department:</strong> Biochemistry</p>
-    </div>
-
-    <div class="test-results">
-      <h3>Test Results</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Test Name</th>
-            <th>Result</th>
-            <th>Reference Range</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Blood Glucose</td>
-            <td>145 mg/dL</td>
-            <td>70 - 110 mg/dL</td>
-            <td class="status-up">High</td>
-          </tr>
-          <tr>
-            <td>Liver ALT</td>
-            <td>25 U/L</td>
-            <td>7 - 56 U/L</td>
-            <td class="status-normal">Normal</td>
-          </tr>
-          <tr>
-            <td>Cholesterol</td>
-            <td>160 mg/dL</td>
-            <td>120 - 200 mg/dL</td>
-            <td class="status-normal">Normal</td>
-          </tr>
-          <tr>
-            <td>Hemoglobin</td>
-            <td>10.5 g/dL</td>
-            <td>13.5 - 17.5 g/dL</td>
-            <td class="status-down">Low</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <!-- Top Actions -->
+  <div class="no-print max-w-6xl mx-auto mb-4 flex flex-wrap gap-2 justify-end">
+    <button onclick="window.print()" class="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">🖨️ Print / Save PDF</button>
+    <button onclick="exportCSV()" class="px-4 py-2 rounded bg-emerald-600 text-white hover:bg-emerald-700">📄 Export CSV</button>
+    <button onclick="shareWhatsApp()" class="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700">🟢 WhatsApp Patient</button>
   </div>
-</body>
-</html>
+
+  <!-- Report Container -->
+  <div class="max-w-6xl mx-auto bg-white shadow-md rounded-xl p-6">
+
+    <!-- Header -->
+    <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b pb-4">
+      <div class="flex items-center gap-3">
+        <img src="logo.png" alt="Alpha Med Logo" class="w-16 h-16 object-contain">
+        <div>
+          <h1 class="text-2xl font-bold text-blue-800 leading-tight">Alpha Med Clinical Laboratory</h1>
+          <p class="text-sm text-gray-600">Advanced Diagnostic Services • Phone: 03xx-xxxxxxx • Email: info@alphamed.com</p>
+          <p class="text-xs text-gray-500">Address: Your clinic address here</p>
+        </div>
+      </div>
+      <div class="text-right">
+        <div id="qrBox" class="inline-block"></div>
+        <div class="text-xs text-gray-500 mt-1">Scan for verification</div>
+      </div>
+    </header>
+
+    <!-- Patient & Sample Info -->
+    <section class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+      <div class="bg-gray-50 rounded-lg p-4">
+        <h2 class="font-semibold text-gray-700 mb-2">Patient Information</h2>
+        <div class="grid grid-cols-2 gap-x-4 gap-y-1">
+          <div class="text-gray-500">Patient Name</div><div id="p_name" class="font-medium">—</div>
+          <div class="text-gray-500">Father/S/O</div><div id="p_father" class="font-medium">—</div>
+          <div class="text-gray-500">Gender</div><div id="p_gender" class="font-medium">—</div>
+          <div class="text-gray-500">Age</div><div id="p_age" class="font-medium">—</div>
+          <div class="text-gray-500">CNIC</div><div id="p_cnic" class="font-medium break-all">—</div>
+          <div class="text-gray-500">Phone</div><div id="p_phone" class="font-medium break-all">—</div>
+        </div>
+      </div>
+
+      <div class="bg-gray-50 rounded-lg p-4">
+        <h2 class="font-semibold text-gray-700 mb-2">Sample / Report</h2>
+        <div class="grid grid-cols-2 gap-x-4 gap-y-1">
+          <div class="text-gray-500">MRN No</div><div id="p_mrn" class="font-medium">—</div>
+          <div class="text-gray-500">Sample No</div><div id="p_sample" class="font-medium">—</div>
+          <div class="text-gray-500">Collected</div><div id="p_collected" class="font-medium">—</div>
+          <div class="text-gray-500">Reported</div><div id="p_reported" class="font-medium">—</div>
+          <div class="text-gray-500">Ref Doctor</div><div id="p_ref" class="font-medium">—</div>
+          <div class="text-gray-500">Departments</div><div id="p_depts" class="font-medium">—</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tests (rendered by JS) -->
+    <section id="testsContainer" class="mt-6 space-y-8"></section>
+
+    <!-- Comments / Notes -->
+    <section class="mt-4">
+      <h3 class="font-semibold text-gray-700 mb-2">Comments / Notes</h3>
+      <div id="p_comments" class="text-sm bg-gray-50 p-3 rounded-lg min-h-[48px]">—</div>
+    </section>
+
+    <!-- Signatures -->
+    <section class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="text-center">
+        <div class="h-16"></div>
+        <div class="border-t border-gray-400 pt-1 font-medium">Technologist / Verified By</div>
+        <div id="sig_verified" class="text-xs text-gray-500">—</div>
+      </div>
+      <div class="text-center">
+        <div class="h-16"></div>
+        <div class="border-t border-gray-400 pt-1 font-medium">Pathologist / Authorized Signatory</div>
+        <div id="sig_authorized" class="text-xs text-gray-500">—</div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="mt-8 text-center text-xs text-gray-500 border-t pt-3">
+      This is a computer-generated report. Results depend on specimen quality and methodology. Please correlate clinically.
+    </footer>
+  </div>
+
+  <script>
+    // ---------- Helpers ----------
+    function byId(id){ return document.getElementById(id); }
+
+    // Parse simple numeric ranges like "x–y" / "x-y"
+    function parseRange(rangeStr){
+      if(!rangeStr) return null;
+      const s = String(rangeStr).replace(/\s/g,'').replace('–','-');
+      const m = s.match(/^([<>]=?|\<=|\>=)?\s*([\d.]+)(?:-([\d.]+))?$/i);
+      if(m){
+        const op = m[1] || null;
+        const a = parseFloat(m[2]);
+        const b = m[3] ? parseFloat(m[3]) : null;
+        return {op, a, b};
+      }
+      // Also try "x to y"
+      const m2 = rangeStr.match(/([\d.]+)\s*(?:to|–|-)\s*([\d.]+)/i);
+      if(m2) return {op:null, a:parseFloat(m2[1]), b:parseFloat(m2[2])};
+      return null;
+    }
+
+    function flagResult(value, ref){
+      // Non-numeric or qualitative refs
+      const num = parseFloat(value);
+      if (isNaN(num) || !ref) return "";
+      const pr = parseRange(ref);
+      if(!pr){
+        // Try operators like "<5", ">10"
+        const m = String(ref).trim().match(/^([<>]=?)\s*([\d.]+)$/);
+        if(m){
+          const op=m[1], lim=parseFloat(m[2]);
+          if(op==='<' && !(num < lim)) return "H";
+          if(op==='>' && !(num > lim)) return "L"; // flip for visual consistency
+          if(op==='<=') return num<=lim ? "" : "H";
+          if(op==='>=') return num>=lim ? "" : "L";
+        }
+        return "";
+      }
+      if(pr.b==null){
+        // Single value with optional operator
+        if(pr.op===null) return "";
+        if(pr.op==='<' && num>=pr.a) return "H";
+        if(pr.op==='>' && num<=pr.a) return "L";
+        if(pr.op==='<=' && num>pr.a) return "H";
+        if(pr.op==='>=' && num<pr.a) return "L";
+        return "";
+      }
+      if(num < pr.a) return "L";
+      if(num > pr.b) return "H";
+      return "";
+    }
+
+    function formatDate(d){
+      if(!d) return "—";
+      const dd = new Date(d);
+      if(isNaN(dd)) return d;
+      return dd.toLocaleString();
+    }
+
+    // ---------- Data Ingestion ----------
+    // 1) URL param ?data=<base64 JSON>
+    function getDataFromURL(){
+      const params = new URLSearchParams(window.location.search);
+      const b64 = params.get('data');
+      if(!b64) return null;
+      try{
+        const json = atob(decodeURIComponent(b64));
+        return JSON.parse(json);
+      }catch(e){ return null; }
+    }
+
+    // 2) localStorage 'currentReport'
+    function getDataFromStorage(){
+      try{
+        const s = localStorage.getItem('currentReport');
+        return s ? JSON.parse(s) : null;
+      }catch(e){ return null; }
+    }
+
+    // 3) Fallback sample
+    const sampleReport = {
+      lab: { name: "Alpha Med Clinical Laboratory" },
+      patient: {
+        name: "Asad Khan",
+        father: "Kaleem Ullah",
+        gender: "Male",
+        age: "32",
+        cnic: "34501-8971113-7",
+        phone: "0300-1234567"
+      },
+      sample: {
+        mrn: "MRN-8765",
+        sampleNo: "SMP-0023",
+        collectedAt: new Date().toISOString(),
+        reportedAt: new Date().toISOString(),
+        refDoctor: "Dr. Ahmed",
+      },
+      comments: "Thank you for choosing Alpha Med.",
+      verifiedBy: "M. Imran (MLS)",
+      authorizedBy: "Dr. Sara (M.Phil Pathology)",
+      tests: [
+        {
+          department: "Hematology",
+          testName: "Complete Blood Count (CBC)",
+          parameters: [
+            { name: "Hemoglobin", value: "12.1", units: "g/dL", ref: "13 - 17" },
+            { name: "WBC", value: "6.4", units: "x10^3/µL", ref: "4 - 11" },
+            { name: "Platelets", value: "190", units: "x10^3/µL", ref: "150 - 400" },
+            { name: "ESR (1 hr)", value: "28", units: "mm/hr", ref: "0 - 20" },
+          ]
+        },
+        {
+          department: "Biochemistry",
+          testName: "Liver Function Test (LFT)",
+          parameters: [
+            { name: "Bilirubin (Total)", value: "0.8", units: "mg/dL", ref: "0.2 - 1.2" },
+            { name: "ALT (SGPT)", value: "76", units: "U/L", ref: "7 - 56" },
+            { name: "AST (SGOT)", value: "34", units: "U/L", ref: "5 - 40" },
+            { name: "Alkaline Phosphatase", value: "120", units: "U/L", ref: "44 - 147" },
+          ]
+        }
+      ]
+    };
+
+    const report = getDataFromURL() || getDataFromStorage() || sampleReport;
+
+    // ---------- Render ----------
+    function renderHeader(){
+      const p = report.patient || {};
+      const s = report.sample || {};
+      byId('p_name').textContent = p.name || "—";
+      byId('p_father').textContent = p.father || "—";
+      byId('p_gender').textContent = p.gender || "—";
+      byId('p_age').textContent = p.age || "—";
+      byId('p_cnic').textContent = p.cnic || "—";
+      byId('p_phone').textContent = p.phone || "—";
+
+      byId('p_mrn').textContent = s.mrn || "—";
+      byId('p_sample').textContent = s.sampleNo || "—";
+      byId('p_collected').textContent = formatDate(s.collectedAt);
+      byId('p_reported').textContent = formatDate(s.reportedAt);
+      byId('p_ref').textContent = s.refDoctor || "—";
+      const depts = (report.tests||[]).map(t=>t.department).filter(Boolean);
+      byId('p_depts').textContent = depts.length
