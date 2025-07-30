@@ -9,7 +9,7 @@ function loadSummary() {
   const pendingPatients = patients.filter(p => !completedMRNs.includes(p.mrn));
 
   const patientListHTML = patients.length > 0
-    ? patients.map(p => `
+    ? patients.map(p => ` 
         <li class="text-gray-700">
           <strong>${p.name || "Unnamed"}</strong> 
           (MRN: ${p.mrn || "N/A"}) – 
@@ -28,9 +28,13 @@ function loadSummary() {
 
   const html = `
     <div class="bg-white p-4 rounded shadow-md space-y-2">
-      <p><strong>Total Registered Patients:</strong> ${totalPatients}</p>
+      <p><strong>Total Registered Patients:</strong> 
+        <span class="${totalPatients > 50 ? 'text-red-600' : 'text-green-600'}">${totalPatients}</span>
+      </p>
       <p><strong>Reports Completed:</strong> ${totalResults}</p>
-      <p><strong>Pending Reports:</strong> ${pendingPatients.length}</p>
+      <p><strong>Pending Reports:</strong> 
+        <span class="${pendingPatients.length > 0 ? 'text-yellow-600' : 'text-gray-600'}">${pendingPatients.length}</span>
+      </p>
     </div>
 
     <div class="mt-6">
