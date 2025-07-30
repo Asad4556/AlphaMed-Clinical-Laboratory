@@ -43,9 +43,51 @@
     </ul>
   </div>
 
+  <script>
+    function loadSummary() {
+      const summaryContainer = document.getElementById('summaryContainer');
+      summaryContainer.innerHTML = ''; // Clear existing content
+
+      // Simulating fetching data from localStorage or an API
+      const summaryData = getFromStorage("dashboard_summary") || [];
+
+      if (summaryData.length === 0) {
+        summaryContainer.innerHTML = `<p class="text-center text-gray-600">No summary data available.</p>`;
+        return;
+      }
+
+      summaryData.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        card.innerHTML = `
+          <h3>${item.title}</h3>
+          <p>${item.count}</p>
+        `;
+        
+        summaryContainer.appendChild(card);
+      });
+    }
+
+    // Sample data for testing (this would be fetched from localStorage in real application)
+    function setSampleSummaryData() {
+      const sampleData = [
+        { title: 'Total Patients', count: 1200 },
+        { title: 'Tests Conducted', count: 5000 },
+        { title: 'Pending Results', count: 200 },
+        { title: 'Users Registered', count: 15 }
+      ];
+      
+      saveToStorage('dashboard_summary', sampleData);
+    }
+
+    // Uncomment the line below to set sample data (for testing)
+    // setSampleSummaryData();
+  </script>
+
   <style>
     .card {
-      @apply bg-white rounded-xl p-4 shadow text-center;
+      @apply bg-white rounded-xl p-4 shadow text-center transition-transform duration-300 transform hover:scale-105;
     }
     .card h3 {
       @apply text-2xl font-bold text-blue-700;
