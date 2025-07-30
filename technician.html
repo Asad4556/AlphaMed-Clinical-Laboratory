@@ -1,43 +1,60 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Technician Panel - Alpha Med</title>
+// technician.js
 
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
+document.getElementById("searchBtn").addEventListener("click", function () {
+  const query = document.getElementById("searchInput").value.trim();
+  const patients = getFromStorage("patients");
 
-  <!-- Scripts -->
-  <script src="storage.js"></script>
-  <script src="technician.js" defer></script>
-</head>
-<body class="bg-gray-100 p-6">
+  const found = patients.find(p =>
+    p.cnic === query || p.mrn === query
+  );
 
-  <h1 class="text-2xl font-bold mb-4">🔬 Technician Panel</h1>
+  if (found) {
+    showPatient(found);
+  } else {
+    alert("Patient not found!");
+  }
+});
 
-  <!-- Search Section -->
-  <div class="bg-white p-4 rounded shadow mb-6">
-    <label class="block mb-2 font-semibold">Search Patient by CNIC or MRN:</label>
-    <input type="text" id="searchInput" class="border px-3 py-2 rounded w-full mb-2" placeholder="Enter CNIC or MRN">
-    <button id="searchBtn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Search</button>
-  </div>
+function showPatient(patient) {
+  document.getElementById("patientInfo").classList.remove("hidden");
+  document.getElementById("resultForm").classList.remove("hidden");
 
-  <!-- Patient Info -->
-  <div id="patientInfo" class="hidden bg-white p-4 rounded shadow mb-6">
-    <h2 class="text-lg font-semibold mb-2">Patient Info:</h2>
-    <p><strong>Name:</strong> <span id="pName"></span></p>
-    <p><strong>MRN:</strong> <span id="pMRN"></span></p>
-    <p><strong>Sample No:</strong> <span id="pSample"></span></p>
-  </div>
+  document.getElementById("pName").textContent = patient.name;
+  document.getElementById("pMRN").textContent = patient.mrn;
+  document.getElementById("pSample").textContent = patient.sampleNo;
 
-  <!-- Test Results Form -->
-  <form id="resultForm" class="hidden bg-white p-4 rounded shadow">
-    <h2 class="text-lg font-semibold mb-4">Enter Test Results:</h2>
-    <div id="testFields" class="space-y-4"></div>
+  // Clear old fields
+  const testFields = document.getElementById("testFields");
+  testFields.innerHTML = "";
 
-    <button type="submit" class="bg-green-600 text-white px-4 py-2 mt-4 rounded hover:bg-green-700">Save Results</button>
-  </form>
+  // Show test fields
+  (patient.tests || []).forEach(test => {
+    const field = document.createElement("div");
+    field.innerHTML = `
+      <label class="block font-medium">${test.name}</label>
+      <input type="text" name="${test.name}" class="input-box w-full" placeholder="Enter result" />
+    `;
+    testFields.appendChild(field);
+  });
 
-</body>
-</html>
+  // Attach submit handler
+  document.getElementById("resultForm").onsubmit = function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+    const results = {};
+    for (let pair of formData.entries()) {
+      results[pair[0]] = pair[1];
+    }
+
+    // Update patient record
+    updateStorage("patients", p => p.mrn === patient.mrn, old => ({
+      ...old,
+      results,
+      status: "results-added"
+    }));
+
+    alert("✅ Test results saved!");
+    e.target.reset();
+  };
+}
