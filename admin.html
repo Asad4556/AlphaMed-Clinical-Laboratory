@@ -1,37 +1,117 @@
-<script>
-  function loginUser(role) {
-    const cnic = document.getElementById("cnic").value.trim();
-    const password = document.getElementById("password").value.trim();
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel - AlphaMed Clinical Lab</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .nav a {
+      flex: 1 1 200px;
+      margin: 5px;
+      padding: 10px;
+      text-align: center;
+      background: #007bff;
+      color: white;
+      border-radius: 5px;
+      text-decoration: none;
+    }
+    .nav a:hover {
+      background: #0056b3;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+    .actions button {
+      margin-right: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Admin Panel - AlphaMed Clinical Lab</h1>
 
-    if (!cnic || !password) {
-      alert("Please enter CNIC and Password.");
-      return;
+    <div class="nav">
+      <a href="admin-dashboard.html">Dashboard</a>
+      <a href="register_patient.html">Register Patient</a>
+      <a href="manage_users.html">Manage Users</a>
+      <a href="settings.html">Settings</a>
+      <a href="logout.php">Logout</a>
+    </div>
+
+    <h2>Users</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>CNIC</th>
+          <th>Name</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="userList">
+        <!-- Dynamically populated by JS -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    // Example users data, you can replace it with backend data later
+    const users = [
+      { cnic: "12345-1234567-1", name: "Ali", role: "Receptionist", status: "Active" },
+      { cnic: "98765-4321098-7", name: "Zara", role: "Technician", status: "Active" }
+    ];
+
+    const userList = document.getElementById('userList');
+    users.forEach(user => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${user.cnic}</td>
+        <td>${user.name}</td>
+        <td>${user.role}</td>
+        <td>${user.status}</td>
+        <td class="actions">
+          <button onclick="editUser('${user.cnic}')">Edit</button>
+          <button onclick="deleteUser('${user.cnic}')">Delete</button>
+        </td>
+      `;
+      userList.appendChild(tr);
+    });
+
+    function editUser(cnic) {
+      alert("Edit user: " + cnic);
+      // Add your edit logic here
     }
 
-    // Get all users from localStorage
-    const users = JSON.parse(localStorage.getItem("users")) || [];
-
-    // Find the matching user
-    const user = users.find(u => u.cnic === cnic && u.password === password && u.role.toLowerCase() === role.toLowerCase());
-
-    if (!user) {
-      alert("Invalid CNIC, Password or Role!");
-      return;
+    function deleteUser(cnic) {
+      if (confirm("Are you sure to delete user " + cnic + "?")) {
+        alert("User deleted (demo only).");
+        // Add your delete logic here
+      }
     }
-
-    // Store session
-    localStorage.setItem("loggedInUser", JSON.stringify(user));
-    localStorage.setItem("loggedInRole", role.toLowerCase());
-
-    // Redirect based on role
-    if (role.toLowerCase() === "admin") {
-      window.location.href = "admin-dashboard.html";
-    } else if (role.toLowerCase() === "technician") {
-      window.location.href = "technician_dashboard.html";
-    } else if (role.toLowerCase() === "reception") {
-      window.location.href = "reception_dashboard.html";
-    } else {
-      alert("Unknown role!");
-    }
-  }
-</script>
+  </script>
+</body>
+</html>
