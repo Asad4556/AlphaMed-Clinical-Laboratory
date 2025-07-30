@@ -2,127 +2,42 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Technician Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Technician Panel - Alpha Med</title>
+
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Scripts -->
+  <script src="storage.js"></script>
+  <script src="technician.js" defer></script>
 </head>
 <body class="bg-gray-100 p-6">
 
-  <div class="max-w-5xl mx-auto bg-white p-6 rounded-xl shadow">
-    <h1 class="text-2xl font-bold mb-4">🔬 Technician Dashboard</h1>
+  <h1 class="text-2xl font-bold mb-4">🔬 Technician Panel</h1>
 
-    <!-- 🔍 Search Patient -->
-    <input
-      type="text"
-      id="searchInput"
-      placeholder="Search by MRN, Name, CNIC"
-      class="w-full border p-2 rounded mb-4"
-      oninput="filterPatients()"
-    />
-
-    <!-- 📋 Patient List -->
-    <table class="w-full text-sm text-left border">
-      <thead class="bg-gray-200">
-        <tr>
-          <th class="p-2">#</th>
-          <th class="p-2">Name</th>
-          <th class="p-2">MRN</th>
-          <th class="p-2">Sample</th>
-          <th class="p-2">Select</th>
-        </tr>
-      </thead>
-      <tbody id="patientTable"></tbody>
-    </table>
-
-    <!-- 🧪 Test Entry Section -->
-    <div id="testSection" class="mt-8 hidden">
-      <h2 class="text-xl font-semibold mb-2">Enter Test Results</h2>
-      <form id="testForm" class="space-y-4"></form>
-      <button onclick="saveResults()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-        💾 Save Results
-      </button>
-    </div>
+  <!-- Search Section -->
+  <div class="bg-white p-4 rounded shadow mb-6">
+    <label class="block mb-2 font-semibold">Search Patient by CNIC or MRN:</label>
+    <input type="text" id="searchInput" class="border px-3 py-2 rounded w-full mb-2" placeholder="Enter CNIC or MRN">
+    <button id="searchBtn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Search</button>
   </div>
 
-  <script>
-    let selectedPatient = null;
+  <!-- Patient Info -->
+  <div id="patientInfo" class="hidden bg-white p-4 rounded shadow mb-6">
+    <h2 class="text-lg font-semibold mb-2">Patient Info:</h2>
+    <p><strong>Name:</strong> <span id="pName"></span></p>
+    <p><strong>MRN:</strong> <span id="pMRN"></span></p>
+    <p><strong>Sample No:</strong> <span id="pSample"></span></p>
+  </div>
 
-    const tests = [
-      { name: "Hemoglobin", normal: "13-17 g/dL", dept: "Hematology", unit: "g/dL" },
-      { name: "WBC", normal: "4,000-11,000 /µL", dept: "Hematology", unit: "/µL" },
-      { name: "Blood Glucose", normal: "70-110 mg/dL", dept: "Biochemistry", unit: "mg/dL" },
-      { name: "ALT", normal: "7-55 U/L", dept: "Liver Function", unit: "U/L" },
-      { name: "Uric Acid", normal: "3.5-7.2 mg/dL", dept: "Biochemistry", unit: "mg/dL" },
-    ];
+  <!-- Test Results Form -->
+  <form id="resultForm" class="hidden bg-white p-4 rounded shadow">
+    <h2 class="text-lg font-semibold mb-4">Enter Test Results:</h2>
+    <div id="testFields" class="space-y-4"></div>
 
-    function filterPatients() {
-      const query = document.getElementById("searchInput").value.toLowerCase();
-      const patients = JSON.parse(localStorage.getItem("patients")) || [];
-      const table = document.getElementById("patientTable");
-      table.innerHTML = "";
-
-      patients.forEach((p, index) => {
-        const values = `${p.name} ${p.mrn} ${p.cnic}`.toLowerCase();
-        if (values.includes(query)) {
-          table.innerHTML += `
-            <tr class="border-b">
-              <td class="p-2">${index + 1}</td>
-              <td class="p-2">${p.name}</td>
-              <td class="p-2">${p.mrn}</td>
-              <td class="p-2">${p.sampleNo}</td>
-              <td class="p-2">
-                <button onclick='selectPatient(${JSON.stringify(p)})'
-                  class="text-blue-600 underline">Select</button>
-              </td>
-            </tr>`;
-        }
-      });
-    }
-
-    function selectPatient(p) {
-      selectedPatient = p;
-      document.getElementById("testSection").classList.remove("hidden");
-      renderTestForm();
-    }
-
-    function renderTestForm() {
-      const form = document.getElementById("testForm");
-      form.innerHTML = "";
-      tests.forEach(test => {
-        form.innerHTML += `
-          <div class="grid grid-cols-4 gap-2">
-            <label class="font-semibold col-span-1">${test.name}</label>
-            <input type="text" name="${test.name}" placeholder="Enter Value"
-              class="border p-2 rounded col-span-1" />
-            <span class="col-span-1 text-gray-600">Normal: ${test.normal}</span>
-            <span class="col-span-1 text-gray-600">Unit: ${test.unit}</span>
-          </div>`;
-      });
-    }
-
-    function saveResults() {
-      const form = document.getElementById("testForm");
-      const data = {};
-      [...form.elements].forEach(input => {
-        if (input.name) {
-          data[input.name] = input.value;
-        }
-      });
-
-      const results = JSON.parse(localStorage.getItem("results")) || [];
-      results.push({
-        mrn: selectedPatient.mrn,
-        name: selectedPatient.name,
-        results: data,
-        enteredAt: new Date().toISOString()
-      });
-      localStorage.setItem("results", JSON.stringify(results));
-
-      alert("✅ Results saved successfully!");
-      document.getElementById("testSection").classList.add("hidden");
-    }
-
-    window.onload = filterPatients;
-  </script>
+    <button type="submit" class="bg-green-600 text-white px-4 py-2 mt-4 rounded hover:bg-green-700">Save Results</button>
+  </form>
 
 </body>
 </html>
