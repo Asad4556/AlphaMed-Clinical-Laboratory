@@ -5,54 +5,64 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Login - Alpha Med</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(to bottom right, #cfe8ff, #a0d2eb);
+    }
+  </style>
 </head>
-<body class="bg-gradient-to-br from-blue-100 to-blue-300 min-h-screen flex items-center justify-center">
+<body class="min-h-screen flex items-center justify-center px-4">
 
-  <div class="bg-white shadow-xl p-8 rounded-xl w-full max-w-md">
+  <div class="bg-white shadow-2xl p-8 rounded-xl w-full max-w-md">
     <div class="text-center mb-6">
-      <img src="logo.png" alt="Alpha Med Logo" class="w-16 mx-auto mb-2">
+      <img src="logo.png" alt="Alpha Med Logo" class="w-16 mx-auto mb-3">
       <h1 class="text-2xl font-bold text-blue-700">Alpha Med Clinical Lab</h1>
-      <p class="text-gray-500 text-sm">Admin Login</p>
+      <p class="text-gray-500 text-sm">Admin Login Portal</p>
     </div>
 
     <form id="loginForm" class="space-y-4">
+      <!-- CNIC Field -->
       <div>
         <label for="cnic" class="block text-sm font-medium text-gray-700">CNIC</label>
-        <input type="text" id="cnic" placeholder="xxxxx-xxxxxxx-x" required
-               class="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-               value="34501-8971113-7" />
+        <input type="text" id="cnic" required placeholder="xxxxx-xxxxxxx-x"
+               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
       </div>
 
+      <!-- Password Field -->
       <div>
         <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-        <input type="password" id="password" placeholder="••••••••" required
-               class="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-               value="Asad@2723" />
+        <input type="password" id="password" required placeholder="••••••••"
+               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
       </div>
 
-      <div id="errorMsg" class="text-red-600 text-sm hidden">Invalid login. Try again.</div>
+      <!-- Error Message -->
+      <div id="errorMsg" class="text-red-600 text-sm hidden">Invalid CNIC or Password.</div>
 
+      <!-- Login Button -->
       <button type="submit"
-              class="w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700 transition">
+              class="w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700 transition duration-200">
         Login
       </button>
     </form>
   </div>
 
+  <!-- Login Script -->
   <script>
-    const correctCNIC = "34501-8971113-7";
-    const correctPassword = "Asad@2723";
+    // Hardcoded Admin Credentials
+    const adminCNIC = "34501-8971113-7";
+    const adminPassword = "Asad@2723";
 
     document.getElementById("loginForm").addEventListener("submit", function (e) {
       e.preventDefault();
 
-      const enteredCNIC = document.getElementById("cnic").value.trim();
-      const enteredPassword = document.getElementById("password").value;
+      const cnic = document.getElementById("cnic").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const error = document.getElementById("errorMsg");
 
-      if (enteredCNIC === correctCNIC && enteredPassword === correctPassword) {
+      if (cnic === adminCNIC && password === adminPassword) {
         window.location.href = "admin-dashboard.html";
       } else {
-        document.getElementById("errorMsg").classList.remove("hidden");
+        error.classList.remove("hidden");
       }
     });
   </script>
