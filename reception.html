@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Reception - Register Patient</title>
+  <title>Reception Panel</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 </head>
 <body class="bg-gray-100 p-6">
 
-  <div class="max-w-5xl mx-auto bg-white p-6 rounded-xl shadow">
-    <h1 class="text-2xl font-bold mb-4">🧾 Patient Registration (Reception)</h1>
+  <div class="max-w-6xl mx-auto bg-white p-6 rounded-xl shadow">
+    <h1 class="text-2xl font-bold mb-4">🧾 Patient Registration</h1>
 
     <!-- Patient Form -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
@@ -28,8 +28,17 @@
       <canvas id="qrCode"></canvas>
     </div>
 
+    <!-- 🔍 Search -->
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="Search by Name, MRN, CNIC or Phone"
+      class="w-full border p-2 rounded my-4"
+      oninput="filterPatients()"
+    />
+
     <!-- Patient List -->
-    <h2 class="text-xl font-semibold mt-6 mb-2">📋 Registered Patients</h2>
+    <h2 class="text-xl font-semibold mb-2">📋 Registered Patients</h2>
     <div class="overflow-auto max-h-96 border rounded">
       <table class="min-w-full text-sm text-left">
         <thead class="bg-gray-200 sticky top-0">
@@ -44,7 +53,7 @@
           </tr>
         </thead>
         <tbody id="patientTable" class="bg-white">
-          <!-- Patients appear here -->
+          <!-- Patients will appear here -->
         </tbody>
       </table>
     </div>
@@ -127,8 +136,32 @@
       });
     }
 
-    // Load existing patients on page load
+    function filterPatients() {
+      const query = document.getElementById("searchInput").value.toLowerCase();
+      const patients = JSON.parse(localStorage.getItem("patients")) || [];
+      const table = document.getElementById("patientTable");
+      table.innerHTML = "";
+
+      patients.forEach((p, index) => {
+        const values = `${p.name} ${p.mrn} ${p.cnic} ${p.phone}`.toLowerCase();
+        if (values.includes(query)) {
+          table.innerHTML += `
+            <tr class="border-b">
+              <td class="px-3 py-2">${index + 1}</td>
+              <td class="px-3 py-2">${p.name}</td>
+              <td class="px-3 py-2">${p.mrn}</td>
+              <td class="px-3 py-2">${p.sampleNo}</td>
+              <td class="px-3 py-2">${p.cnic}</td>
+              <td class="px-3 py-2">${p.phone}</td>
+              <td class="px-3 py-2">${p.age}</td>
+            </tr>`;
+        }
+      });
+    }
+
+    // Load patients on page load
     window.onload = renderPatients;
   </script>
+
 </body>
 </html>
