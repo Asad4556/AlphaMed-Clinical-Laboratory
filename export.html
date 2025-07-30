@@ -1,68 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Export Data</title>
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 30px;
-      background-color: #f4f4f4;
-    }
-
-    .export-container {
-      max-width: 500px;
-      margin: auto;
-      background: white;
-      padding: 20px 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    select, button {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      font-size: 16px;
-    }
-
-    button {
-      background-color: #1e90ff;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #187bcd;
-    }
-  </style>
+  <title>Export Reports - Alpha Med</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-gray-100 p-6 min-h-screen font-sans">
 
-  <div class="export-container">
-    <h2>Export Data</h2>
+  <div class="max-w-6xl mx-auto bg-white shadow-xl p-6 rounded-xl">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-bold text-blue-700">📁 Export Reports</h1>
+    </div>
 
-    <form action="export_data.php" method="POST">
-      <label for="exportType">Select data type to export:</label>
-      <select name="exportType" id="exportType" required>
-        <option value="">-- Select --</option>
-        <option value="patients">Patient Records</option>
-        <option value="reports">Lab Reports</option>
-        <option value="tests">Test Results</option>
-        <option value="attendance">Staff Attendance</option>
-      </select>
+    <!-- Filters -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div>
+        <label class="text-sm font-medium">From Date</label>
+        <input type="date" class="input" />
+      </div>
+      <div>
+        <label class="text-sm font-medium">To Date</label>
+        <input type="date" class="input" />
+      </div>
+      <div>
+        <label class="text-sm font-medium">Department</label>
+        <select class="input">
+          <option value="">All Departments</option>
+          <option>Hematology</option>
+          <option>Serology</option>
+          <option>Microbiology</option>
+          <option>Biochemistry</option>
+          <option>Culture Tests</option>
+          <option>Blood Banking</option>
+        </select>
+      </div>
+    </div>
 
-      <button type="submit">Export as Excel</button>
-    </form>
+    <!-- Export Buttons -->
+    <div class="flex gap-4 mb-4">
+      <button onclick="exportPDF()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Export as PDF</button>
+      <button onclick="exportExcel()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Export as Excel</button>
+    </div>
+
+    <!-- Result Table -->
+    <div class="overflow-auto rounded-lg shadow border border-gray-200">
+      <table class="min-w-full bg-white">
+        <thead class="bg-gray-100 text-gray-700 text-sm">
+          <tr>
+            <th class="p-3 text-left">Patient Name</th>
+            <th class="p-3 text-left">MRN</th>
+            <th class="p-3 text-left">Test</th>
+            <th class="p-3 text-left">Date</th>
+            <th class="p-3 text-left">Result</th>
+          </tr>
+        </thead>
+        <tbody class="text-gray-700 text-sm">
+          <tr>
+            <td class="p-3">Ali Khan</td>
+            <td class="p-3">MRN001</td>
+            <td class="p-3">CBC</td>
+            <td class="p-3">2025-07-30</td>
+            <td class="p-3">Normal</td>
+          </tr>
+          <tr class="bg-gray-50">
+            <td class="p-3">Sara Ahmed</td>
+            <td class="p-3">MRN002</td>
+            <td class="p-3">LFT</td>
+            <td class="p-3">2025-07-28</td>
+            <td class="p-3">High ALT</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
+  <script>
+    function exportPDF() {
+      alert("📄 Export to PDF functionality goes here (e.g., jsPDF integration)");
+    }
+
+    function exportExcel() {
+      alert("📊 Export to Excel functionality goes here (e.g., SheetJS integration)");
+    }
+  </script>
+
+  <style>
+    .input {
+      @apply border border-gray-300 rounded-md p-2 w-full mt-1;
+    }
+  </style>
 </body>
 </html>
