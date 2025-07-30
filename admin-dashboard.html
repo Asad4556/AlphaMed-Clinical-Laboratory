@@ -4,59 +4,44 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Dashboard - Alpha Med</title>
+
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Scripts -->
+  <script src="storage.js"></script>
+  <script src="dashboard-summary.js"></script>
+
 </head>
-<body class="flex bg-gray-100 min-h-screen font-sans">
+<body class="bg-gray-100 text-gray-800 p-6 min-h-screen">
 
-  <!-- Sidebar -->
-  <aside class="w-64 bg-white shadow-lg hidden md:block">
-    <div class="p-6">
-      <img src="/assets/logo.png" alt="Logo" class="h-14 mx-auto mb-4" />
-      <h2 class="text-xl font-bold text-center text-blue-700">Alpha Med Admin</h2>
-    </div>
-    <nav class="mt-6 space-y-2 px-4">
-      <a href="#" class="block p-2 rounded hover:bg-blue-100 text-blue-700 font-medium">Dashboard</a>
-      <a href="manage_users.html" class="block p-2 rounded hover:bg-blue-100">Manage Users</a>
-      <a href="view_reports.html" class="block p-2 rounded hover:bg-blue-100">Reports</a>
-      <a href="settings.html" class="block p-2 rounded hover:bg-blue-100">Settings</a>
-      <a href="index.html" class="block p-2 rounded hover:bg-blue-100 text-red-600">Logout</a>
-    </nav>
-  </aside>
+  <!-- Header -->
+  <header class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">🧪 Alpha Med Admin Dashboard</h1>
+    <a href="login.html" class="text-red-600 hover:underline text-sm">Logout</a>
+  </header>
 
-  <!-- Main Content -->
-  <main class="flex-1 p-6">
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
-      <span class="text-gray-500">Welcome, Admin</span>
-    </div>
+  <!-- Load Summary Button -->
+  <button onclick="loadSummary()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded mb-4">
+    📊 Load Summary
+  </button>
 
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-      <div class="bg-white p-4 rounded-xl shadow text-center">
-        <h2 class="text-lg font-semibold text-blue-700">Total Patients</h2>
-        <p class="text-2xl font-bold mt-2">1,235</p>
-      </div>
-      <div class="bg-white p-4 rounded-xl shadow text-center">
-        <h2 class="text-lg font-semibold text-yellow-600">Pending Reports</h2>
-        <p class="text-2xl font-bold mt-2">58</p>
-      </div>
-      <div class="bg-white p-4 rounded-xl shadow text-center">
-        <h2 class="text-lg font-semibold text-green-700">Lab Technicians</h2>
-        <p class="text-2xl font-bold mt-2">12</p>
-      </div>
-      <div class="bg-white p-4 rounded-xl shadow text-center">
-        <h2 class="text-lg font-semibold text-purple-700">Departments</h2>
-        <p class="text-2xl font-bold mt-2">9</p>
-      </div>
-    </div>
+  <!-- Summary Container -->
+  <div id="summaryContainer" class="bg-white p-4 rounded shadow space-y-4">
+    <p class="text-gray-500">Click "Load Summary" to view patient and report data.</p>
+  </div>
 
-    <!-- Quick Links -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <a href="manage_users.html" class="bg-blue-600 text-white p-4 rounded-lg hover:bg-blue-700 shadow text-center">Manage Users</a>
-      <a href="view_reports.html" class="bg-green-600 text-white p-4 rounded-lg hover:bg-green-700 shadow text-center">View Reports</a>
-      <a href="settings.html" class="bg-gray-700 text-white p-4 rounded-lg hover:bg-gray-800 shadow text-center">Settings</a>
-    </div>
-  </main>
+  <!-- Navigation Links -->
+  <div class="mt-10 space-y-2">
+    <h2 class="text-lg font-semibold">Quick Access</h2>
+    <ul class="list-disc list-inside text-blue-700 space-y-1 text-sm">
+      <li><a href="manage_users.html" class="hover:underline">👤 Manage Users</a></li>
+      <li><a href="settings.html" class="hover:underline">⚙️ Settings</a></li>
+      <li><a href="export.html" class="hover:underline">📁 Export Data</a></li>
+      <li><a href="reception_dashboard.html" class="hover:underline">📝 Patient Entries</a></li>
+      <li><a href="view_reports.html" class="hover:underline">📄 View Reports</a></li>
+    </ul>
+  </div>
 
 </body>
 </html>
