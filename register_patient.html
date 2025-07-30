@@ -4,140 +4,100 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Register Patient - Alpha Med</title>
+
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-</head>
-<body class="bg-gray-100 min-h-screen">
 
-  <!-- Header -->
-  <header class="bg-white shadow p-4 flex justify-between items-center">
-    <div class="flex items-center space-x-2">
-      <img src="logo.png" alt="Logo" class="w-10">
-      <h1 class="text-xl font-bold text-blue-700">Register Patient</h1>
-    </div>
-    <a href="reception_dashboard.html" class="text-blue-600 hover:underline">Dashboard</a>
-  </header>
+  <!-- Custom Scripts -->
+  <script src="storage.js"></script>
+</head>
+<body class="bg-gray-100 p-6">
+
+  <h1 class="text-2xl font-bold mb-4">📝 Register Patient</h1>
 
   <!-- Form -->
-  <main class="max-w-4xl mx-auto bg-white p-8 mt-6 rounded-xl shadow">
-    <form id="registerForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
+  <div class="bg-white p-4 rounded shadow mb-6">
+    <form id="patientForm" class="space-y-4">
       <div>
-        <label class="block mb-1 font-medium">Patient Name</label>
-        <input type="text" name="patient_name" required class="w-full border p-2 rounded" />
+        <label class="block">Patient Name</label>
+        <input type="text" id="name" required class="w-full border px-2 py-1 rounded"/>
       </div>
-
       <div>
-        <label class="block mb-1 font-medium">Father Name / S/O</label>
-        <input type="text" name="father_name" required class="w-full border p-2 rounded" />
+        <label class="block">Father Name / S/o</label>
+        <input type="text" id="father" required class="w-full border px-2 py-1 rounded"/>
       </div>
-
       <div>
-        <label class="block mb-1 font-medium">CNIC</label>
-        <input type="text" name="cnic" placeholder="xxxxx-xxxxxxx-x" class="w-full border p-2 rounded" />
+        <label class="block">CNIC</label>
+        <input type="text" id="cnic" required class="w-full border px-2 py-1 rounded"/>
       </div>
-
       <div>
-        <label class="block mb-1 font-medium">Phone No</label>
-        <input type="tel" name="phone" placeholder="03xx-xxxxxxx" class="w-full border p-2 rounded" />
+        <label class="block">Phone No</label>
+        <input type="text" id="phone" required class="w-full border px-2 py-1 rounded"/>
       </div>
-
       <div>
-        <label class="block mb-1 font-medium">Sample No</label>
-        <input type="text" name="sample_no" required class="w-full border p-2 rounded" />
+        <label class="block">Age (dd-mm-yyyy)</label>
+        <input type="text" id="age" required class="w-full border px-2 py-1 rounded"/>
       </div>
 
-      <div>
-        <label class="block mb-1 font-medium">MRN No</label>
-        <input type="text" name="mrn_no" required class="w-full border p-2 rounded" />
-      </div>
-
-      <div>
-        <label class="block mb-1 font-medium">Age (DOB)</label>
-        <input type="date" name="dob" required class="w-full border p-2 rounded" />
-      </div>
-
-      <div>
-        <label class="block mb-1 font-medium">Department</label>
-        <select name="department" id="department" class="w-full border p-2 rounded">
-          <option value="">Select Department</option>
-          <option>Hematology</option>
-          <option>Serology</option>
-          <option>Histopathology</option>
-          <option>Microbiology</option>
-          <option>Biochemistry</option>
-          <option>Culture Tests</option>
-          <option>Special Chemistry</option>
-          <option>Molecular Biology</option>
-          <option>Blood Banking</option>
-        </select>
-      </div>
-
-      <div>
-        <label class="block mb-1 font-medium">Test Name</label>
-        <input type="text" name="test_name" list="testList" class="w-full border p-2 rounded" />
-        <datalist id="testList">
-          <option>Complete Blood Count (CBC)</option>
-          <option>Widal Test</option>
-          <option>Hepatitis B Surface Antigen</option>
-          <option>HCV PCR</option>
-          <option>Liver Function Test (LFT)</option>
-          <option>Urine Culture</option>
-          <option>COVID-19 PCR</option>
-          <option>Blood Grouping</option>
-          <option>Thyroid Panel</option>
-        </datalist>
-      </div>
-
-      <!-- QR Code Box -->
-      <div class="col-span-1 md:col-span-2">
-        <label class="block mb-2 font-medium">Patient QR Code</label>
-        <div id="qr" class="w-32 h-32 bg-gray-200 rounded p-2"></div>
-      </div>
-
-      <!-- Actions -->
-      <div class="col-span-1 md:col-span-2 flex gap-4">
-        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-          Register & Generate Slip
-        </button>
-        <button type="button" onclick="printSlip()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-          Print Slip
-        </button>
-      </div>
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Save Patient</button>
     </form>
-  </main>
+  </div>
+
+  <!-- QR Code Preview -->
+  <div id="qrPreview" class="mb-6"></div>
+
+  <!-- Patient List -->
+  <div class="bg-white p-4 rounded shadow">
+    <h2 class="text-xl font-semibold mb-2">📋 Registered Patients</h2>
+    <ul id="patientList" class="text-sm space-y-2"></ul>
+  </div>
 
   <script>
-    const form = document.getElementById("registerForm");
-    const qrBox = document.getElementById("qr");
+    const form = document.getElementById("patientForm");
+    const list = document.getElementById("patientList");
+    const qr = document.getElementById("qrPreview");
 
-    form.addEventListener("submit", function(e) {
-      e.preventDefault();
-      const formData = new FormData(form);
-      const data = {};
-      formData.forEach((value, key) => data[key] = value);
-
-      const qrContent = `
-        Name: ${data.patient_name}
-        Father: ${data.father_name}
-        CNIC: ${data.cnic}
-        MRN: ${data.mrn_no}
-        Dept: ${data.department}
-        Test: ${data.test_name}
-      `;
-
-      qrBox.innerHTML = "";
-      QRCode.toCanvas(qrContent, { width: 128 }, function(err, canvas) {
-        if (!err) qrBox.appendChild(canvas);
-      });
-
-      alert("Patient registered successfully!");
-    });
-
-    function printSlip() {
-      alert("Redirecting to printable slip (registration-slip.html)");
-      window.location.href = "registration-slip.html";
+    function renderPatients() {
+      const patients = getFromStorage("patients");
+      list.innerHTML = patients.map(p => `
+        <li class="border-b py-1">
+          <strong>${p.name}</strong> (MRN: ${p.mrn}, Sample: ${p.sampleNo}) - ${p.phone}
+        </li>
+      `).join("");
     }
+
+    form.onsubmit = e => {
+      e.preventDefault();
+
+      const newPatient = {
+        name: name.value,
+        father: father.value,
+        cnic: cnic.value,
+        phone: phone.value,
+        age: age.value,
+        mrn: generateID("MRN"),
+        sampleNo: generateID("SMP"),
+        registeredAt: new Date().toLocaleString()
+      };
+
+      addToStorage("patients", newPatient);
+      generateQRCode(newPatient);
+      renderPatients();
+      form.reset();
+    };
+
+    function generateQRCode(patient) {
+      const qrData = `Alpha Med Lab\nName: ${patient.name}\nMRN: ${patient.mrn}\nSample: ${patient.sampleNo}\nPhone: ${patient.phone}`;
+      QRCode.toCanvas(document.createElement("canvas"), qrData, function (err, canvas) {
+        if (!err) {
+          qr.innerHTML = "";
+          qr.appendChild(canvas);
+        }
+      });
+    }
+
+    renderPatients();
   </script>
 </body>
 </html>
