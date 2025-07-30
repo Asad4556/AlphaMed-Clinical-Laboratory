@@ -1,1 +1,73 @@
-body { background-color: #111; color: #fff; font-family: Arial; }
+/* ===== Custom Branding Colors (if needed) ===== */
+:root {
+  --primary: #1e40af;   /* Tailwind blue-800 */
+  --accent: #2563eb;    /* Tailwind blue-600 */
+  --gray-light: #f9fafb;
+}
+
+/* ===== Reusable Utility Classes ===== */
+.lab-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--primary);
+}
+
+.label {
+  font-weight: 600;
+  color: #374151; /* Tailwind gray-700 */
+}
+
+.input-box {
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db; /* Tailwind gray-300 */
+  background-color: #fff;
+}
+
+.input-box:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* ===== QR Code Canvas Styling ===== */
+canvas {
+  margin-top: 0.5rem;
+}
+
+/* ===== Toast Notifications (if manually used) ===== */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: var(--primary);
+  color: white;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  animation: fadeInOut 3s ease-in-out;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(20px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(20px); }
+}
+
+/* ===== Print Tweaks ===== */
+@media print {
+  body {
+    background: white !important;
+    color: black;
+    font-size: 12px;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-border {
+    border: 1px solid #000;
+  }
+}
