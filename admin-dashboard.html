@@ -4,37 +4,37 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Dashboard - Alpha Med</title>
-
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
 
   <!-- Scripts -->
   <script src="storage.js"></script>
-  <script src="dashboard-summary.js"></script>
-
+  <script src="dashboard-summary.js" defer></script>
 </head>
 <body class="bg-gray-100 text-gray-800 p-6 min-h-screen">
 
   <!-- Header -->
   <header class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold">🧪 Alpha Med Admin Dashboard</h1>
+    <h1 class="text-3xl font-bold text-blue-700">🧪 Alpha Med Admin Dashboard</h1>
     <a href="login.html" class="text-red-600 hover:underline text-sm">Logout</a>
   </header>
 
   <!-- Load Summary Button -->
-  <button onclick="loadSummary()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded mb-4">
-    📊 Load Summary
-  </button>
-
-  <!-- Summary Container -->
-  <div id="summaryContainer" class="bg-white p-4 rounded shadow space-y-4">
-    <p class="text-gray-500">Click "Load Summary" to view patient and report data.</p>
+  <div class="mb-6 flex justify-between items-center">
+    <h2 class="text-xl font-semibold">📊 Dashboard Summary</h2>
+    <button onclick="loadSummary()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
+      🔄 Load Summary
+    </button>
   </div>
 
-  <!-- Navigation Links -->
-  <div class="mt-10 space-y-2">
-    <h2 class="text-lg font-semibold">Quick Access</h2>
-    <ul class="list-disc list-inside text-blue-700 space-y-1 text-sm">
+  <!-- Summary Grid -->
+  <div id="summaryContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+    <!-- JS will populate these -->
+  </div>
+
+  <!-- Quick Access -->
+  <div>
+    <h2 class="text-lg font-semibold mb-2">🔗 Quick Access</h2>
+    <ul class="space-y-2 text-blue-700 text-sm">
       <li><a href="manage_users.html" class="hover:underline">👤 Manage Users</a></li>
       <li><a href="settings.html" class="hover:underline">⚙️ Settings</a></li>
       <li><a href="export.html" class="hover:underline">📁 Export Data</a></li>
@@ -42,6 +42,18 @@
       <li><a href="view_reports.html" class="hover:underline">📄 View Reports</a></li>
     </ul>
   </div>
+
+  <style>
+    .card {
+      @apply bg-white rounded-xl p-4 shadow text-center;
+    }
+    .card h3 {
+      @apply text-2xl font-bold text-blue-700;
+    }
+    .card p {
+      @apply text-sm text-gray-500 mt-1;
+    }
+  </style>
 
 </body>
 </html>
