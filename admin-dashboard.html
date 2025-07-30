@@ -29,6 +29,26 @@
   <!-- Summary Grid -->
   <div id="summaryContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
     <!-- JS will populate these -->
+    <div class="card">
+      <h3>Total Patients</h3>
+      <p>1200</p>
+      <button class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded mt-4">🔍 View Details</button>
+    </div>
+    <div class="card">
+      <h3>Tests Conducted</h3>
+      <p>5000</p>
+      <button class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded mt-4">🔍 View Details</button>
+    </div>
+    <div class="card">
+      <h3>Pending Results</h3>
+      <p>200</p>
+      <button class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded mt-4">🔍 View Details</button>
+    </div>
+    <div class="card">
+      <h3>Users Registered</h3>
+      <p>15</p>
+      <button class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded mt-4">🔍 View Details</button>
+    </div>
   </div>
 
   <!-- Quick Access -->
@@ -41,6 +61,9 @@
       <li><a href="reception_dashboard.html" class="hover:underline">📝 Patient Entries</a></li>
       <li><a href="view_reports.html" class="hover:underline">📄 View Reports</a></li>
     </ul>
+    <button onclick="quickAccessAction()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded mt-4">
+      🔗 Go to Quick Access
+    </button>
   </div>
 
   <script>
@@ -63,26 +86,16 @@
         card.innerHTML = `
           <h3>${item.title}</h3>
           <p>${item.count}</p>
+          <button class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded mt-4">🔍 View Details</button>
         `;
         
         summaryContainer.appendChild(card);
       });
     }
 
-    // Sample data for testing (this would be fetched from localStorage in real application)
-    function setSampleSummaryData() {
-      const sampleData = [
-        { title: 'Total Patients', count: 1200 },
-        { title: 'Tests Conducted', count: 5000 },
-        { title: 'Pending Results', count: 200 },
-        { title: 'Users Registered', count: 15 }
-      ];
-      
-      saveToStorage('dashboard_summary', sampleData);
+    function quickAccessAction() {
+      alert("Quick Access Button clicked!");
     }
-
-    // Uncomment the line below to set sample data (for testing)
-    // setSampleSummaryData();
   </script>
 
   <style>
