@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login - Alpha Med Lab</title>
+  <title>لاگ ان کریں - Alpha Med Lab</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-6">
@@ -12,49 +12,47 @@
     <div class="text-center mb-6">
       <img src="assets/logo.png" alt="Alpha Med" class="h-16 mx-auto mb-2"/>
       <h1 class="text-2xl font-bold text-blue-700">Alpha Med Clinical Lab</h1>
-      <p class="text-sm text-gray-500">Sign in to continue</p>
+      <p class="text-sm text-gray-500">لاگ ان کرنے کے لیے نیچے تفصیلات درج کریں</p>
     </div>
 
     <form id="loginForm" class="space-y-4">
       <div>
-        <label class="block text-sm font-medium">Username or Email</label>
-        <input type="text" id="username" class="input" required />
+        <label class="block text-sm font-medium">یوزر نیم یا ای میل</label>
+        <input type="text" id="username" class="input" required autofocus />
       </div>
 
       <div>
-        <label class="block text-sm font-medium">Password</label>
+        <label class="block text-sm font-medium">پاس ورڈ</label>
         <div class="relative">
           <input type="password" id="password" class="input pr-10" required />
-          <button type="button" onclick="togglePassword()" class="absolute right-2 top-2 text-gray-500 hover:text-gray-700 text-sm">
-            👁️
-          </button>
+          <button type="button" onclick="togglePassword()" class="absolute right-2 top-2 text-gray-500 hover:text-gray-700 text-sm">👁️</button>
         </div>
       </div>
 
       <div>
-        <label class="block text-sm font-medium">Login As</label>
+        <label class="block text-sm font-medium">رول منتخب کریں</label>
         <select id="role" class="input" required>
-          <option value="">Select Role</option>
-          <option value="admin">Admin</option>
-          <option value="technician">Technician</option>
-          <option value="reception">Receptionist</option>
+          <option value="">رول منتخب کریں</option>
+          <option value="admin">ایڈمن</option>
+          <option value="technician">ٹیکنیشن</option>
+          <option value="reception">ریسیپشنسٹ</option>
         </select>
       </div>
 
       <div id="error" class="text-red-600 text-sm"></div>
 
-      <button type="submit" class="bg-blue-600 text-white w-full py-2 rounded hover:bg-blue-700">Login</button>
+      <button type="submit" class="bg-blue-600 text-white w-full py-2 rounded hover:bg-blue-700">لاگ ان</button>
     </form>
   </div>
 
   <script>
-    // Password visibility toggle
+    // پاس ورڈ دکھانے/چھپانے کا فنکشن
     function togglePassword() {
       const passField = document.getElementById("password");
       passField.type = passField.type === "password" ? "text" : "password";
     }
 
-    // Login logic
+    // لاگ ان فارم ہینڈلر
     document.getElementById("loginForm").addEventListener("submit", function(e) {
       e.preventDefault();
 
@@ -64,11 +62,11 @@
       const error = document.getElementById("error");
 
       if (!username || !password || !role) {
-        error.textContent = "⚠️ Please fill in all fields.";
+        error.textContent = "⚠️ براہ کرم تمام فیلڈز پر کریں۔";
         return;
       }
 
-      // Simulate login and redirect
+      // سادہ رول بیسڈ ری ڈائریکشن
       if (role === "admin") {
         window.location.href = "admin-dashboard.html";
       } else if (role === "technician") {
@@ -76,7 +74,7 @@
       } else if (role === "reception") {
         window.location.href = "reception_dashboard.html";
       } else {
-        error.textContent = "❌ Invalid role selected.";
+        error.textContent = "❌ درست رول منتخب کریں۔";
       }
     });
   </script>
