@@ -2,95 +2,127 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Technician Panel - Alpha Med</title>
+  <title>Technician Panel</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 min-h-screen text-gray-800">
+<body class="bg-gray-100 p-6">
 
-  <!-- Header -->
-  <header class="bg-blue-800 text-white p-4 flex justify-between items-center">
-    <h1 class="text-xl font-semibold">🔬 Technician Panel - Alpha Med</h1>
-    <a href="technician_dashboard.html" class="text-sm hover:underline">Dashboard</a>
-  </header>
+  <div class="max-w-5xl mx-auto bg-white p-6 rounded-xl shadow">
+    <h1 class="text-2xl font-bold mb-4">🔬 Technician Dashboard</h1>
 
-  <!-- Main Content -->
-  <main class="max-w-6xl mx-auto mt-6 px-4">
+    <!-- 🔍 Search Patient -->
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="Search by MRN, Name, CNIC"
+      class="w-full border p-2 rounded mb-4"
+      oninput="filterPatients()"
+    />
 
-    <!-- Table Title -->
-    <div class="mb-4">
-      <h2 class="text-lg font-bold text-blue-700">📝 Pending Tests</h2>
-      <p class="text-sm text-gray-600">Click “Enter Result” to fill in results for the selected sample.</p>
+    <!-- 📋 Patient List -->
+    <table class="w-full text-sm text-left border">
+      <thead class="bg-gray-200">
+        <tr>
+          <th class="p-2">#</th>
+          <th class="p-2">Name</th>
+          <th class="p-2">MRN</th>
+          <th class="p-2">Sample</th>
+          <th class="p-2">Select</th>
+        </tr>
+      </thead>
+      <tbody id="patientTable"></tbody>
+    </table>
+
+    <!-- 🧪 Test Entry Section -->
+    <div id="testSection" class="mt-8 hidden">
+      <h2 class="text-xl font-semibold mb-2">Enter Test Results</h2>
+      <form id="testForm" class="space-y-4"></form>
+      <button onclick="saveResults()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+        💾 Save Results
+      </button>
     </div>
+  </div>
 
-    <!-- Table -->
-    <div class="bg-white rounded-lg shadow overflow-auto">
-      <table class="min-w-full text-sm">
-        <thead class="bg-blue-600 text-white">
-          <tr>
-            <th class="px-4 py-2 text-left">Sample No</th>
-            <th class="px-4 py-2 text-left">Patient Name</th>
-            <th class="px-4 py-2 text-left">Test</th>
-            <th class="px-4 py-2 text-left">Department</th>
-            <th class="px-4 py-2 text-left">Date</th>
-            <th class="px-4 py-2 text-center">Action</th>
-          </tr>
-        </thead>
-        <tbody id="testTableBody">
-          <!-- Rows will be added dynamically -->
-        </tbody>
-      </table>
-    </div>
-  </main>
-
-  <!-- Sample Data Script -->
   <script>
-    const testSamples = [
-      {
-        sampleNo: "SMP-0012",
-        patientName: "Asad Khan",
-        testName: "CBC",
-        department: "Hematology",
-        date: "2025-07-30"
-      },
-      {
-        sampleNo: "SMP-0013",
-        patientName: "Ali Raza",
-        testName: "Liver Function Test (LFT)",
-        department: "Biochemistry",
-        date: "2025-07-30"
-      },
-      {
-        sampleNo: "SMP-0014",
-        patientName: "Zara Fatima",
-        testName: "COVID-19 PCR",
-        department: "Molecular Biology",
-        date: "2025-07-30"
-      }
+    let selectedPatient = null;
+
+    const tests = [
+      { name: "Hemoglobin", normal: "13-17 g/dL", dept: "Hematology", unit: "g/dL" },
+      { name: "WBC", normal: "4,000-11,000 /µL", dept: "Hematology", unit: "/µL" },
+      { name: "Blood Glucose", normal: "70-110 mg/dL", dept: "Biochemistry", unit: "mg/dL" },
+      { name: "ALT", normal: "7-55 U/L", dept: "Liver Function", unit: "U/L" },
+      { name: "Uric Acid", normal: "3.5-7.2 mg/dL", dept: "Biochemistry", unit: "mg/dL" },
     ];
 
-    const tbody = document.getElementById("testTableBody");
+    function filterPatients() {
+      const query = document.getElementById("searchInput").value.toLowerCase();
+      const patients = JSON.parse(localStorage.getItem("patients")) || [];
+      const table = document.getElementById("patientTable");
+      table.innerHTML = "";
 
-    testSamples.forEach(sample => {
-      const row = document.createElement("tr");
-      row.className = "border-b hover:bg-gray-50";
+      patients.forEach((p, index) => {
+        const values = `${p.name} ${p.mrn} ${p.cnic}`.toLowerCase();
+        if (values.includes(query)) {
+          table.innerHTML += `
+            <tr class="border-b">
+              <td class="p-2">${index + 1}</td>
+              <td class="p-2">${p.name}</td>
+              <td class="p-2">${p.mrn}</td>
+              <td class="p-2">${p.sampleNo}</td>
+              <td class="p-2">
+                <button onclick='selectPatient(${JSON.stringify(p)})'
+                  class="text-blue-600 underline">Select</button>
+              </td>
+            </tr>`;
+        }
+      });
+    }
 
-      row.innerHTML = `
-        <td class="px-4 py-2">${sample.sampleNo}</td>
-        <td class="px-4 py-2">${sample.patientName}</td>
-        <td class="px-4 py-2">${sample.testName}</td>
-        <td class="px-4 py-2">${sample.department}</td>
-        <td class="px-4 py-2">${sample.date}</td>
-        <td class="px-4 py-2 text-center">
-          <a href="add_test_result.html?sample=${sample.sampleNo}" 
-             class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-xs">
-            Enter Result
-          </a>
-        </td>
-      `;
+    function selectPatient(p) {
+      selectedPatient = p;
+      document.getElementById("testSection").classList.remove("hidden");
+      renderTestForm();
+    }
 
-      tbody.appendChild(row);
-    });
+    function renderTestForm() {
+      const form = document.getElementById("testForm");
+      form.innerHTML = "";
+      tests.forEach(test => {
+        form.innerHTML += `
+          <div class="grid grid-cols-4 gap-2">
+            <label class="font-semibold col-span-1">${test.name}</label>
+            <input type="text" name="${test.name}" placeholder="Enter Value"
+              class="border p-2 rounded col-span-1" />
+            <span class="col-span-1 text-gray-600">Normal: ${test.normal}</span>
+            <span class="col-span-1 text-gray-600">Unit: ${test.unit}</span>
+          </div>`;
+      });
+    }
+
+    function saveResults() {
+      const form = document.getElementById("testForm");
+      const data = {};
+      [...form.elements].forEach(input => {
+        if (input.name) {
+          data[input.name] = input.value;
+        }
+      });
+
+      const results = JSON.parse(localStorage.getItem("results")) || [];
+      results.push({
+        mrn: selectedPatient.mrn,
+        name: selectedPatient.name,
+        results: data,
+        enteredAt: new Date().toISOString()
+      });
+      localStorage.setItem("results", JSON.stringify(results));
+
+      alert("✅ Results saved successfully!");
+      document.getElementById("testSection").classList.add("hidden");
+    }
+
+    window.onload = filterPatients;
   </script>
+
 </body>
 </html>
