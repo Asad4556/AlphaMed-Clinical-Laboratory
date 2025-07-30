@@ -5,9 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Export Reports - Alpha Med</title>
   <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 p-6 min-h-screen font-sans">
 
+  <!-- SheetJS (Excel Export) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <!-- jsPDF & AutoTable (PDF Export) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+</head>
+
+<body class="bg-gray-100 p-6 min-h-screen font-sans">
   <div class="max-w-6xl mx-auto bg-white shadow-xl p-6 rounded-xl">
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-2xl font-bold text-blue-700">📁 Export Reports</h1>
@@ -17,15 +24,15 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       <div>
         <label class="text-sm font-medium">From Date</label>
-        <input type="date" class="input" />
+        <input type="date" id="fromDate" class="input" />
       </div>
       <div>
         <label class="text-sm font-medium">To Date</label>
-        <input type="date" class="input" />
+        <input type="date" id="toDate" class="input" />
       </div>
       <div>
         <label class="text-sm font-medium">Department</label>
-        <select class="input">
+        <select id="department" class="input">
           <option value="">All Departments</option>
           <option>Hematology</option>
           <option>Serology</option>
@@ -55,34 +62,92 @@
             <th class="p-3 text-left">Result</th>
           </tr>
         </thead>
-        <tbody class="text-gray-700 text-sm">
-          <tr>
-            <td class="p-3">Ali Khan</td>
-            <td class="p-3">MRN001</td>
-            <td class="p-3">CBC</td>
-            <td class="p-3">2025-07-30</td>
-            <td class="p-3">Normal</td>
-          </tr>
-          <tr class="bg-gray-50">
-            <td class="p-3">Sara Ahmed</td>
-            <td class="p-3">MRN002</td>
-            <td class="p-3">LFT</td>
-            <td class="p-3">2025-07-28</td>
-            <td class="p-3">High ALT</td>
-          </tr>
+        <tbody id="resultsBody" class="text-gray-700 text-sm">
+          <!-- Filled dynamically -->
         </tbody>
       </table>
     </div>
   </div>
 
   <script>
-    function exportPDF() {
-      alert("📄 Export to PDF functionality goes here (e.g., jsPDF integration)");
+    function loadResults() {
+      const results = JSON.parse(localStorage.getItem("results") || "[]");
+
+      const from = new Date(document.querySelector("#fromDate").value);
+      const to = new Date(document.querySelector("#toDate").value);
+      const department = document.querySelector("#department").value;
+
+      const filtered = results.filter(r => {
+        const date = new Date(r.date);
+        const matchDept = department ? r.department === department : true;
+        const matchDate = (!isNaN(from) ? date >= from : true) && (!isNaN(to) ? date <= to : true);
+        return matchDept && matchDate;
+      });
+
+      const tbody = document.querySelector("#resultsBody");
+      tbody.innerHTML = "";
+
+      filtered.forEach(r => {
+        r.tests.forEach(test => {
+          const row = `
+            <tr class="border-b">
+              <td class="p-3">${r.name}</td>
+              <td class="p-3">${r.mrn}</td>
+              <td class="p-3">${test.name}</td>
+              <td class="p-3">${r.date}</td>
+              <td class="p-3">${test.result}</td>
+            </tr>
+          `;
+          tbody.innerHTML += row;
+        });
+      });
+
+      return filtered;
     }
 
     function exportExcel() {
-      alert("📊 Export to Excel functionality goes here (e.g., SheetJS integration)");
+      const data = loadResults();
+      const rows = [["Patient Name", "MRN", "Test", "Date", "Result"]];
+      data.forEach(r => {
+        r.tests.forEach(test => {
+          rows.push([r.name, r.mrn, test.name, r.date, test.result]);
+        });
+      });
+
+      const ws = XLSX.utils.aoa_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Reports");
+      XLSX.writeFile(wb, "Reports.xlsx");
     }
+
+    async function exportPDF() {
+      const data = loadResults();
+      const rows = [];
+      data.forEach(r => {
+        r.tests.forEach(test => {
+          rows.push([r.name, r.mrn, test.name, r.date, test.result]);
+        });
+      });
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      doc.setFontSize(14);
+      doc.text("Exported Reports", 14, 15);
+
+      doc.autoTable({
+        startY: 20,
+        head: [["Patient Name", "MRN", "Test", "Date", "Result"]],
+        body: rows,
+      });
+
+      doc.save("Reports.pdf");
+    }
+
+    window.onload = loadResults;
+    document.querySelector("#fromDate").addEventListener("change", loadResults);
+    document.querySelector("#toDate").addEventListener("change", loadResults);
+    document.querySelector("#department").addEventListener("change", loadResults);
   </script>
 
   <style>
