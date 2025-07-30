@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Reception - Alpha Med</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="storage.js"></script>
+  <script src="labSections.js"></script>
   <script src="reception.js" defer></script>
 </head>
 <body class="bg-gray-100 p-6">
@@ -19,6 +19,12 @@
       <input type="text" name="cnic" placeholder="CNIC" class="border p-2 rounded" required>
       <input type="text" name="phone" placeholder="Phone No" class="border p-2 rounded">
       <input type="date" name="dob" placeholder="Date of Birth" class="border p-2 rounded" required>
+    </div>
+
+    <!-- Auto-generated MRN and Sample No display -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+      <input type="text" id="autoMRN" placeholder="MRN" class="border p-2 rounded bg-gray-100" readonly>
+      <input type="text" id="autoSampleNo" placeholder="Sample No" class="border p-2 rounded bg-gray-100" readonly>
     </div>
 
     <div class="mt-4">
@@ -61,5 +67,18 @@
     </table>
   </div>
 
+  <script>
+    // Populate the auto-generated MRN and SampleNo when form loads
+    document.addEventListener("DOMContentLoaded", () => {
+      const getNext = (key, base) => {
+        const last = parseInt(localStorage.getItem(key) || base, 10) + 1;
+        return last;
+      };
+      document.getElementById("autoMRN").value = `MRN-${getNext("lastMRN", 1000)}`;
+      document.getElementById("autoSampleNo").value = `S-${getNext("lastSample", 5000)}`;
+    });
+
+    // Refresh MRN & Sample No after each submit from inside reception.js
+  </script>
 </body>
 </html>
