@@ -2,184 +2,88 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>مریض رجسٹریشن - AlphaMed</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register Patient - AlphaMed</title>
   <link rel="stylesheet" href="style.css" />
-  <style>
-    body {
-      background-color: #121212;
-      color: #ffffff;
-      font-family: Arial, sans-serif;
-      padding: 20px;
-    }
-
-    h2 {
-      text-align: center;
-      color: #00ffff;
-    }
-
-    label {
-      display: block;
-      margin-top: 10px;
-    }
-
-    input, select, button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      font-size: 16px;
-      border-radius: 4px;
-      border: none;
-    }
-
-    input, select {
-      background-color: #1e1e1e;
-      color: white;
-      border: 1px solid #555;
-    }
-
-    button {
-      background-color: #00ffff;
-      color: #000;
-      font-weight: bold;
-      margin-top: 20px;
-      cursor: pointer;
-    }
-
-    .checkbox-group {
-      margin-top: 10px;
-    }
-
-    .checkbox-group label {
-      display: inline-block;
-      margin-right: 15px;
-    }
-  </style>
+  <script src="labSections.js" defer></script>
 </head>
 <body>
+  <header class="header">
+    <img src="logo.png" alt="Lab Logo" class="logo" />
+    <h1>AlphaMed Clinical Laboratory</h1>
+  </header>
 
-  <h2>نیا مریض رجسٹر کریں</h2>
+  <nav class="navbar">
+    <a href="reception.html">Home</a>
+    <a href="reception_dashboard.html">Dashboard</a>
+    <a href="registration-slip.html">Slip</a>
+    <a href="logout.php" class="logout">Logout</a>
+  </nav>
 
-  <form id="patientForm">
-    <label>مریض کا نام:</label>
-    <input type="text" id="name" required>
+  <main class="main">
+    <h2>Register New Patient</h2>
+    <form id="registerForm" action="save_patient.php" method="POST" class="form-section">
+      <div class="form-group">
+        <label>Patient Name</label>
+        <input type="text" name="name" required />
+      </div>
 
-    <label>CNIC:</label>
-    <input type="text" id="cnic" required placeholder="مثال: 12345-1234567-1">
+      <div class="form-group">
+        <label>Age</label>
+        <input type="number" name="age" required />
+      </div>
 
-    <label>عمر:</label>
-    <input type="number" id="age" required>
+      <div class="form-group">
+        <label>Gender</label>
+        <select name="gender" required>
+          <option value="">Select</option>
+          <option>Male</option>
+          <option>Female</option>
+          <option>Other</option>
+        </select>
+      </div>
 
-    <label>جنس:</label>
-    <select id="gender">
-      <option value="Male">مرد</option>
-      <option value="Female">خاتون</option>
-    </select>
+      <div class="form-group">
+        <label>Contact Number</label>
+        <input type="text" name="contact" required />
+      </div>
 
-    <label>سیکشن منتخب کریں:</label>
-    <select id="section" onchange="populateTests()" required>
-      <option value="">-- سیکشن منتخب کریں --</option>
-      <option value="Hematology">Hematology</option>
-      <option value="Biochemistry">Biochemistry</option>
-      <option value="Serology">Serology</option>
-      <option value="Microbiology">Microbiology</option>
-      <option value="Urine">Urine</option>
-      <option value="PCR">PCR</option>
-    </select>
+      <div class="form-group">
+        <label>Referral Doctor</label>
+        <input type="text" name="referral" />
+      </div>
 
-    <div class="checkbox-group" id="testsArea">
-      <!-- ٹیسٹ یہاں ظاہر ہوں گے -->
-    </div>
+      <div class="form-group">
+        <label>Select Department</label>
+        <select id="departmentSelect" onchange="loadTests()" required>
+          <option value="">Choose Department</option>
+          <option value="hematology">Hematology</option>
+          <option value="biochemistry">Biochemistry</option>
+          <option value="microbiology">Microbiology</option>
+          <option value="serology">Serology</option>
+          <option value="immunology">Immunology</option>
+        </select>
+      </div>
 
-    <button type="submit">رجسٹر کریں</button>
-  </form>
+      <div class="form-group">
+        <label>Tests</label>
+        <div id="testList" class="test-list">
+          <p>Select a department to load tests.</p>
+        </div>
+      </div>
 
-  <script>
-    // تمام ٹیسٹ
-    const allTests = {
-      Hematology: [
-        { name: "CBC", male: "4.5-5.5", female: "4.0-5.0" },
-        { name: "Hemoglobin", male: "13-17", female: "12-15" },
-        { name: "Platelet Count", male: "150-400", female: "150-400" }
-      ],
-      Biochemistry: [
-        { name: "Blood Sugar", male: "70-110", female: "70-110" },
-        { name: "Urea", male: "15-45", female: "15-45" },
-        { name: "Creatinine", male: "0.6-1.2", female: "0.5-1.1" }
-      ],
-      Serology: [
-        { name: "HCV", male: "Negative", female: "Negative" },
-        { name: "HBsAg", male: "Negative", female: "Negative" },
-        { name: "HIV", male: "Negative", female: "Negative" }
-      ],
-      Microbiology: [
-        { name: "Blood Culture", male: "-", female: "-" },
-        { name: "Sputum Culture", male: "-", female: "-" }
-      ],
-      Urine: [
-        { name: "Urine R/M", male: "-", female: "-" },
-        { name: "Pregnancy Test", male: "-", female: "Positive/Negative" }
-      ],
-      PCR: [
-        { name: "HCV PCR", male: "-", female: "-" },
-        { name: "COVID-19 PCR", male: "-", female: "-" },
-        { name: "TB PCR", male: "-", female: "-" }
-      ]
-    };
+      <div class="form-group">
+        <label>Selected Tests</label>
+        <ul id="selectedTests"></ul>
+        <input type="hidden" name="tests" id="testInput" />
+      </div>
 
-    // سیکشن کے مطابق ٹیسٹ لوڈ کرنا
-    function populateTests() {
-      const section = document.getElementById("section").value;
-      const area = document.getElementById("testsArea");
-      area.innerHTML = "";
+      <button type="submit" class="btn">Register Patient</button>
+    </form>
+  </main>
 
-      if (!section || !allTests[section]) return;
-
-      allTests[section].forEach((test, index) => {
-        area.innerHTML += `
-          <label>
-            <input type="checkbox" name="selectedTests" value="${index}"> ${test.name}
-          </label>
-        `;
-      });
-    }
-
-    // مریض کو رجسٹر کرنا
-    document.getElementById("patientForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-
-      const name = document.getElementById("name").value.trim();
-      const cnic = document.getElementById("cnic").value.trim();
-      const age = parseInt(document.getElementById("age").value.trim());
-      const gender = document.getElementById("gender").value;
-      const section = document.getElementById("section").value;
-      const checkboxes = document.querySelectorAll("input[name='selectedTests']:checked");
-
-      if (!checkboxes.length) {
-        alert("کم از کم ایک ٹیسٹ منتخب کریں۔");
-        return;
-      }
-
-      const selectedTests = Array.from(checkboxes).map(cb => allTests[section][cb.value]);
-
-      const patients = JSON.parse(localStorage.getItem("patients") || "[]");
-      const mrn = `ACL-25-${String(patients.length + 1).padStart(5, '0')}`;
-
-      const patient = { mrn, name, cnic, age, gender, testType: section, selectedTests };
-      patients.push(patient);
-      localStorage.setItem("patients", JSON.stringify(patients));
-
-      alert(`مریض کامیابی سے رجسٹر ہو گیا ✅\nMRN: ${mrn}`);
-      this.reset();
-      document.getElementById("testsArea").innerHTML = "";
-    });
-
-    // 🛡️ سیکیورٹی چیک
-    const currentUser = JSON.parse(localStorage.getItem("loggedInUser"));
-    if (!currentUser || currentUser.role.toLowerCase() !== "reception") {
-      alert("صرف ریسیپشن یوزر کو اجازت ہے۔");
-      window.location.href = "login.html";
-    }
-  </script>
-
+  <footer class="footer">
+    <p>&copy; 2025 AlphaMed Clinical Laboratory. All rights reserved.</p>
+  </footer>
 </body>
 </html>
