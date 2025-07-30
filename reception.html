@@ -3,108 +3,33 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Reception Panel - AlphaMed Lab</title>
-  <link rel="stylesheet" href="style.css"/>
-  <style>
-    body {
-      background-color: #111;
-      color: white;
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-
-    header {
-      background-color: #00bcd4;
-      color: black;
-      padding: 20px;
-      text-align: center;
-    }
-
-    nav {
-      background-color: #222;
-      padding: 10px 0;
-    }
-
-    nav ul {
-      display: flex;
-      justify-content: center;
-      list-style: none;
-      padding: 0;
-    }
-
-    nav ul li {
-      margin: 0 15px;
-    }
-
-    nav ul li a {
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
-      padding: 10px 20px;
-      border-radius: 5px;
-      background-color: #00bcd4;
-    }
-
-    nav ul li a:hover {
-      background-color: #00a0b0;
-    }
-
-    main {
-      padding: 40px;
-      text-align: center;
-    }
-
-    footer {
-      text-align: center;
-      padding: 15px;
-      background-color: #222;
-      color: #aaa;
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-    }
-  </style>
+  <title>Reception - AlphaMed Lab</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header>
+  <header class="header">
+    <img src="logo.png" alt="Lab Logo" class="logo" />
     <h1>AlphaMed Clinical Laboratory</h1>
-    <p>Reception Panel</p>
   </header>
 
-  <nav>
-    <ul>
-      <li><a href="reception_dashboard.html">Dashboard</a></li>
-      <li><a href="register_patient.html">Register Patient</a></li>
-      <li><a href="change_password.html">Change Password</a></li>
-      <li><a href="#" onclick="logout()">Logout</a></li>
-    </ul>
+  <nav class="navbar">
+    <a href="reception_dashboard.html">Dashboard</a>
+    <a href="register_patient.html">Register Patient</a>
+    <a href="registration-slip.html">Slip</a>
+    <a href="view_reports.html">Reports</a>
+    <a href="settings.html">Settings</a>
+    <a href="logout.php" class="logout">Logout</a>
   </nav>
 
-  <main>
-    <section class="dashboard-welcome">
-      <h2>خوش آمدید، ریسیپشنسٹ</h2>
-      <p>کام شروع کرنے کے لیے مینو سے کوئی آپشن منتخب کریں۔</p>
+  <main class="main">
+    <section class="welcome">
+      <h2>Welcome, Receptionist</h2>
+      <p>Select an action from the menu to get started.</p>
     </section>
   </main>
 
-  <footer>
-    <p>&copy; 2025 AlphaMed Clinical Laboratory</p>
+  <footer class="footer">
+    <p>&copy; 2025 AlphaMed Clinical Laboratory. All rights reserved.</p>
   </footer>
-
-  <script>
-    // صرف ریسیپشن یوزرز کے لیے رسائی
-    const user = JSON.parse(localStorage.getItem("loggedInUser"));
-    if (!user || user.role !== "reception") {
-      alert("آپ کے پاس رسائی کی اجازت نہیں ہے۔");
-      window.location.href = "login.html";
-    }
-
-    function logout() {
-      localStorage.removeItem("loggedInUser");
-      localStorage.removeItem("loggedInRole");
-      window.location.href = "login.html";
-    }
-  </script>
 </body>
 </html>
