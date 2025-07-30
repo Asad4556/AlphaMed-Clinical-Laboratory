@@ -2,16 +2,54 @@ const testList = {
   Hematology: [
     { name: "Hemoglobin", range: "13-17 g/dL" },
     { name: "WBC Count", range: "4,000–11,000/mm³" },
+    { name: "Platelet Count", range: "150,000–450,000/mm³" },
+    { name: "RBC Count", range: "4.7-6.1 million/mm³" },
+    { name: "ESR", range: "0-20 mm/hr" }
   ],
   Serology: [
     { name: "HCV Antibody", range: "Negative" },
     { name: "HBsAg", range: "Negative" },
+    { name: "VDRL", range: "Negative" },
+    { name: "HIV", range: "Negative" }
+  ],
+  Histopathology: [
+    { name: "Biopsy", range: "As per report" },
+    { name: "Cytology", range: "As per report" }
+  ],
+  Microbiology: [
+    { name: "Gram Stain", range: "Negative" },
+    { name: "Culture Sensitivity", range: "As per report" },
+    { name: "AFB Smear", range: "Negative" }
   ],
   Biochemistry: [
     { name: "Glucose", range: "70–110 mg/dL" },
     { name: "Cholesterol", range: "125–200 mg/dL" },
+    { name: "Triglycerides", range: "0-150 mg/dL" },
+    { name: "Urea", range: "7-20 mg/dL" },
+    { name: "Creatinine", range: "0.6-1.3 mg/dL" },
+    { name: "SGPT", range: "7-56 U/L" },
+    { name: "SGOT", range: "5-40 U/L" },
+    { name: "ALP", range: "44-147 IU/L" }
   ],
-  // Add all others similarly...
+  Culture: [
+    { name: "Blood Culture", range: "As per report" },
+    { name: "Urine Culture", range: "As per report" },
+    { name: "Sputum Culture", range: "As per report" }
+  ],
+  "Special Chemistry": [
+    { name: "TSH", range: "0.4-4.0 mIU/L" },
+    { name: "Vitamin D", range: "30-100 ng/mL" },
+    { name: "CRP", range: "< 10 mg/L" }
+  ],
+  "Molecular Biology": [
+    { name: "PCR for TB", range: "Negative" },
+    { name: "PCR for COVID-19", range: "Negative" }
+  ],
+  "Blood Banking": [
+    { name: "Blood Group", range: "A, B, AB, O" },
+    { name: "Cross Match", range: "Compatible/Incompatible" },
+    { name: "Coombs Test", range: "Negative" }
+  ]
 };
 
 const form = document.getElementById("patientForm");
@@ -75,7 +113,7 @@ form.onsubmit = (e) => {
 
 // Show registered patients
 function renderPatients() {
-  const patients = getFromStorage("patients");
+  const patients = getFromStorage("patients") || [];
   patientList.innerHTML = "";
 
   patients.forEach(p => {
