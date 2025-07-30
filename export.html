@@ -1,174 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Export Report - AlphaMed Clinical Laboratory</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Export Data</title>
+  <link rel="stylesheet" href="style.css" />
   <style>
     body {
-      background-color: #121212;
-      color: #ffffff;
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 20px;
+      font-family: Arial, sans-serif;
+      padding: 30px;
+      background-color: #f4f4f4;
     }
 
-    .report-container {
-      position: relative;
-      background: url('logo.png') no-repeat center center;
-      background-size: contain;
-      padding: 40px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px #444;
+    .export-container {
+      max-width: 500px;
       margin: auto;
-      width: 80%;
+      background: white;
+      padding: 20px 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
 
-    .report-header {
+    h2 {
       text-align: center;
       margin-bottom: 20px;
     }
 
-    .barcode {
-      margin-top: 20px;
-      text-align: center;
-    }
-
-    .report-footer {
-      font-style: italic;
-      text-align: center;
-      margin-top: 40px;
-      font-size: 0.9em;
-    }
-
-    .btn {
-      margin: 10px 5px;
-      padding: 10px 20px;
-      background-color: #03dac5;
-      color: #000;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    .btn:hover {
-      background-color: #018786;
-    }
-
-    table {
+    select, button {
       width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      background-color: #1e1e1e;
+      padding: 12px;
+      margin: 10px 0;
+      font-size: 16px;
     }
 
-    th, td {
-      border: 1px solid #444;
-      padding: 10px;
-      text-align: center;
+    button {
+      background-color: #1e90ff;
+      color: white;
+      border: none;
+      cursor: pointer;
     }
 
-    th {
-      background-color: #333;
+    button:hover {
+      background-color: #187bcd;
     }
   </style>
 </head>
 <body>
 
-  <div class="report-container" id="reportContent">
-    <div class="report-header">
-      <img src="logo.png" alt="Lab Logo" height="80">
-      <h2>AlphaMed Clinical Laboratory</h2>
-      <p>Quality Assurance Through Advanced Technology</p>
-    </div>
+  <div class="export-container">
+    <h2>Export Data</h2>
 
-    <div id="patientInfo">
-      <p><strong>Name:</strong> John Doe</p>
-      <p><strong>Age/Gender:</strong> 32 / Male</p>
-      <p><strong>MRN:</strong> MRN20250724001</p>
-      <p><strong>Sample No:</strong> SMP-72822</p>
-      <p><strong>Department:</strong> Molecular Biology</p>
-    </div>
+    <form action="export_data.php" method="POST">
+      <label for="exportType">Select data type to export:</label>
+      <select name="exportType" id="exportType" required>
+        <option value="">-- Select --</option>
+        <option value="patients">Patient Records</option>
+        <option value="reports">Lab Reports</option>
+        <option value="tests">Test Results</option>
+        <option value="attendance">Staff Attendance</option>
+      </select>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Test Name</th>
-          <th>Normal Range</th>
-          <th>Result</th>
-        </tr>
-      </thead>
-      <tbody id="testResults">
-        <tr>
-          <td>HCV PCR</td>
-          <td>Negative</td>
-          <td>Negative</td>
-        </tr>
-        <tr>
-          <td>HBV PCR</td>
-          <td>Negative</td>
-          <td>Negative</td>
-        </tr>
-        <tr>
-          <td>Anti-HCV</td>
-          <td>Negative</td>
-          <td>Negative</td>
-        </tr>
-        <tr>
-          <td>Anti-HBV</td>
-          <td>Negative</td>
-          <td>Negative</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <div class="barcode">
-      <svg id="barcode"></svg>
-    </div>
-
-    <div class="report-footer">
-      This report is computer-generated and does not require a signature.
-    </div>
+      <button type="submit">Export as Excel</button>
+    </form>
   </div>
 
-  <div style="text-align:center;">
-    <button class="btn" onclick="window.print()">🖨️ Print</button>
-    <button class="btn" onclick="exportPDF()">📄 Export PDF</button>
-  </div>
-
-  <script>
-    // Generate barcode
-    JsBarcode("#barcode", "MRN20250724001|John Doe|HCV PCR|HBV PCR|Molecular Biology", {
-      format: "CODE128",
-      lineColor: "#0ff",
-      width: 2,
-      height: 60,
-      displayValue: false
-    });
-
-    // Export to PDF
-    async function exportPDF() {
-      const { jsPDF } = window.jspdf;
-      const content = document.getElementById("reportContent");
-
-      const canvas = await html2canvas(content, {
-        scale: 2,
-        useCORS: true
-      });
-
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF('p', 'pt', 'a4');
-
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
-      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-      pdf.save("AlphaMed_Report.pdf");
-    }
-  </script>
 </body>
 </html>
