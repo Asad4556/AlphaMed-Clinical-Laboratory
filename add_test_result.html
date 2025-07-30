@@ -1,1 +1,71 @@
-<!-- add_test_result.html content -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Add Test Result - AlphaMed Lab</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>AlphaMed Clinical Laboratory</h1>
+    <nav>
+      <a href="technician_dashboard.html">Dashboard</a>
+      <a href="logout.php">Logout</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h2>Add Test Results</h2>
+
+    <form id="testResultForm">
+      <label for="mrn">MRN Number:</label>
+      <input type="text" id="mrn" name="mrn" required placeholder="Enter MRN" />
+
+      <label for="testName">Test Name:</label>
+      <input type="text" id="testName" name="testName" required placeholder="Enter Test Name" />
+
+      <label for="result">Result:</label>
+      <input type="text" id="result" name="result" required placeholder="Enter Result" />
+
+      <label for="reference">Reference Range:</label>
+      <input type="text" id="reference" name="reference" required placeholder="Enter Reference Range" />
+
+      <label for="status">Status:</label>
+      <select id="status" name="status" required>
+        <option value="">Select Status</option>
+        <option value="Normal">Normal</option>
+        <option value="High">High</option>
+        <option value="Low">Low</option>
+      </select>
+
+      <button type="submit">Submit Result</button>
+    </form>
+
+    <div id="responseMessage" style="margin-top: 20px;"></div>
+  </main>
+
+  <script>
+    document.getElementById('testResultForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const form = e.target;
+      const formData = {
+        mrn: form.mrn.value.trim(),
+        testName: form.testName.value.trim(),
+        result: form.result.value.trim(),
+        reference: form.reference.value.trim(),
+        status: form.status.value
+      };
+
+      // Simulate form submission for GitHub Pages (no backend)
+      localStorage.setItem("test_result_" + formData.mrn, JSON.stringify(formData));
+
+      document.getElementById('responseMessage').innerHTML =
+        `<p style="color: green;">Test result saved for MRN: ${formData.mrn}</p>`;
+
+      form.reset();
+    });
+  </script>
+</body>
+</html>
