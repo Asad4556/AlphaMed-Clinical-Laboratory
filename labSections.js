@@ -1,43 +1,131 @@
 // labSections.js
 
-const labSections = {
-  "Pathology": [
-    "Urine R/E", "Stool R/E", "Urine Culture", "Stool Culture", "Semen Analysis"
-  ],
-  "Hematology": [
-    "CBC", "Hemoglobin", "RBC Count", "WBC Count", "Platelet Count", "ESR", "Peripheral Smear"
-  ],
-  "Biochemistry": [
-    "Glucose Fasting", "Glucose Random", "Glucose 2hr PP", "HbA1c", "Liver Function Test (LFT)",
-    "Renal Function Test (RFT)", "Lipid Profile", "Uric Acid", "Calcium", "Phosphate", "CRP"
-  ],
-  "Microbiology": [
-    "Blood Culture", "Urine Culture", "Sputum Culture", "Wound Swab Culture", "AFB Test", "Gram Stain"
-  ],
-  "Serology": [
-    "Hepatitis B (HBsAg)", "Hepatitis C (Anti-HCV)", "HIV", "VDRL", "Widal Test", "ASO Titre"
-  ],
-  "Immunology": [
-    "Rheumatoid Factor (RF)", "C-Reactive Protein (CRP)", "ANA", "Thyroid Profile", "H. Pylori IgG", "Toxoplasma IgG/IgM"
-  ],
-  "Molecular Biology": [
-    "COVID-19 PCR", "HCV PCR", "HBV PCR", "TB PCR", "DNA Extraction"
-  ],
-  "Histopathology": [
-    "Biopsy", "FNAC", "Pap Smear", "Surgical Specimen", "Bone Marrow Biopsy"
-  ],
-  "Cytogenetics": [
-    "Karyotyping", "FISH", "Chromosomal Analysis"
-  ],
-  "Hormonal Assays": [
-    "TSH", "T3", "T4", "FSH", "LH", "Prolactin", "Testosterone", "Estrogen", "Beta HCG"
-  ],
-  "Toxicology": [
-    "Drug Screening", "Alcohol Level", "Lead", "Arsenic", "Mercury"
-  ],
-  "Special Chemistry": [
-    "Electrolytes (Na, K, Cl)", "Ammonia", "Lactate", "Iron Studies", "Vitamin B12", "Vitamin D"
-  ]
-};
-
-export default labSections;
+export const labSections = [
+  {
+    id: "hematology",
+    name: "Hematology",
+    tests: [
+      { name: "Complete Blood Count (CBC)", normalRange: "Lab Defined" },
+      { name: "Hemoglobin (Hb)", normalRange: "13–17 g/dL" },
+      { name: "Total Leukocyte Count (TLC)", normalRange: "4,000–11,000/μL" },
+      { name: "Differential Leukocyte Count (DLC)", normalRange: "Lab Defined" },
+      { name: "Platelet Count", normalRange: "150,000–400,000/μL" },
+      { name: "ESR", normalRange: "0–20 mm/hr" },
+      { name: "Reticulocyte Count", normalRange: "0.5–2.5%" },
+      { name: "Peripheral Smear", normalRange: "Normal morphology" },
+      { name: "BT/CT", normalRange: "Bleeding <7 mins / Clotting 8–15 mins" },
+      { name: "Hemoglobin Electrophoresis", normalRange: "HbA, HbA2, HbF" },
+    ],
+  },
+  {
+    id: "serology",
+    name: "Serology",
+    tests: [
+      { name: "HBsAg", normalRange: "Negative" },
+      { name: "Anti-HCV", normalRange: "Negative" },
+      { name: "HIV I/II", normalRange: "Negative" },
+      { name: "Widal Test", normalRange: "Negative" },
+      { name: "ASO Titre", normalRange: "<200 IU/mL" },
+      { name: "RA Factor", normalRange: "<14 IU/mL" },
+      { name: "CRP (Qualitative)", normalRange: "Negative" },
+      { name: "VDRL", normalRange: "Non-reactive" },
+      { name: "TPHA", normalRange: "Negative" },
+    ],
+  },
+  {
+    id: "histopathology",
+    name: "Histopathology",
+    tests: [
+      { name: "Biopsy (Skin, Breast, etc.)", normalRange: "As per report" },
+      { name: "FNAC (Fine Needle Aspiration Cytology)", normalRange: "As per report" },
+      { name: "Pap Smear", normalRange: "Negative for malignancy" },
+      { name: "Endometrial Curettage", normalRange: "Normal histology" },
+      { name: "Surgical Specimen Analysis", normalRange: "As per findings" },
+    ],
+  },
+  {
+    id: "microbiology",
+    name: "Microbiology",
+    tests: [
+      { name: "Urine R/E", normalRange: "No pus cells / No bacteria" },
+      { name: "Urine Culture", normalRange: "No growth" },
+      { name: "Stool R/E", normalRange: "No ova/cysts" },
+      { name: "Stool Culture", normalRange: "Normal flora only" },
+      { name: "Sputum for AFB", normalRange: "Negative" },
+      { name: "Sputum Culture", normalRange: "Sterile" },
+      { name: "Throat Swab Culture", normalRange: "No pathogenic growth" },
+    ],
+  },
+  {
+    id: "biochemistry",
+    name: "Biochemistry",
+    tests: [
+      { name: "Fasting Blood Sugar", normalRange: "70–100 mg/dL" },
+      { name: "Random Blood Sugar", normalRange: "<140 mg/dL" },
+      { name: "HbA1c", normalRange: "<5.7%" },
+      { name: "Urea", normalRange: "10–50 mg/dL" },
+      { name: "Creatinine", normalRange: "0.6–1.3 mg/dL" },
+      { name: "Uric Acid", normalRange: "3.5–7.2 mg/dL" },
+      { name: "Bilirubin Total/Direct", normalRange: "<1.2 / <0.3 mg/dL" },
+      { name: "SGPT (ALT)", normalRange: "7–56 U/L" },
+      { name: "SGOT (AST)", normalRange: "5–40 U/L" },
+      { name: "Alkaline Phosphatase", normalRange: "44–147 U/L" },
+      { name: "Cholesterol", normalRange: "<200 mg/dL" },
+      { name: "HDL / LDL / Triglycerides", normalRange: "Lab Defined" },
+      { name: "Calcium", normalRange: "8.6–10.3 mg/dL" },
+      { name: "Phosphorus", normalRange: "2.5–4.5 mg/dL" },
+      { name: "Total Protein", normalRange: "6.0–8.3 g/dL" },
+      { name: "Albumin", normalRange: "3.5–5.0 g/dL" },
+    ],
+  },
+  {
+    id: "culture",
+    name: "Culture Tests",
+    tests: [
+      { name: "Urine Culture and Sensitivity", normalRange: "Sterile" },
+      { name: "Blood Culture", normalRange: "No growth" },
+      { name: "Pus Culture", normalRange: "No pathogenic growth" },
+      { name: "Sputum Culture", normalRange: "Sterile" },
+      { name: "Stool Culture", normalRange: "No pathogens" },
+      { name: "Wound Swab Culture", normalRange: "No growth" },
+    ],
+  },
+  {
+    id: "special-chemistry",
+    name: "Special Chemistry",
+    tests: [
+      { name: "CRP (Quantitative)", normalRange: "<6 mg/L" },
+      { name: "Ferritin", normalRange: "30–300 ng/mL" },
+      { name: "Vitamin D (25-OH)", normalRange: "30–100 ng/mL" },
+      { name: "Vitamin B12", normalRange: "200–900 pg/mL" },
+      { name: "T3", normalRange: "80–200 ng/dL" },
+      { name: "T4", normalRange: "5.1–14.1 μg/dL" },
+      { name: "TSH", normalRange: "0.4–4.0 mIU/L" },
+      { name: "Prolactin", normalRange: "4.8–23.3 ng/mL" },
+      { name: "PSA (Total)", normalRange: "<4 ng/mL" },
+      { name: "β-hCG", normalRange: "Pregnancy Dependent" },
+    ],
+  },
+  {
+    id: "molecular",
+    name: "Molecular Biology",
+    tests: [
+      { name: "COVID-19 PCR", normalRange: "Negative" },
+      { name: "HCV RNA (PCR)", normalRange: "Undetected" },
+      { name: "HBV DNA (PCR)", normalRange: "Undetected" },
+      { name: "Mycobacterium Tuberculosis PCR", normalRange: "Not Detected" },
+      { name: "CMV DNA PCR", normalRange: "Negative" },
+    ],
+  },
+  {
+    id: "blood-banking",
+    name: "Blood Banking",
+    tests: [
+      { name: "Blood Group", normalRange: "A/B/AB/O +/−" },
+      { name: "Rh Typing", normalRange: "Positive / Negative" },
+      { name: "Crossmatching", normalRange: "Compatible" },
+      { name: "Coombs Test (Direct/Indirect)", normalRange: "Negative" },
+      { name: "Screening for Irregular Antibodies", normalRange: "Negative" },
+    ],
+  },
+];
