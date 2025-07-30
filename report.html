@@ -1,1 +1,177 @@
-<!-- report.html content -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lab Report</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fff;
+      padding: 20px;
+    }
+
+    .report-container {
+      width: 800px;
+      margin: 0 auto;
+      position: relative;
+      padding: 30px;
+      border: 1px solid #ccc;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+    }
+
+    .logo-left {
+      width: 80px;
+    }
+
+    .lab-name {
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      flex-grow: 1;
+    }
+
+    .barcode {
+      width: 100px;
+      text-align: right;
+    }
+
+    .watermark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0.08;
+      font-size: 80px;
+      font-weight: bold;
+      z-index: 0;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .patient-info {
+      margin-top: 30px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .patient-info p {
+      margin: 4px 0;
+    }
+
+    .test-results {
+      margin-top: 30px;
+      position: relative;
+      z-index: 1;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      padding: 10px;
+      border: 1px solid #aaa;
+      text-align: left;
+    }
+
+    th {
+      background: #f0f0f0;
+    }
+
+    .status-up {
+      color: red;
+      font-weight: bold;
+    }
+
+    .status-down {
+      color: blue;
+      font-weight: bold;
+    }
+
+    .status-normal {
+      color: green;
+      font-weight: bold;
+    }
+
+    @media print {
+      body {
+        padding: 0;
+      }
+      .report-container {
+        border: none;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="report-container">
+    <div class="header">
+      <img src="logo.png" alt="Logo" class="logo-left" />
+      <div class="lab-name">AlphaMed Clinical Laboratory</div>
+      <div class="barcode">
+        <img src="barcode.png" alt="Barcode" width="80" />
+      </div>
+    </div>
+
+    <div class="watermark">AlphaMed</div>
+
+    <div class="patient-info">
+      <p><strong>Patient Name:</strong> John Doe</p>
+      <p><strong>MRN:</strong> AM-000123</p>
+      <p><strong>Sample No:</strong> SM-00145</p>
+      <p><strong>Date:</strong> 30-July-2025</p>
+      <p><strong>Department:</strong> Biochemistry</p>
+    </div>
+
+    <div class="test-results">
+      <h3>Test Results</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Test Name</th>
+            <th>Result</th>
+            <th>Reference Range</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Blood Glucose</td>
+            <td>145 mg/dL</td>
+            <td>70 - 110 mg/dL</td>
+            <td class="status-up">High</td>
+          </tr>
+          <tr>
+            <td>Liver ALT</td>
+            <td>25 U/L</td>
+            <td>7 - 56 U/L</td>
+            <td class="status-normal">Normal</td>
+          </tr>
+          <tr>
+            <td>Cholesterol</td>
+            <td>160 mg/dL</td>
+            <td>120 - 200 mg/dL</td>
+            <td class="status-normal">Normal</td>
+          </tr>
+          <tr>
+            <td>Hemoglobin</td>
+            <td>10.5 g/dL</td>
+            <td>13.5 - 17.5 g/dL</td>
+            <td class="status-down">Low</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>
