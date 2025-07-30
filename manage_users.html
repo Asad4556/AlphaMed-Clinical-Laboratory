@@ -1,132 +1,82 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Manage Users - Alpha Med</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 min-h-screen">
+<script>
+  const userTable = document.getElementById("userTable");
+  const filterRole = document.getElementById("filterRole");
 
-  <!-- Header -->
-  <header class="bg-white shadow p-4 flex justify-between items-center">
-    <div class="flex items-center space-x-2">
-      <img src="logo.png" alt="Logo" class="w-10">
-      <h1 class="text-xl font-bold text-blue-700">Alpha Med - Manage Users</h1>
-    </div>
-    <a href="admin-dashboard.html" class="text-blue-600 hover:underline">← Back to Dashboard</a>
-  </header>
+  function getUsers() {
+    return JSON.parse(localStorage.getItem("users") || "[]");
+  }
 
-  <!-- Main Content -->
-  <main class="p-6 max-w-5xl mx-auto">
-    <!-- Add User -->
-    <section class="bg-white p-4 rounded-lg shadow mb-6">
-      <h2 class="text-lg font-semibold mb-3">Add New User</h2>
-      <form id="addUserForm" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <input type="text" id="userName" placeholder="Full Name" required class="p-2 border rounded">
-        <input type="text" id="userCNIC" placeholder="CNIC (xxxxx-xxxxxxx-x)" required class="p-2 border rounded">
-        <input type="password" id="userPassword" placeholder="Password" required class="p-2 border rounded">
-        <select id="userRole" required class="p-2 border rounded col-span-1 md:col-span-2">
-          <option value="">Select Role</option>
-          <option value="admin">Admin</option>
-          <option value="receptionist">Receptionist</option>
-          <option value="technician">Technician</option>
-        </select>
-        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 col-span-1 md:col-span-3">Add User</button>
-      </form>
-    </section>
+  function setUsers(users) {
+    localStorage.setItem("users", JSON.stringify(users));
+  }
 
-    <!-- User List -->
-    <section class="bg-white p-4 rounded-lg shadow">
-      <div class="flex justify-between items-center mb-3">
-        <h2 class="text-lg font-semibold">Registered Users</h2>
-        <select id="filterRole" class="p-2 border rounded">
-          <option value="">All Roles</option>
-          <option value="admin">Admin</option>
-          <option value="receptionist">Receptionist</option>
-          <option value="technician">Technician</option>
-        </select>
-      </div>
+  function renderUsers(role = "") {
+    const users = getUsers();
+    userTable.innerHTML = "";
+    users
+      .filter(user => !role || user.role === role)
+      .forEach((user, index) => {
+        userTable.innerHTML += `
+          <tr class="border-b">
+            <td class="p-2">${index + 1}</td>
+            <td class="p-2">${user.name}</td>
+            <td class="p-2">${user.cnic}</td>
+            <td class="p-2 capitalize">${user.role}</td>
+            <td class="p-2">
+              <button class="text-blue-600 hover:underline mr-2" onclick="editUser(${index})">Edit</button>
+              <button class="text-red-600 hover:underline" onclick="deleteUser(${index})">Delete</button>
+            </td>
+          </tr>`;
+      });
+  }
 
-      <table class="w-full text-left border-t">
-        <thead>
-          <tr class="bg-gray-100 text-sm text-gray-700">
-            <th class="p-2">#</th>
-            <th class="p-2">Name</th>
-            <th class="p-2">CNIC</th>
-            <th class="p-2">Role</th>
-            <th class="p-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody id="userTable" class="text-sm">
-          <!-- Filled by JS -->
-        </tbody>
-      </table>
-    </section>
-  </main>
+  document.getElementById("addUserForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const name = document.getElementById("userName").value.trim();
+    const cnic = document.getElementById("userCNIC").value.trim();
+    const password = document.getElementById("userPassword").value;
+    const role = document.getElementById("userRole").value;
 
-  <script>
-    const users = [
-      { name: "Asad", cnic: "34501-8971113-7", role: "admin" },
-      { name: "Sana", cnic: "35202-1234567-1", role: "receptionist" },
-      { name: "Ali", cnic: "35301-7654321-9", role: "technician" },
-    ];
+    const users = getUsers();
+    users.push({ name, cnic, password, role });
+    setUsers(users);
+    renderUsers(filterRole.value);
+    e.target.reset();
+  });
 
-    const userTable = document.getElementById("userTable");
-    const filterRole = document.getElementById("filterRole");
+  filterRole.addEventListener("change", () => renderUsers(filterRole.value));
 
-    function renderUsers(role = "") {
-      userTable.innerHTML = "";
-      users
-        .filter(user => !role || user.role === role)
-        .forEach((user, index) => {
-          userTable.innerHTML += `
-            <tr class="border-b">
-              <td class="p-2">${index + 1}</td>
-              <td class="p-2">${user.name}</td>
-              <td class="p-2">${user.cnic}</td>
-              <td class="p-2 capitalize">${user.role}</td>
-              <td class="p-2">
-                <button class="text-blue-600 hover:underline mr-2" onclick="editUser(${index})">Edit</button>
-                <button class="text-red-600 hover:underline" onclick="deleteUser(${index})">Delete</button>
-              </td>
-            </tr>`;
-        });
-    }
-
-    document.getElementById("addUserForm").addEventListener("submit", (e) => {
-      e.preventDefault();
-      const name = document.getElementById("userName").value.trim();
-      const cnic = document.getElementById("userCNIC").value.trim();
-      const role = document.getElementById("userRole").value;
-
-      users.push({ name, cnic, role });
+  function deleteUser(index) {
+    if (confirm("Delete this user?")) {
+      const users = getUsers();
+      users.splice(index, 1);
+      setUsers(users);
       renderUsers(filterRole.value);
-      e.target.reset();
-    });
-
-    filterRole.addEventListener("change", () => renderUsers(filterRole.value));
-
-    function deleteUser(index) {
-      if (confirm("Delete this user?")) {
-        users.splice(index, 1);
-        renderUsers(filterRole.value);
-      }
     }
+  }
 
-    function editUser(index) {
-      const u = users[index];
-      const name = prompt("Enter new name", u.name);
-      const cnic = prompt("Enter new CNIC", u.cnic);
-      const role = prompt("Enter new role (admin/receptionist/technician)", u.role);
+  function editUser(index) {
+    const users = getUsers();
+    const u = users[index];
+    const name = prompt("Enter new name", u.name);
+    const cnic = prompt("Enter new CNIC", u.cnic);
+    const role = prompt("Enter new role", u.role);
 
-      if (name && cnic && role) {
-        users[index] = { name, cnic, role };
-        renderUsers(filterRole.value);
-      }
+    if (name && cnic && role) {
+      users[index] = { ...u, name, cnic, role };
+      setUsers(users);
+      renderUsers(filterRole.value);
     }
+  }
 
-    renderUsers();
-  </script>
-</body>
-</html>
+  // Initialize with default users if not present
+  if (!localStorage.getItem("users")) {
+    setUsers([
+      { name: "Asad", cnic: "34501-8971113-7", password: "Asad@2723", role: "admin" },
+      { name: "Sana", cnic: "35202-1234567-1", password: "sana123", role: "receptionist" },
+      { name: "Ali", cnic: "35301-7654321-9", password: "ali123", role: "technician" }
+    ]);
+  }
+
+  renderUsers();
+</script>
