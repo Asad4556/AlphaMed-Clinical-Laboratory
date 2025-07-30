@@ -3,54 +3,94 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Settings - Alpha Med</title>
+  <title>Admin Dashboard - Alpha Med</title>
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Scripts -->
+  <script src="storage.js"></script>
+  <script src="dashboard-summary.js" defer></script>
 </head>
-<body class="bg-gray-100 p-6 min-h-screen">
+<body class="bg-gray-100 text-gray-800 p-6 min-h-screen">
 
-  <div class="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-md space-y-10">
-    <h1 class="text-3xl font-bold text-blue-700">⚙️ Admin Panel - Settings & Users</h1>
+  <!-- Header -->
+  <header class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-blue-700">🧪 Alpha Med Admin Dashboard</h1>
+    <a href="login.html" class="text-red-600 hover:underline text-sm">Logout</a>
+  </header>
 
-    <!-- Lab Settings -->
-    <section>
-      <h2 class="text-xl font-semibold mb-2">🛠 Lab Settings</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <input id="labName" type="text" placeholder="Lab Name" class="input" />
-        <input id="email" type="email" placeholder="Email" class="input" />
-        <input id="phone" type="text" placeholder="Phone" class="input" />
-      </div>
-      <button onclick="saveSettings()" class="mt-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-        💾 Save Settings
-      </button>
-    </section>
-
-    <hr />
-
-    <!-- Add User -->
-    <section>
-      <h2 class="text-xl font-semibold mb-2">👤 Add User</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-        <input id="username" type="text" placeholder="User Name" class="input" />
-        <select id="role" class="input">
-          <option value="">Select Role</option>
-          <option value="Admin">Admin</option>
-          <option value="Reception">Reception</option>
-          <option value="Technician">Technician</option>
-        </select>
-        <button onclick="addUser()" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-          ➕ Add User
-        </button>
-      </div>
-    </section>
-
-    <!-- User List -->
-    <section>
-      <h2 class="text-xl font-semibold mb-2">📋 User List</h2>
-      <ul id="userList" class="space-y-2">
-        <!-- Dynamic user list -->
-      </ul>
-    </section>
+  <!-- Load Summary Button -->
+  <div class="mb-6 flex justify-between items-center">
+    <h2 class="text-xl font-semibold">📊 Dashboard Summary</h2>
+    <button onclick="loadSummary()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
+      🔄 Load Summary
+    </button>
   </div>
+
+  <!-- Summary Grid -->
+  <div id="summaryContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+    <!-- JS will populate these -->
+  </div>
+
+  <!-- Quick Access -->
+  <div>
+    <h2 class="text-lg font-semibold mb-2">🔗 Quick Access</h2>
+    <ul class="space-y-2 text-blue-700 text-sm">
+      <li><a href="manage_users.html" class="hover:underline">👤 Manage Users</a></li>
+      <li><a href="settings.html" class="hover:underline">⚙️ Settings</a></li>
+      <li><a href="export.html" class="hover:underline">📁 Export Data</a></li>
+      <li><a href="reception_dashboard.html" class="hover:underline">📝 Patient Entries</a></li>
+      <li><a href="view_reports.html" class="hover:underline">📄 View Reports</a></li>
+    </ul>
+  </div>
+
+  <!-- Lab Settings -->
+  <section class="mt-10">
+    <h2 class="text-xl font-semibold mb-2">🛠 Lab Settings</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <input id="labName" type="text" placeholder="Lab Name" class="input" />
+      <input id="email" type="email" placeholder="Email" class="input" />
+      <input id="phone" type="text" placeholder="Phone" class="input" />
+    </div>
+    <button onclick="saveSettings()" class="mt-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+      💾 Save Settings
+    </button>
+    <button onclick="resetSettings()" class="mt-2 px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500 ml-2">
+      🔄 Reset Settings
+    </button>
+  </section>
+
+  <hr class="my-6"/>
+
+  <!-- Add User -->
+  <section>
+    <h2 class="text-xl font-semibold mb-2">👤 Add User</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+      <input id="username" type="text" placeholder="User Name" class="input" />
+      <select id="role" class="input">
+        <option value="">Select Role</option>
+        <option value="Admin">Admin</option>
+        <option value="Reception">Reception</option>
+        <option value="Technician">Technician</option>
+      </select>
+      <button onclick="addUser()" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+        ➕ Add User
+      </button>
+      <button onclick="resetUserFields()" class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600">
+        🔄 Reset Fields
+      </button>
+    </div>
+  </section>
+
+  <!-- User List -->
+  <section>
+    <h2 class="text-xl font-semibold mb-2">📋 User List</h2>
+    <ul id="userList" class="space-y-2">
+      <!-- Dynamic user list -->
+    </ul>
+    <button onclick="deleteAllUsers()" class="mt-3 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+      🗑 Delete All Users
+    </button>
+  </section>
 
   <style>
     .input {
@@ -87,6 +127,12 @@
       alert("✅ Lab settings saved.");
     }
 
+    function resetSettings() {
+      document.getElementById("labName").value = "";
+      document.getElementById("email").value = "";
+      document.getElementById("phone").value = "";
+    }
+
     function showUsers() {
       const userList = document.getElementById("userList");
       const users = JSON.parse(localStorage.getItem("users")) || [];
@@ -121,6 +167,11 @@
       showUsers();
     }
 
+    function resetUserFields() {
+      document.getElementById("username").value = "";
+      document.getElementById("role").value = "";
+    }
+
     function deleteUser(index) {
       if (!confirm("Are you sure you want to delete this user?")) return;
 
@@ -130,11 +181,19 @@
       showUsers();
     }
 
+    function deleteAllUsers() {
+      if (confirm("⚠️ Are you sure you want to delete ALL users?")) {
+        localStorage.removeItem("users");
+        showUsers();
+      }
+    }
+
     // Initial load
     window.onload = () => {
       loadSettings();
       showUsers();
     };
   </script>
+
 </body>
 </html>
