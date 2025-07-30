@@ -1,55 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Technician Panel - AlphaMed Lab</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    body {
-      background-color: #121212;
-      color: #00bcd4;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      text-align: center;
-      padding: 50px;
-    }
-
-    .centered {
-      margin-top: 50px;
-    }
-
-    button {
-      background-color: #00bcd4;
-      color: #fff;
-      border: none;
-      padding: 15px 30px;
-      margin: 10px;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    button:hover {
-      background-color: #0196a0;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Technician Panel - Alpha Med</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-gray-100 min-h-screen text-gray-800">
 
-  <h1>Technician Panel</h1>
+  <!-- Header -->
+  <header class="bg-blue-800 text-white p-4 flex justify-between items-center">
+    <h1 class="text-xl font-semibold">🔬 Technician Panel - Alpha Med</h1>
+    <a href="technician_dashboard.html" class="text-sm hover:underline">Dashboard</a>
+  </header>
 
-  <div class="centered">
-    <button onclick="window.location.href='technician_dashboard.html'">Dashboard</button>
-    <button onclick="window.location.href='change_password.html'">Change Password</button>
-    <button onclick="logout()">Logout</button>
-  </div>
+  <!-- Main Content -->
+  <main class="max-w-6xl mx-auto mt-6 px-4">
 
-  <script src="script.js"></script>
+    <!-- Table Title -->
+    <div class="mb-4">
+      <h2 class="text-lg font-bold text-blue-700">📝 Pending Tests</h2>
+      <p class="text-sm text-gray-600">Click “Enter Result” to fill in results for the selected sample.</p>
+    </div>
+
+    <!-- Table -->
+    <div class="bg-white rounded-lg shadow overflow-auto">
+      <table class="min-w-full text-sm">
+        <thead class="bg-blue-600 text-white">
+          <tr>
+            <th class="px-4 py-2 text-left">Sample No</th>
+            <th class="px-4 py-2 text-left">Patient Name</th>
+            <th class="px-4 py-2 text-left">Test</th>
+            <th class="px-4 py-2 text-left">Department</th>
+            <th class="px-4 py-2 text-left">Date</th>
+            <th class="px-4 py-2 text-center">Action</th>
+          </tr>
+        </thead>
+        <tbody id="testTableBody">
+          <!-- Rows will be added dynamically -->
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Sample Data Script -->
   <script>
-    // Technician role ki restriction apply karna
-    restrictAccess("technician");
-  </script>
+    const testSamples = [
+      {
+        sampleNo: "SMP-0012",
+        patientName: "Asad Khan",
+        testName: "CBC",
+        department: "Hematology",
+        date: "2025-07-30"
+      },
+      {
+        sampleNo: "SMP-0013",
+        patientName: "Ali Raza",
+        testName: "Liver Function Test (LFT)",
+        department: "Biochemistry",
+        date: "2025-07-30"
+      },
+      {
+        sampleNo: "SMP-0014",
+        patientName: "Zara Fatima",
+        testName: "COVID-19 PCR",
+        department: "Molecular Biology",
+        date: "2025-07-30"
+      }
+    ];
 
+    const tbody = document.getElementById("testTableBody");
+
+    testSamples.forEach(sample => {
+      const row = document.createElement("tr");
+      row.className = "border-b hover:bg-gray-50";
+
+      row.innerHTML = `
+        <td class="px-4 py-2">${sample.sampleNo}</td>
+        <td class="px-4 py-2">${sample.patientName}</td>
+        <td class="px-4 py-2">${sample.testName}</td>
+        <td class="px-4 py-2">${sample.department}</td>
+        <td class="px-4 py-2">${sample.date}</td>
+        <td class="px-4 py-2 text-center">
+          <a href="add_test_result.html?sample=${sample.sampleNo}" 
+             class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-xs">
+            Enter Result
+          </a>
+        </td>
+      `;
+
+      tbody.appendChild(row);
+    });
+  </script>
 </body>
 </html>
