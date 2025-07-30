@@ -3,53 +3,82 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Reception Dashboard - AlphaMed</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Reception Dashboard - Alpha Med</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <header class="header">
-    <img src="logo.png" alt="Lab Logo" class="logo" />
-    <h1>AlphaMed Clinical Laboratory</h1>
+<body class="bg-gray-100 min-h-screen">
+
+  <!-- Header -->
+  <header class="bg-white shadow p-4 flex justify-between items-center">
+    <div class="flex items-center space-x-3">
+      <img src="logo.png" alt="Alpha Med Logo" class="w-10">
+      <h1 class="text-xl font-bold text-blue-700">Reception Dashboard</h1>
+    </div>
+    <button onclick="logout()" class="text-sm text-red-600 hover:underline">Logout</button>
   </header>
 
-  <nav class="navbar">
-    <a href="reception.html">Home</a>
-    <a href="register_patient.html">Register Patient</a>
-    <a href="registration-slip.html">Slip</a>
-    <a href="view_reports.html">Reports</a>
-    <a href="settings.html">Settings</a>
-    <a href="logout.php" class="logout">Logout</a>
-  </nav>
-
-  <main class="main">
-    <section class="dashboard">
-      <h2>Reception Dashboard</h2>
-      <div class="card-grid">
-        <div class="card">
-          <h3>Today’s Patients</h3>
-          <p id="today-count">Loading...</p>
-        </div>
-        <div class="card">
-          <h3>Pending Reports</h3>
-          <p id="pending-count">Loading...</p>
-        </div>
-        <div class="card">
-          <h3>Total Registered</h3>
-          <p id="total-count">Loading...</p>
-        </div>
+  <!-- Main Content -->
+  <main class="p-6 max-w-6xl mx-auto">
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div class="bg-white rounded-xl shadow p-5 text-center">
+        <h3 class="text-gray-500 text-sm">Patients Today</h3>
+        <p class="text-2xl font-bold text-blue-700" id="patientsToday">24</p>
       </div>
-    </section>
+      <div class="bg-white rounded-xl shadow p-5 text-center">
+        <h3 class="text-gray-500 text-sm">Pending Slips</h3>
+        <p class="text-2xl font-bold text-yellow-500" id="pendingSlips">6</p>
+      </div>
+      <div class="bg-white rounded-xl shadow p-5 text-center">
+        <h3 class="text-gray-500 text-sm">Reports Ready</h3>
+        <p class="text-2xl font-bold text-green-600" id="readyReports">14</p>
+      </div>
+      <div class="bg-white rounded-xl shadow p-5 text-center">
+        <h3 class="text-gray-500 text-sm">WhatsApp Notifications</h3>
+        <p class="text-2xl font-bold text-purple-600" id="sentMsgs">18</p>
+      </div>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <a href="register_patient.html" class="block bg-blue-600 text-white p-6 rounded-lg shadow hover:bg-blue-700 transition text-center">
+        + Register New Patient
+      </a>
+      <a href="registration-slip.html" class="block bg-green-600 text-white p-6 rounded-lg shadow hover:bg-green-700 transition text-center">
+        🧾 View Patient Slips
+      </a>
+      <a href="view_reports.html" class="block bg-purple-600 text-white p-6 rounded-lg shadow hover:bg-purple-700 transition text-center">
+        📄 View Reports
+      </a>
+      <a href="settings.html" class="block bg-gray-600 text-white p-6 rounded-lg shadow hover:bg-gray-700 transition text-center">
+        ⚙️ Settings
+      </a>
+    </div>
+
+    <!-- Chart Placeholder (optional future upgrade) -->
+    <!--
+    <div class="mt-10 bg-white p-6 rounded-lg shadow">
+      <h2 class="text-lg font-bold mb-4">Daily Patient Trend</h2>
+      <div class="h-64 bg-gray-100 flex items-center justify-center text-gray-400">
+        (Chart Coming Soon)
+      </div>
+    </div>
+    -->
+
   </main>
 
-  <footer class="footer">
-    <p>&copy; 2025 AlphaMed Clinical Laboratory. All rights reserved.</p>
-  </footer>
-
   <script>
-    // Dummy data – replace with actual API calls or local storage
-    document.getElementById("today-count").textContent = "23";
-    document.getElementById("pending-count").textContent = "8";
-    document.getElementById("total-count").textContent = "1056";
+    function logout() {
+      if (confirm("Are you sure you want to logout?")) {
+        window.location.href = "login.html";
+      }
+    }
+
+    // Optional: Replace these values with real-time data if backend available
+    document.getElementById("patientsToday").textContent = 24;
+    document.getElementById("pendingSlips").textContent = 6;
+    document.getElementById("readyReports").textContent = 14;
+    document.getElementById("sentMsgs").textContent = 18;
   </script>
 </body>
 </html>
