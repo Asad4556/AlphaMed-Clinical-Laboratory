@@ -2,15 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Register Patient - Alpha Med</title>
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-
-  <!-- Custom Scripts -->
-  <script src="storage.js"></script>
 </head>
 <body class="bg-gray-100 p-6">
 
@@ -20,27 +17,27 @@
   <div class="bg-white p-4 rounded shadow mb-6">
     <form id="patientForm" class="space-y-4">
       <div>
-        <label class="block">Patient Name</label>
+        <label class="block font-semibold mb-1">Patient Name</label>
         <input type="text" id="name" required class="w-full border px-2 py-1 rounded"/>
       </div>
       <div>
-        <label class="block">Father Name / S/o</label>
+        <label class="block font-semibold mb-1">Father Name / S/o</label>
         <input type="text" id="father" required class="w-full border px-2 py-1 rounded"/>
       </div>
       <div>
-        <label class="block">CNIC</label>
+        <label class="block font-semibold mb-1">CNIC</label>
         <input type="text" id="cnic" required class="w-full border px-2 py-1 rounded"/>
       </div>
       <div>
-        <label class="block">Phone No</label>
+        <label class="block font-semibold mb-1">Phone No</label>
         <input type="text" id="phone" required class="w-full border px-2 py-1 rounded"/>
       </div>
       <div>
-        <label class="block">Age (dd-mm-yyyy)</label>
-        <input type="text" id="age" required class="w-full border px-2 py-1 rounded"/>
+        <label class="block font-semibold mb-1">Date of Birth</label>
+        <input type="date" id="dob" required class="w-full border px-2 py-1 rounded"/>
       </div>
 
-      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Save Patient</button>
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Save Patient</button>
     </form>
   </div>
 
@@ -54,12 +51,32 @@
   </div>
 
   <script>
+    // Storage helper functions
+    function getFromStorage(key) {
+      const data = localStorage.getItem(key);
+      return data ? JSON.parse(data) : [];
+    }
+    function addToStorage(key, item) {
+      const arr = getFromStorage(key);
+      arr.push(item);
+      localStorage.setItem(key, JSON.stringify(arr));
+    }
+
+    // Simple ID generator based on timestamp + random
+    function generateID(prefix) {
+      return `${prefix}-${Date.now().toString().slice(-6)}${Math.floor(Math.random() * 900 + 100)}`;
+    }
+
     const form = document.getElementById("patientForm");
     const list = document.getElementById("patientList");
     const qr = document.getElementById("qrPreview");
 
     function renderPatients() {
       const patients = getFromStorage("patients");
+      if (patients.length === 0) {
+        list.innerHTML = `<li class="text-gray-500">No patients registered yet.</li>`;
+        return;
+      }
       list.innerHTML = patients.map(p => `
         <li class="border-b py-1">
           <strong>${p.name}</strong> (MRN: ${p.mrn}, Sample: ${p.sampleNo}) - ${p.phone}
@@ -67,15 +84,24 @@
       `).join("");
     }
 
+    function generateQRCode(patient) {
+      const qrData = `Alpha Med Lab\nName: ${patient.name}\nMRN: ${patient.mrn}\nSample: ${patient.sampleNo}\nPhone: ${patient.phone}`;
+      QRCode.toCanvas(qr, qrData, function (err) {
+        if (err) {
+          qr.innerHTML = "Failed to generate QR code";
+        }
+      });
+    }
+
     form.onsubmit = e => {
       e.preventDefault();
 
       const newPatient = {
-        name: name.value,
-        father: father.value,
-        cnic: cnic.value,
-        phone: phone.value,
-        age: age.value,
+        name: form.name.value.trim(),
+        father: form.father.value.trim(),
+        cnic: form.cnic.value.trim(),
+        phone: form.phone.value.trim(),
+        dob: form.dob.value,
         mrn: generateID("MRN"),
         sampleNo: generateID("SMP"),
         registeredAt: new Date().toLocaleString()
@@ -86,16 +112,6 @@
       renderPatients();
       form.reset();
     };
-
-    function generateQRCode(patient) {
-      const qrData = `Alpha Med Lab\nName: ${patient.name}\nMRN: ${patient.mrn}\nSample: ${patient.sampleNo}\nPhone: ${patient.phone}`;
-      QRCode.toCanvas(document.createElement("canvas"), qrData, function (err, canvas) {
-        if (!err) {
-          qr.innerHTML = "";
-          qr.appendChild(canvas);
-        }
-      });
-    }
 
     renderPatients();
   </script>
