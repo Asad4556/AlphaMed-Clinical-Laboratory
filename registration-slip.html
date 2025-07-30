@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Registration Slip - Alpha Med</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
@@ -25,7 +25,7 @@
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
       <div class="flex items-center space-x-3">
-        <img src="logo.png" alt="Logo" class="w-16 h-16">
+        <img src="logo.png" alt="Logo" class="w-16 h-16" />
         <div>
           <h1 class="text-2xl font-bold text-blue-800">Alpha Med Clinical Laboratory</h1>
           <p class="text-sm text-gray-600">Advanced Diagnostic Services</p>
@@ -36,15 +36,15 @@
 
     <!-- Patient Info -->
     <div class="grid grid-cols-2 gap-4 text-sm">
-      <div><strong>Patient Name:</strong> <span id="patientName">Asad Khan</span></div>
-      <div><strong>Father Name:</strong> <span id="fatherName">Kaleem Ullah</span></div>
-      <div><strong>CNIC:</strong> <span id="cnic">34501-8971113-7</span></div>
-      <div><strong>Phone No:</strong> <span id="phone">0300-1234567</span></div>
-      <div><strong>Sample No:</strong> <span id="sampleNo">SMP-0023</span></div>
-      <div><strong>MRN No:</strong> <span id="mrnNo">MRN-8765</span></div>
-      <div><strong>Age:</strong> <span id="age">32</span></div>
-      <div><strong>Department:</strong> <span id="department">Hematology</span></div>
-      <div><strong>Test Name:</strong> <span id="testName">Complete Blood Count</span></div>
+      <div><strong>Patient Name:</strong> <span id="patientName">Loading...</span></div>
+      <div><strong>Father Name:</strong> <span id="fatherName">Loading...</span></div>
+      <div><strong>CNIC:</strong> <span id="cnic">Loading...</span></div>
+      <div><strong>Phone No:</strong> <span id="phone">Loading...</span></div>
+      <div><strong>Sample No:</strong> <span id="sampleNo">Loading...</span></div>
+      <div><strong>MRN No:</strong> <span id="mrnNo">Loading...</span></div>
+      <div><strong>Date of Birth:</strong> <span id="dob">Loading...</span></div>
+      <div><strong>Department:</strong> <span id="department">Loading...</span></div>
+      <div><strong>Test Name:</strong> <span id="testName">Loading...</span></div>
       <div><strong>Date:</strong> <span id="date"></span></div>
     </div>
 
@@ -63,25 +63,54 @@
   </div>
 
   <script>
-    // Set current date
+    // Show today's date
     document.getElementById("date").textContent = new Date().toLocaleDateString();
 
-    // Generate QR with summary info
-    const qrContent = `
-      Alpha Med Clinical Laboratory
-      Patient: Asad Khan
-      CNIC: 34501-8971113-7
-      Sample: SMP-0023
-      Test: CBC
-    `;
+    // Utility to get patients from localStorage
+    function getFromStorage(key) {
+      const data = localStorage.getItem(key);
+      return data ? JSON.parse(data) : [];
+    }
 
-    QRCode.toCanvas(qrContent, { width: 96 }, function (err, canvas) {
-      if (!err) {
-        document.getElementById("qrCode").appendChild(canvas);
-      }
-    });
+    // Load the most recent patient (you can modify to pick by MRN or other criteria)
+    const patients = getFromStorage("patients");
+    if (patients.length === 0) {
+      alert("No registered patients found!");
+      document.getElementById("patientName").textContent = "N/A";
+      // Clear other fields similarly or keep default
+    } else {
+      const patient = patients[patients.length - 1]; // last registered
 
-    // OPTIONAL: Get patient data from URL/localStorage if needed
+      // Fill patient details
+      document.getElementById("patientName").textContent = patient.name || "N/A";
+      document.getElementById("fatherName").textContent = patient.father || "N/A";
+      document.getElementById("cnic").textContent = patient.cnic || "N/A";
+      document.getElementById("phone").textContent = patient.phone || "N/A";
+      document.getElementById("sampleNo").textContent = patient.sampleNo || "N/A";
+      document.getElementById("mrnNo").textContent = patient.mrn || "N/A";
+      document.getElementById("dob").textContent = patient.dob || "N/A";
+
+      // For demo, department and test name are static or you can add logic to fetch tests associated with patient.
+      // If you store tests separately linked with MRN, you can fetch and display them here.
+      const department = localStorage.getItem("lastDepartment") || "Hematology";
+      const testName = localStorage.getItem("lastTestName") || "Complete Blood Count";
+
+      document.getElementById("department").textContent = department;
+      document.getElementById("testName").textContent = testName;
+
+      // Generate QR content
+      const qrData = `
+        Alpha Med Clinical Laboratory
+        Patient: ${patient.name}
+        CNIC: ${patient.cnic}
+        Sample: ${patient.sampleNo}
+        Test: ${testName}
+      `;
+
+      QRCode.toCanvas(document.getElementById("qrCode"), qrData.trim(), { width: 96 }, function (err) {
+        if (err) console.error(err);
+      });
+    }
   </script>
 </body>
 </html>
