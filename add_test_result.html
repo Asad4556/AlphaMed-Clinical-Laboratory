@@ -47,6 +47,8 @@
       const patients = getFromStorage("patients");
       const tests = getFromStorage("reception_tests");
 
+      if (!patients || !tests) return alert("Data not found in localStorage!");
+
       const patient = patients.find(p => p.mrn === mrn);
       if (!patient) return alert("Patient not found");
 
@@ -94,6 +96,9 @@
         const value = document.getElementById(test.inputId).value.trim();
         if (!value) return alert(`Result missing for: ${test.name}`);
 
+        // Optional: Add validation for numeric tests
+        // if (isNaN(value)) return alert(`Invalid result for: ${test.name}. Please enter a number.`);
+
         results.push({
           mrn: currentMRN,
           testName: test.name,
@@ -102,11 +107,21 @@
         });
       }
 
-      const allResults = getFromStorage("test_results");
+      const allResults = getFromStorage("test_results") || [];
       saveToStorage("test_results", [...allResults, ...results]);
 
       alert("Test results submitted successfully!");
-      location.reload();
+
+      // Clear inputs after submission
+      resetForm();
+    }
+
+    function resetForm() {
+      document.getElementById("mrnInput").value = '';
+      document.getElementById("testList").innerHTML = '';
+      document.getElementById("patientInfo").classList.add("hidden");
+      document.getElementById("testSection").classList.add("hidden");
+      document.getElementById("submitSection").classList.add("hidden");
     }
   </script>
 
