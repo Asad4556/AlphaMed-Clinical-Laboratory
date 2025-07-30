@@ -3,101 +3,58 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AlphaMed Login</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: "Segoe UI", sans-serif;
-      background: #f0f4f8;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-
-    .login-container {
-      background: white;
-      padding: 30px 25px;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
-      max-width: 400px;
-      width: 90%;
-      text-align: center;
-    }
-
-    .login-container img {
-      width: 80px;
-      margin-bottom: 10px;
-    }
-
-    .login-container h2 {
-      margin-bottom: 25px;
-      color: #333;
-    }
-
-    input[type="text"],
-    input[type="password"] {
-      width: 100%;
-      padding: 12px 10px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      box-sizing: border-box;
-    }
-
-    select {
-      width: 100%;
-      padding: 12px 10px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      box-sizing: border-box;
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 15px;
-      background: #007bff;
-      color: white;
-      font-weight: bold;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #0056b3;
-    }
-
-    .footer-note {
-      font-size: 13px;
-      color: #888;
-      margin-top: 20px;
-    }
-  </style>
+  <title>Admin Login - Alpha Med</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <div class="login-container">
-    <img src="logo.png" alt="AlphaMed Logo" />
-    <h2>AlphaMed Clinical Lab</h2>
+<body class="bg-gradient-to-br from-blue-100 to-blue-300 min-h-screen flex items-center justify-center">
 
-    <form action="dashboard.html" method="POST">
-      <select name="role" required>
-        <option value="">Select Role</option>
-        <option value="reception">Reception</option>
-        <option value="technician">Technician</option>
-        <option value="admin">Admin</option>
-      </select>
+  <div class="bg-white shadow-xl p-8 rounded-xl w-full max-w-md">
+    <div class="text-center mb-6">
+      <img src="logo.png" alt="Alpha Med Logo" class="w-16 mx-auto mb-2">
+      <h1 class="text-2xl font-bold text-blue-700">Alpha Med Clinical Lab</h1>
+      <p class="text-gray-500 text-sm">Admin Login</p>
+    </div>
 
-      <input type="text" name="username" placeholder="Username or CNIC" required />
-      <input type="password" name="password" placeholder="Password" required />
+    <form id="loginForm" class="space-y-4">
+      <div>
+        <label for="cnic" class="block text-sm font-medium text-gray-700">CNIC</label>
+        <input type="text" id="cnic" placeholder="xxxxx-xxxxxxx-x" required
+               class="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+               value="34501-8971113-7" />
+      </div>
 
-      <button type="submit">Login</button>
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+        <input type="password" id="password" placeholder="••••••••" required
+               class="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+               value="Asad@2723" />
+      </div>
+
+      <div id="errorMsg" class="text-red-600 text-sm hidden">Invalid login. Try again.</div>
+
+      <button type="submit"
+              class="w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700 transition">
+        Login
+      </button>
     </form>
-
-    <div class="footer-note">© 2025 AlphaMed Clinical Laboratory</div>
   </div>
+
+  <script>
+    const correctCNIC = "34501-8971113-7";
+    const correctPassword = "Asad@2723";
+
+    document.getElementById("loginForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const enteredCNIC = document.getElementById("cnic").value.trim();
+      const enteredPassword = document.getElementById("password").value;
+
+      if (enteredCNIC === correctCNIC && enteredPassword === correctPassword) {
+        window.location.href = "admin-dashboard.html";
+      } else {
+        document.getElementById("errorMsg").classList.remove("hidden");
+      }
+    });
+  </script>
 </body>
 </html>
