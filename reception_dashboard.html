@@ -1,1 +1,55 @@
-<!-- reception_dashboard.html content -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reception Dashboard - AlphaMed</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="header">
+    <img src="logo.png" alt="Lab Logo" class="logo" />
+    <h1>AlphaMed Clinical Laboratory</h1>
+  </header>
+
+  <nav class="navbar">
+    <a href="reception.html">Home</a>
+    <a href="register_patient.html">Register Patient</a>
+    <a href="registration-slip.html">Slip</a>
+    <a href="view_reports.html">Reports</a>
+    <a href="settings.html">Settings</a>
+    <a href="logout.php" class="logout">Logout</a>
+  </nav>
+
+  <main class="main">
+    <section class="dashboard">
+      <h2>Reception Dashboard</h2>
+      <div class="card-grid">
+        <div class="card">
+          <h3>Today’s Patients</h3>
+          <p id="today-count">Loading...</p>
+        </div>
+        <div class="card">
+          <h3>Pending Reports</h3>
+          <p id="pending-count">Loading...</p>
+        </div>
+        <div class="card">
+          <h3>Total Registered</h3>
+          <p id="total-count">Loading...</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2025 AlphaMed Clinical Laboratory. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // Dummy data – replace with actual API calls or local storage
+    document.getElementById("today-count").textContent = "23";
+    document.getElementById("pending-count").textContent = "8";
+    document.getElementById("total-count").textContent = "1056";
+  </script>
+</body>
+</html>
