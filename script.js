@@ -2,10 +2,15 @@
 function generateQRCode(text, canvasId = "qrCode") {
   const canvas = document.getElementById(canvasId);
   if (!canvas) return;
-  canvas.innerHTML = "";
-  QRCode.toCanvas(text, { width: 128 }, function (err, c) {
-    if (!err) canvas.appendChild(c);
-  });
+  
+  QRCode.toCanvas(text, { width: 128 })
+    .then((canvasElement) => {
+      canvas.innerHTML = ""; // Clear previous content
+      canvas.appendChild(canvasElement);
+    })
+    .catch((err) => {
+      console.error("QR Code generation failed:", err);
+    });
 }
 
 // ========= Form Validation ==========
@@ -16,6 +21,7 @@ function validateForm(requiredFields) {
     if (field && field.value.trim() === "") {
       field.classList.add("border-red-500");
       isValid = false;
+      showToast(`${field.name || "Field"} is required.`, "error"); // Error message
     } else if (field) {
       field.classList.remove("border-red-500");
     }
@@ -26,22 +32,31 @@ function validateForm(requiredFields) {
 // ========= WhatsApp Message ==========
 function sendWhatsAppMessage(number, message) {
   const phone = number.replace(/\D/g, ""); // Remove non-digits
+  if (phone.length < 10) {
+    showToast("Invalid phone number", "error");  // Show error if phone number is invalid
+    return;
+  }
   const text = encodeURIComponent(message);
-  const url = `https://wa.me/92${phone}?text=${text}`;
+  const url = `https://wa.me/${phone}?text=${text}`;
   window.open(url, "_blank");
 }
 
 // ========= CSV Export ==========
-function exportTableToCSV(tableId, filename = "export.csv") {
-  const table = document.getElementById(tableId);
+function exportTableToCSV(selector, filename = "export.csv") {
+  const table = document.querySelector(selector);
   if (!table) return;
 
   let csv = [];
   const rows = table.querySelectorAll("tr");
-  rows.forEach((row) => {
+  
+  rows.forEach((row, index) => {
     const cols = row.querySelectorAll("td, th");
-    const rowData = Array.from(cols).map(col => `"${col.innerText}"`).join(",");
+    const rowData = Array.from(cols).map(col => `"${col.innerText.trim()}"`).join(",");
     csv.push(rowData);
+    
+    if (index === 0) {
+      csv.push("\n"); // Add line break after header row
+    }
   });
 
   // Download CSV
@@ -53,7 +68,7 @@ function exportTableToCSV(tableId, filename = "export.csv") {
 }
 
 // ========= Toast Alert ==========
-function showToast(message, type = "info") {
+function showToast(message, type = "info", duration = 3000) {
   const color = {
     info: "bg-blue-500",
     success: "bg-green-500",
@@ -66,11 +81,16 @@ function showToast(message, type = "info") {
   toast.innerText = message;
   document.body.appendChild(toast);
 
-  setTimeout(() => toast.remove(), 3000);
+  setTimeout(() => toast.remove(), duration);
 }
 
 // ========= Age Calculator ==========
 function calculateAge(dob) {
+  if (!dob) {
+    showToast("Invalid Date of Birth", "error");
+    return "N/A";
+  }
+
   const birth = new Date(dob);
   const today = new Date();
   let age = today.getFullYear() - birth.getFullYear();
