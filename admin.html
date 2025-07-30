@@ -1,117 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Admin Panel - AlphaMed Clinical Lab</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    .container {
-      max-width: 900px;
-      margin: auto;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-    }
-    .nav {
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
-    }
-    .nav a {
-      flex: 1 1 200px;
-      margin: 5px;
-      padding: 10px;
-      text-align: center;
-      background: #007bff;
-      color: white;
-      border-radius: 5px;
-      text-decoration: none;
-    }
-    .nav a:hover {
-      background: #0056b3;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 30px;
-    }
-    table, th, td {
-      border: 1px solid #ccc;
-    }
-    th, td {
-      padding: 10px;
-      text-align: left;
-    }
-    .actions button {
-      margin-right: 5px;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel - Alpha Med</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <div class="container">
-    <h1>Admin Panel - AlphaMed Clinical Lab</h1>
+<body class="bg-gray-100 min-h-screen p-6 font-sans">
 
-    <div class="nav">
-      <a href="admin-dashboard.html">Dashboard</a>
-      <a href="register_patient.html">Register Patient</a>
-      <a href="manage_users.html">Manage Users</a>
-      <a href="settings.html">Settings</a>
-      <a href="logout.php">Logout</a>
+  <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-xl p-6">
+    <div class="flex justify-between items-center mb-4">
+      <h1 class="text-2xl font-bold text-blue-700">Admin Panel</h1>
+      <a href="index.html" class="text-red-600 hover:underline">Logout</a>
     </div>
 
-    <h2>Users</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>CNIC</th>
-          <th>Name</th>
-          <th>Role</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody id="userList">
-        <!-- Dynamically populated by JS -->
-      </tbody>
-    </table>
+    <!-- Admin Profile Card -->
+    <div class="bg-blue-50 border border-blue-200 p-4 rounded-xl flex items-center mb-6">
+      <img src="/assets/avatar.png" alt="Admin" class="w-16 h-16 rounded-full border-2 border-blue-500 mr-4">
+      <div>
+        <h2 class="text-xl font-semibold text-blue-800">Dr. Admin</h2>
+        <p class="text-gray-600">Administrator, Alpha Med Clinical Lab</p>
+        <p class="text-sm text-gray-500">Email: admin@alphamed.com</p>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <a href="manage_users.html" class="bg-blue-600 text-white p-4 rounded-lg shadow hover:bg-blue-700 text-center">👥 Manage Users</a>
+      <a href="change_password.html" class="bg-yellow-500 text-white p-4 rounded-lg shadow hover:bg-yellow-600 text-center">🔐 Change Password</a>
+      <a href="settings.html" class="bg-gray-700 text-white p-4 rounded-lg shadow hover:bg-gray-800 text-center">⚙️ System Settings</a>
+    </div>
+
+    <!-- Admin Notes (Optional Section) -->
+    <div class="mt-6">
+      <h3 class="text-lg font-semibold mb-2 text-gray-700">Admin Notes</h3>
+      <textarea placeholder="Write important notes or instructions..." class="w-full p-3 border border-gray-300 rounded-lg h-32"></textarea>
+    </div>
   </div>
 
-  <script>
-    // Example users data, you can replace it with backend data later
-    const users = [
-      { cnic: "12345-1234567-1", name: "Ali", role: "Receptionist", status: "Active" },
-      { cnic: "98765-4321098-7", name: "Zara", role: "Technician", status: "Active" }
-    ];
-
-    const userList = document.getElementById('userList');
-    users.forEach(user => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${user.cnic}</td>
-        <td>${user.name}</td>
-        <td>${user.role}</td>
-        <td>${user.status}</td>
-        <td class="actions">
-          <button onclick="editUser('${user.cnic}')">Edit</button>
-          <button onclick="deleteUser('${user.cnic}')">Delete</button>
-        </td>
-      `;
-      userList.appendChild(tr);
-    });
-
-    function editUser(cnic) {
-      alert("Edit user: " + cnic);
-      // Add your edit logic here
-    }
-
-    function deleteUser(cnic) {
-      if (confirm("Are you sure to delete user " + cnic + "?")) {
-        alert("User deleted (demo only).");
-        // Add your delete logic here
-      }
-    }
-  </script>
 </body>
 </html>
