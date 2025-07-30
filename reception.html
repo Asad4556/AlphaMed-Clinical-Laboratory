@@ -1,167 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Reception Panel</title>
+  <meta charset="UTF-8" />
+  <title>Reception - Alpha Med</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <script src="storage.js"></script>
+  <script src="reception.js" defer></script>
 </head>
 <body class="bg-gray-100 p-6">
 
-  <div class="max-w-6xl mx-auto bg-white p-6 rounded-xl shadow">
-    <h1 class="text-2xl font-bold mb-4">🧾 Patient Registration</h1>
+  <h1 class="text-2xl font-bold mb-6">🏥 Reception Panel - Register Patient</h1>
 
-    <!-- Patient Form -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-      <input id="name" type="text" placeholder="Patient Name" class="border p-2 rounded" />
-      <input id="cnic" type="text" placeholder="CNIC" class="border p-2 rounded" />
-      <input id="phone" type="text" placeholder="Phone" class="border p-2 rounded" />
-      <input id="age" type="text" placeholder="Age" class="border p-2 rounded" />
+  <!-- Patient Form -->
+  <form id="patientForm" class="bg-white p-6 rounded shadow mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <input type="text" name="name" placeholder="Patient Name" class="border p-2 rounded" required>
+      <input type="text" name="fatherName" placeholder="Father Name/S/o" class="border p-2 rounded" required>
+      <input type="text" name="cnic" placeholder="CNIC" class="border p-2 rounded" required>
+      <input type="text" name="phone" placeholder="Phone No" class="border p-2 rounded">
+      <input type="date" name="dob" placeholder="Date of Birth" class="border p-2 rounded" required>
     </div>
 
-    <button onclick="registerPatient()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-      ➕ Register Patient
-    </button>
-
-    <!-- QR Code -->
     <div class="mt-4">
-      <canvas id="qrCode"></canvas>
+      <label class="block font-semibold mb-1">Select Department:</label>
+      <select id="departmentSelect" class="border p-2 rounded w-full">
+        <option value="">-- Select Department --</option>
+        <option value="Hematology">Hematology</option>
+        <option value="Serology">Serology</option>
+        <option value="Histopathology">Histopathology</option>
+        <option value="Microbiology">Microbiology</option>
+        <option value="Biochemistry">Biochemistry</option>
+        <option value="Culture">Culture Tests</option>
+        <option value="Special Chemistry">Special Chemistry</option>
+        <option value="Molecular Biology">Molecular Biology</option>
+        <option value="Blood Banking">Blood Banking</option>
+      </select>
     </div>
 
-    <!-- 🔍 Search -->
-    <input
-      type="text"
-      id="searchInput"
-      placeholder="Search by Name, MRN, CNIC or Phone"
-      class="w-full border p-2 rounded my-4"
-      oninput="filterPatients()"
-    />
-
-    <!-- Patient List -->
-    <h2 class="text-xl font-semibold mb-2">📋 Registered Patients</h2>
-    <div class="overflow-auto max-h-96 border rounded">
-      <table class="min-w-full text-sm text-left">
-        <thead class="bg-gray-200 sticky top-0">
-          <tr>
-            <th class="py-2 px-3">#</th>
-            <th class="py-2 px-3">Name</th>
-            <th class="py-2 px-3">MRN</th>
-            <th class="py-2 px-3">Sample No</th>
-            <th class="py-2 px-3">CNIC</th>
-            <th class="py-2 px-3">Phone</th>
-            <th class="py-2 px-3">Age</th>
-          </tr>
-        </thead>
-        <tbody id="patientTable" class="bg-white">
-          <!-- Patients will appear here -->
-        </tbody>
-      </table>
+    <div class="mt-4">
+      <label class="block font-semibold mb-1">Select Tests:</label>
+      <div id="testCheckboxes" class="grid grid-cols-2 gap-2"></div>
     </div>
+
+    <button type="submit" class="mt-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Register Patient</button>
+  </form>
+
+  <!-- Patient List -->
+  <div class="bg-white p-4 rounded shadow">
+    <h2 class="text-xl font-semibold mb-2">🧾 Registered Patients</h2>
+    <table class="w-full table-auto">
+      <thead>
+        <tr class="bg-gray-200 text-left">
+          <th class="p-2">MRN</th>
+          <th class="p-2">Name</th>
+          <th class="p-2">CNIC</th>
+          <th class="p-2">Sample No</th>
+        </tr>
+      </thead>
+      <tbody id="patientList"></tbody>
+    </table>
   </div>
-
-  <script>
-    let sampleCount = localStorage.getItem("sampleCount") || 1000;
-
-    function generateMRN() {
-      return 'MRN-' + Date.now();
-    }
-
-    function generateSampleNo() {
-      sampleCount++;
-      localStorage.setItem("sampleCount", sampleCount);
-      return 'SMP-' + sampleCount;
-    }
-
-    function registerPatient() {
-      const name = document.getElementById("name").value;
-      const cnic = document.getElementById("cnic").value;
-      const phone = document.getElementById("phone").value;
-      const age = document.getElementById("age").value;
-
-      if (!name || !cnic || !phone || !age) {
-        alert("⚠️ Please fill all fields");
-        return;
-      }
-
-      const patient = {
-        name,
-        cnic,
-        phone,
-        age,
-        mrn: generateMRN(),
-        sampleNo: generateSampleNo(),
-        createdAt: new Date().toISOString()
-      };
-
-      const patients = JSON.parse(localStorage.getItem("patients")) || [];
-      patients.push(patient);
-      localStorage.setItem("patients", JSON.stringify(patients));
-
-      generateQRCode(patient);
-      renderPatients();
-      clearForm();
-    }
-
-    function renderPatients() {
-      const table = document.getElementById("patientTable");
-      const patients = JSON.parse(localStorage.getItem("patients")) || [];
-      table.innerHTML = "";
-
-      patients.forEach((p, index) => {
-        table.innerHTML += `
-          <tr class="border-b">
-            <td class="px-3 py-2">${index + 1}</td>
-            <td class="px-3 py-2">${p.name}</td>
-            <td class="px-3 py-2">${p.mrn}</td>
-            <td class="px-3 py-2">${p.sampleNo}</td>
-            <td class="px-3 py-2">${p.cnic}</td>
-            <td class="px-3 py-2">${p.phone}</td>
-            <td class="px-3 py-2">${p.age}</td>
-          </tr>`;
-      });
-    }
-
-    function clearForm() {
-      document.getElementById("name").value = "";
-      document.getElementById("cnic").value = "";
-      document.getElementById("phone").value = "";
-      document.getElementById("age").value = "";
-    }
-
-    function generateQRCode(patient) {
-      const canvas = document.getElementById("qrCode");
-      const data = `Name: ${patient.name}\nMRN: ${patient.mrn}\nSample#: ${patient.sampleNo}\nPhone: ${patient.phone}`;
-      QRCode.toCanvas(canvas, data, { width: 180 }, function (error) {
-        if (error) console.error(error);
-      });
-    }
-
-    function filterPatients() {
-      const query = document.getElementById("searchInput").value.toLowerCase();
-      const patients = JSON.parse(localStorage.getItem("patients")) || [];
-      const table = document.getElementById("patientTable");
-      table.innerHTML = "";
-
-      patients.forEach((p, index) => {
-        const values = `${p.name} ${p.mrn} ${p.cnic} ${p.phone}`.toLowerCase();
-        if (values.includes(query)) {
-          table.innerHTML += `
-            <tr class="border-b">
-              <td class="px-3 py-2">${index + 1}</td>
-              <td class="px-3 py-2">${p.name}</td>
-              <td class="px-3 py-2">${p.mrn}</td>
-              <td class="px-3 py-2">${p.sampleNo}</td>
-              <td class="px-3 py-2">${p.cnic}</td>
-              <td class="px-3 py-2">${p.phone}</td>
-              <td class="px-3 py-2">${p.age}</td>
-            </tr>`;
-        }
-      });
-    }
-
-    // Load patients on page load
-    window.onload = renderPatients;
-  </script>
 
 </body>
 </html>
