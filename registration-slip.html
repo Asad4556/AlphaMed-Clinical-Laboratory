@@ -3,97 +3,85 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Registration Slip</title>
+  <title>Registration Slip - Alpha Med</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-    }
-
-    .slip-container {
-      width: 800px;
-      margin: 0 auto;
-      position: relative;
-      border: 1px solid #ccc;
-      padding: 30px;
-      background: #fff;
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: relative;
-    }
-
-    .logo-left {
-      width: 80px;
-    }
-
-    .lab-name {
-      text-align: center;
-      font-size: 24px;
-      font-weight: bold;
-      flex-grow: 1;
-    }
-
-    .barcode {
-      width: 100px;
-      text-align: right;
-    }
-
-    .watermark {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      opacity: 0.08;
-      font-size: 80px;
-      font-weight: bold;
-      z-index: 0;
-      pointer-events: none;
-      white-space: nowrap;
-    }
-
-    .details {
-      margin-top: 30px;
-      z-index: 1;
-      position: relative;
-    }
-
-    .details p {
-      margin: 6px 0;
-    }
-
     @media print {
-      body {
-        padding: 0;
+      .no-print {
+        display: none;
       }
-      .slip-container {
-        border: none;
-        box-shadow: none;
+      body {
+        background: white !important;
       }
     }
   </style>
 </head>
-<body>
-  <div class="slip-container">
-    <div class="header">
-      <img src="logo.png" alt="Logo" class="logo-left" />
-      <div class="lab-name">AlphaMed Clinical Laboratory</div>
-      <div class="barcode"><img src="barcode.png" alt="Barcode" width="80" /></div>
+<body class="bg-white text-black min-h-screen py-6 px-4">
+
+  <!-- Container -->
+  <div class="max-w-2xl mx-auto border border-gray-400 rounded-lg p-6 shadow-lg">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+      <div class="flex items-center space-x-3">
+        <img src="logo.png" alt="Logo" class="w-16 h-16">
+        <div>
+          <h1 class="text-2xl font-bold text-blue-800">Alpha Med Clinical Laboratory</h1>
+          <p class="text-sm text-gray-600">Advanced Diagnostic Services</p>
+        </div>
+      </div>
+      <div id="qrCode"></div>
     </div>
 
-    <div class="watermark">AlphaMed</div>
-
-    <div class="details">
-      <p><strong>Patient Name:</strong> John Doe</p>
-      <p><strong>MRN:</strong> AM-000123</p>
-      <p><strong>Sample No:</strong> SM-00145</p>
-      <p><strong>Department:</strong> Biochemistry</p>
-      <p><strong>Tests:</strong> Blood Glucose, Liver Function</p>
-      <p><strong>Date:</strong> 30-July-2025</p>
+    <!-- Patient Info -->
+    <div class="grid grid-cols-2 gap-4 text-sm">
+      <div><strong>Patient Name:</strong> <span id="patientName">Asad Khan</span></div>
+      <div><strong>Father Name:</strong> <span id="fatherName">Kaleem Ullah</span></div>
+      <div><strong>CNIC:</strong> <span id="cnic">34501-8971113-7</span></div>
+      <div><strong>Phone No:</strong> <span id="phone">0300-1234567</span></div>
+      <div><strong>Sample No:</strong> <span id="sampleNo">SMP-0023</span></div>
+      <div><strong>MRN No:</strong> <span id="mrnNo">MRN-8765</span></div>
+      <div><strong>Age:</strong> <span id="age">32</span></div>
+      <div><strong>Department:</strong> <span id="department">Hematology</span></div>
+      <div><strong>Test Name:</strong> <span id="testName">Complete Blood Count</span></div>
+      <div><strong>Date:</strong> <span id="date"></span></div>
     </div>
+
+    <!-- Footer -->
+    <div class="mt-6 border-t pt-4 text-xs text-center text-gray-500">
+      This is a computer-generated slip. No signature required.
+    </div>
+
+    <!-- Print Button -->
+    <div class="mt-6 text-center no-print">
+      <button onclick="window.print()" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+        🖨️ Print Slip
+      </button>
+    </div>
+
   </div>
+
+  <script>
+    // Set current date
+    document.getElementById("date").textContent = new Date().toLocaleDateString();
+
+    // Generate QR with summary info
+    const qrContent = `
+      Alpha Med Clinical Laboratory
+      Patient: Asad Khan
+      CNIC: 34501-8971113-7
+      Sample: SMP-0023
+      Test: CBC
+    `;
+
+    QRCode.toCanvas(qrContent, { width: 96 }, function (err, canvas) {
+      if (!err) {
+        document.getElementById("qrCode").appendChild(canvas);
+      }
+    });
+
+    // OPTIONAL: Get patient data from URL/localStorage if needed
+  </script>
 </body>
 </html>
