@@ -1,1 +1,106 @@
-<!-- view_reports.html content -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>View Lab Reports</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+  <div class="max-w-7xl mx-auto p-6">
+    <h1 class="text-2xl font-semibold mb-4">View Patient Lab Reports</h1>
+
+    <!-- Search & Filter -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+      <div class="flex gap-2 flex-wrap">
+        <input type="text" id="searchName" placeholder="Patient Name" class="px-4 py-2 border rounded w-64"/>
+        <input type="text" id="searchCNIC" placeholder="CNIC" class="px-4 py-2 border rounded w-48"/>
+        <input type="text" id="searchMRN" placeholder="MRN #" class="px-4 py-2 border rounded w-40"/>
+      </div>
+      <button onclick="filterReports()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Search</button>
+    </div>
+
+    <!-- Reports Table -->
+    <div class="overflow-x-auto bg-white rounded shadow">
+      <table class="min-w-full table-auto text-sm">
+        <thead class="bg-gray-100 text-left">
+          <tr>
+            <th class="p-3">Patient Name</th>
+            <th class="p-3">CNIC</th>
+            <th class="p-3">MRN</th>
+            <th class="p-3">Test Name</th>
+            <th class="p-3">Date</th>
+            <th class="p-3 text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="reportsTable" class="divide-y divide-gray-200">
+          <!-- Dynamically filled -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const reportData = [
+      {
+        name: "Ali Raza",
+        cnic: "35201-1234567-1",
+        mrn: "MRN001",
+        test: "CBC",
+        date: "2025-07-29"
+      },
+      {
+        name: "Zainab Ahmed",
+        cnic: "34567-9876543-2",
+        mrn: "MRN002",
+        test: "LFT",
+        date: "2025-07-30"
+      },
+      // Add more sample reports here...
+    ];
+
+    function renderReports(data) {
+      const table = document.getElementById("reportsTable");
+      table.innerHTML = "";
+
+      if (data.length === 0) {
+        table.innerHTML = `<tr><td colspan="6" class="text-center p-4 text-red-500">No reports found</td></tr>`;
+        return;
+      }
+
+      data.forEach(report => {
+        table.innerHTML += `
+          <tr>
+            <td class="p-3">${report.name}</td>
+            <td class="p-3">${report.cnic}</td>
+            <td class="p-3">${report.mrn}</td>
+            <td class="p-3">${report.test}</td>
+            <td class="p-3">${report.date}</td>
+            <td class="p-3 text-center">
+              <a href="report.html?mrn=${report.mrn}" class="text-blue-600 hover:underline">View</a>
+            </td>
+          </tr>`;
+      });
+    }
+
+    function filterReports() {
+      const name = document.getElementById("searchName").value.toLowerCase();
+      const cnic = document.getElementById("searchCNIC").value;
+      const mrn = document.getElementById("searchMRN").value.toLowerCase();
+
+      const filtered = reportData.filter(r =>
+        r.name.toLowerCase().includes(name) &&
+        r.cnic.includes(cnic) &&
+        r.mrn.toLowerCase().includes(mrn)
+      );
+
+      renderReports(filtered);
+    }
+
+    // Load all initially
+    renderReports(reportData);
+  </script>
+
+</body>
+</html>
