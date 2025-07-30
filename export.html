@@ -1,159 +1,91 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Export Reports - Alpha Med</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+function loadResults() {
+  const results = JSON.parse(localStorage.getItem("results") || "[]");
 
-  <!-- SheetJS (Excel Export) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  const from = new Date(document.querySelector("#fromDate").value);
+  const to = new Date(document.querySelector("#toDate").value);
+  const department = document.querySelector("#department").value;
 
-  <!-- jsPDF & AutoTable (PDF Export) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-</head>
+  const filtered = results.filter(r => {
+    const date = new Date(r.date);
+    const matchDept = department ? r.department === department : true;
+    const matchDate = (!isNaN(from) ? date >= from : true) && (!isNaN(to) ? date <= to : true);
+    return matchDept && matchDate;
+  });
 
-<body class="bg-gray-100 p-6 min-h-screen font-sans">
-  <div class="max-w-6xl mx-auto bg-white shadow-xl p-6 rounded-xl">
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold text-blue-700">📁 Export Reports</h1>
-    </div>
+  const tbody = document.querySelector("#resultsBody");
+  tbody.innerHTML = "";
 
-    <!-- Filters -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-      <div>
-        <label class="text-sm font-medium">From Date</label>
-        <input type="date" id="fromDate" class="input" />
-      </div>
-      <div>
-        <label class="text-sm font-medium">To Date</label>
-        <input type="date" id="toDate" class="input" />
-      </div>
-      <div>
-        <label class="text-sm font-medium">Department</label>
-        <select id="department" class="input">
-          <option value="">All Departments</option>
-          <option>Hematology</option>
-          <option>Serology</option>
-          <option>Microbiology</option>
-          <option>Biochemistry</option>
-          <option>Culture Tests</option>
-          <option>Blood Banking</option>
-        </select>
-      </div>
-    </div>
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-gray-500">No results found for the selected filters.</td></tr>`;
+  }
 
-    <!-- Export Buttons -->
-    <div class="flex gap-4 mb-4">
-      <button onclick="exportPDF()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Export as PDF</button>
-      <button onclick="exportExcel()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Export as Excel</button>
-    </div>
+  filtered.forEach(r => {
+    r.tests.forEach(test => {
+      const row = `
+        <tr class="border-b">
+          <td class="p-3">${r.name}</td>
+          <td class="p-3">${r.mrn}</td>
+          <td class="p-3">${test.name}</td>
+          <td class="p-3">${r.date}</td>
+          <td class="p-3">${test.result}</td>
+        </tr>
+      `;
+      tbody.innerHTML += row;
+    });
+  });
 
-    <!-- Result Table -->
-    <div class="overflow-auto rounded-lg shadow border border-gray-200">
-      <table class="min-w-full bg-white">
-        <thead class="bg-gray-100 text-gray-700 text-sm">
-          <tr>
-            <th class="p-3 text-left">Patient Name</th>
-            <th class="p-3 text-left">MRN</th>
-            <th class="p-3 text-left">Test</th>
-            <th class="p-3 text-left">Date</th>
-            <th class="p-3 text-left">Result</th>
-          </tr>
-        </thead>
-        <tbody id="resultsBody" class="text-gray-700 text-sm">
-          <!-- Filled dynamically -->
-        </tbody>
-      </table>
-    </div>
-  </div>
+  return filtered;
+}
 
-  <script>
-    function loadResults() {
-      const results = JSON.parse(localStorage.getItem("results") || "[]");
+function exportExcel() {
+  const data = loadResults();
+  if (data.length === 0) {
+    alert("No results to export.");
+    return;
+  }
 
-      const from = new Date(document.querySelector("#fromDate").value);
-      const to = new Date(document.querySelector("#toDate").value);
-      const department = document.querySelector("#department").value;
+  const rows = [["Patient Name", "MRN", "Test", "Date", "Result"]];
+  data.forEach(r => {
+    r.tests.forEach(test => {
+      rows.push([r.name, r.mrn, test.name, r.date, test.result]);
+    });
+  });
 
-      const filtered = results.filter(r => {
-        const date = new Date(r.date);
-        const matchDept = department ? r.department === department : true;
-        const matchDate = (!isNaN(from) ? date >= from : true) && (!isNaN(to) ? date <= to : true);
-        return matchDept && matchDate;
-      });
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Reports");
+  XLSX.writeFile(wb, "Reports.xlsx");
 
-      const tbody = document.querySelector("#resultsBody");
-      tbody.innerHTML = "";
+  alert("Excel file has been exported.");
+}
 
-      filtered.forEach(r => {
-        r.tests.forEach(test => {
-          const row = `
-            <tr class="border-b">
-              <td class="p-3">${r.name}</td>
-              <td class="p-3">${r.mrn}</td>
-              <td class="p-3">${test.name}</td>
-              <td class="p-3">${r.date}</td>
-              <td class="p-3">${test.result}</td>
-            </tr>
-          `;
-          tbody.innerHTML += row;
-        });
-      });
+async function exportPDF() {
+  const data = loadResults();
+  if (data.length === 0) {
+    alert("No results to export.");
+    return;
+  }
 
-      return filtered;
-    }
+  const rows = [];
+  data.forEach(r => {
+    r.tests.forEach(test => {
+      rows.push([r.name, r.mrn, test.name, r.date, test.result]);
+    });
+  });
 
-    function exportExcel() {
-      const data = loadResults();
-      const rows = [["Patient Name", "MRN", "Test", "Date", "Result"]];
-      data.forEach(r => {
-        r.tests.forEach(test => {
-          rows.push([r.name, r.mrn, test.name, r.date, test.result]);
-        });
-      });
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
 
-      const ws = XLSX.utils.aoa_to_sheet(rows);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Reports");
-      XLSX.writeFile(wb, "Reports.xlsx");
-    }
+  doc.setFontSize(14);
+  doc.text("Exported Reports", 14, 15);
 
-    async function exportPDF() {
-      const data = loadResults();
-      const rows = [];
-      data.forEach(r => {
-        r.tests.forEach(test => {
-          rows.push([r.name, r.mrn, test.name, r.date, test.result]);
-        });
-      });
+  doc.autoTable({
+    startY: 20,
+    head: [["Patient Name", "MRN", "Test", "Date", "Result"]],
+    body: rows,
+  });
 
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
+  doc.save("Reports.pdf");
 
-      doc.setFontSize(14);
-      doc.text("Exported Reports", 14, 15);
-
-      doc.autoTable({
-        startY: 20,
-        head: [["Patient Name", "MRN", "Test", "Date", "Result"]],
-        body: rows,
-      });
-
-      doc.save("Reports.pdf");
-    }
-
-    window.onload = loadResults;
-    document.querySelector("#fromDate").addEventListener("change", loadResults);
-    document.querySelector("#toDate").addEventListener("change", loadResults);
-    document.querySelector("#department").addEventListener("change", loadResults);
-  </script>
-
-  <style>
-    .input {
-      @apply border border-gray-300 rounded-md p-2 w-full mt-1;
-    }
-  </style>
-</body>
-</html>
+  alert("PDF file has been exported.");
+}
