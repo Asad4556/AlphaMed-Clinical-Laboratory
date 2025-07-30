@@ -3,33 +3,67 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Reception - AlphaMed Lab</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Receptionist Panel - Alpha Med</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <header class="header">
-    <img src="logo.png" alt="Lab Logo" class="logo" />
-    <h1>AlphaMed Clinical Laboratory</h1>
+<body class="bg-gray-100 min-h-screen">
+
+  <!-- Header -->
+  <header class="bg-white shadow p-4 flex justify-between items-center">
+    <div class="flex items-center space-x-2">
+      <img src="logo.png" alt="Alpha Med Logo" class="w-10">
+      <h1 class="text-xl font-bold text-blue-700">Alpha Med - Reception Panel</h1>
+    </div>
+    <button onclick="logout()" class="text-sm text-red-600 hover:underline">Logout</button>
   </header>
 
-  <nav class="navbar">
-    <a href="reception_dashboard.html">Dashboard</a>
-    <a href="register_patient.html">Register Patient</a>
-    <a href="registration-slip.html">Slip</a>
-    <a href="view_reports.html">Reports</a>
-    <a href="settings.html">Settings</a>
-    <a href="logout.php" class="logout">Logout</a>
-  </nav>
+  <!-- Dashboard Grid -->
+  <main class="p-6 max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
-  <main class="main">
-    <section class="welcome">
-      <h2>Welcome, Receptionist</h2>
-      <p>Select an action from the menu to get started.</p>
-    </section>
+    <!-- Register Patient -->
+    <a href="register_patient.html" class="bg-white shadow hover:shadow-lg p-6 rounded-xl flex flex-col items-center justify-center text-center transition">
+      <svg class="w-10 h-10 text-blue-600 mb-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M12 4v16m8-8H4"/>
+      </svg>
+      <h2 class="font-semibold text-lg">Register Patient</h2>
+      <p class="text-sm text-gray-500">Add new patients with auto slip generation.</p>
+    </a>
+
+    <!-- View Registration Slips -->
+    <a href="registration-slip.html" class="bg-white shadow hover:shadow-lg p-6 rounded-xl flex flex-col items-center justify-center text-center transition">
+      <svg class="w-10 h-10 text-green-600 mb-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>
+      </svg>
+      <h2 class="font-semibold text-lg">View Slips</h2>
+      <p class="text-sm text-gray-500">Check and print existing patient slips.</p>
+    </a>
+
+    <!-- Manage Patients -->
+    <a href="view_reports.html" class="bg-white shadow hover:shadow-lg p-6 rounded-xl flex flex-col items-center justify-center text-center transition">
+      <svg class="w-10 h-10 text-purple-600 mb-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M4 6h16M4 12h8m-8 6h16"/>
+      </svg>
+      <h2 class="font-semibold text-lg">Patient Reports</h2>
+      <p class="text-sm text-gray-500">Search and access test results.</p>
+    </a>
+
+    <!-- Settings -->
+    <a href="settings.html" class="bg-white shadow hover:shadow-lg p-6 rounded-xl flex flex-col items-center justify-center text-center transition">
+      <svg class="w-10 h-10 text-gray-600 mb-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M11 4h2M11 20h2M4.22 4.22l1.42 1.42M17.36 17.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M17.36 6.64l1.42-1.42"/>
+      </svg>
+      <h2 class="font-semibold text-lg">Settings</h2>
+      <p class="text-sm text-gray-500">Update contact, WhatsApp or lab info.</p>
+    </a>
+
   </main>
 
-  <footer class="footer">
-    <p>&copy; 2025 AlphaMed Clinical Laboratory. All rights reserved.</p>
-  </footer>
+  <script>
+    function logout() {
+      if (confirm("Are you sure you want to logout?")) {
+        window.location.href = "login.html";
+      }
+    }
+  </script>
 </body>
 </html>
