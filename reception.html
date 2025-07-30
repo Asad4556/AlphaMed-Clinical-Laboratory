@@ -1,69 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Receptionist Panel - Alpha Med</title>
+  <meta charset="UTF-8">
+  <title>Reception - Register Patient</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="bg-gray-100 p-6">
 
-  <!-- Header -->
-  <header class="bg-white shadow p-4 flex justify-between items-center">
-    <div class="flex items-center space-x-2">
-      <img src="logo.png" alt="Alpha Med Logo" class="w-10">
-      <h1 class="text-xl font-bold text-blue-700">Alpha Med - Reception Panel</h1>
+  <div class="max-w-5xl mx-auto bg-white p-6 rounded-xl shadow">
+    <h1 class="text-2xl font-bold mb-4">🧾 Patient Registration (Reception)</h1>
+
+    <!-- Patient Form -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+      <input id="name" type="text" placeholder="Patient Name" class="border p-2 rounded" />
+      <input id="cnic" type="text" placeholder="CNIC" class="border p-2 rounded" />
+      <input id="phone" type="text" placeholder="Phone" class="border p-2 rounded" />
+      <input id="age" type="text" placeholder="Age" class="border p-2 rounded" />
     </div>
-    <button onclick="logout()" class="text-sm text-red-600 hover:underline">Logout</button>
-  </header>
 
-  <!-- Dashboard Grid -->
-  <main class="p-6 max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <button onclick="registerPatient()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+      ➕ Register Patient
+    </button>
 
-    <!-- Register Patient -->
-    <a href="register_patient.html" class="bg-white shadow hover:shadow-lg p-6 rounded-xl flex flex-col items-center justify-center text-center transition">
-      <svg class="w-10 h-10 text-blue-600 mb-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path d="M12 4v16m8-8H4"/>
-      </svg>
-      <h2 class="font-semibold text-lg">Register Patient</h2>
-      <p class="text-sm text-gray-500">Add new patients with auto slip generation.</p>
-    </a>
+    <!-- QR Code -->
+    <div class="mt-4">
+      <canvas id="qrCode"></canvas>
+    </div>
 
-    <!-- View Registration Slips -->
-    <a href="registration-slip.html" class="bg-white shadow hover:shadow-lg p-6 rounded-xl flex flex-col items-center justify-center text-center transition">
-      <svg class="w-10 h-10 text-green-600 mb-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>
-      </svg>
-      <h2 class="font-semibold text-lg">View Slips</h2>
-      <p class="text-sm text-gray-500">Check and print existing patient slips.</p>
-    </a>
-
-    <!-- Manage Patients -->
-    <a href="view_reports.html" class="bg-white shadow hover:shadow-lg p-6 rounded-xl flex flex-col items-center justify-center text-center transition">
-      <svg class="w-10 h-10 text-purple-600 mb-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path d="M4 6h16M4 12h8m-8 6h16"/>
-      </svg>
-      <h2 class="font-semibold text-lg">Patient Reports</h2>
-      <p class="text-sm text-gray-500">Search and access test results.</p>
-    </a>
-
-    <!-- Settings -->
-    <a href="settings.html" class="bg-white shadow hover:shadow-lg p-6 rounded-xl flex flex-col items-center justify-center text-center transition">
-      <svg class="w-10 h-10 text-gray-600 mb-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path d="M11 4h2M11 20h2M4.22 4.22l1.42 1.42M17.36 17.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M17.36 6.64l1.42-1.42"/>
-      </svg>
-      <h2 class="font-semibold text-lg">Settings</h2>
-      <p class="text-sm text-gray-500">Update contact, WhatsApp or lab info.</p>
-    </a>
-
-  </main>
+    <!-- Patient List -->
+    <h2 class="text-xl font-semibold mt-6 mb-2">📋 Registered Patients</h2>
+    <div class="overflow-auto max-h-96 border rounded">
+      <table class="min-w-full text-sm text-left">
+        <thead class="bg-gray-200 sticky top-0">
+          <tr>
+            <th class="py-2 px-3">#</th>
+            <th class="py-2 px-3">Name</th>
+            <th class="py-2 px-3">MRN</th>
+            <th class="py-2 px-3">Sample No</th>
+            <th class="py-2 px-3">CNIC</th>
+            <th class="py-2 px-3">Phone</th>
+            <th class="py-2 px-3">Age</th>
+          </tr>
+        </thead>
+        <tbody id="patientTable" class="bg-white">
+          <!-- Patients appear here -->
+        </tbody>
+      </table>
+    </div>
+  </div>
 
   <script>
-    function logout() {
-      if (confirm("Are you sure you want to logout?")) {
-        window.location.href = "login.html";
-      }
+    let sampleCount = localStorage.getItem("sampleCount") || 1000;
+
+    function generateMRN() {
+      return 'MRN-' + Date.now();
     }
+
+    function generateSampleNo() {
+      sampleCount++;
+      localStorage.setItem("sampleCount", sampleCount);
+      return 'SMP-' + sampleCount;
+    }
+
+    function registerPatient() {
+      const name = document.getElementById("name").value;
+      const cnic = document.getElementById("cnic").value;
+      const phone = document.getElementById("phone").value;
+      const age = document.getElementById("age").value;
+
+      if (!name || !cnic || !phone || !age) {
+        alert("⚠️ Please fill all fields");
+        return;
+      }
+
+      const patient = {
+        name,
+        cnic,
+        phone,
+        age,
+        mrn: generateMRN(),
+        sampleNo: generateSampleNo(),
+        createdAt: new Date().toISOString()
+      };
+
+      const patients = JSON.parse(localStorage.getItem("patients")) || [];
+      patients.push(patient);
+      localStorage.setItem("patients", JSON.stringify(patients));
+
+      generateQRCode(patient);
+      renderPatients();
+      clearForm();
+    }
+
+    function renderPatients() {
+      const table = document.getElementById("patientTable");
+      const patients = JSON.parse(localStorage.getItem("patients")) || [];
+      table.innerHTML = "";
+
+      patients.forEach((p, index) => {
+        table.innerHTML += `
+          <tr class="border-b">
+            <td class="px-3 py-2">${index + 1}</td>
+            <td class="px-3 py-2">${p.name}</td>
+            <td class="px-3 py-2">${p.mrn}</td>
+            <td class="px-3 py-2">${p.sampleNo}</td>
+            <td class="px-3 py-2">${p.cnic}</td>
+            <td class="px-3 py-2">${p.phone}</td>
+            <td class="px-3 py-2">${p.age}</td>
+          </tr>`;
+      });
+    }
+
+    function clearForm() {
+      document.getElementById("name").value = "";
+      document.getElementById("cnic").value = "";
+      document.getElementById("phone").value = "";
+      document.getElementById("age").value = "";
+    }
+
+    function generateQRCode(patient) {
+      const canvas = document.getElementById("qrCode");
+      const data = `Name: ${patient.name}\nMRN: ${patient.mrn}\nSample#: ${patient.sampleNo}\nPhone: ${patient.phone}`;
+      QRCode.toCanvas(canvas, data, { width: 180 }, function (error) {
+        if (error) console.error(error);
+      });
+    }
+
+    // Load existing patients on page load
+    window.onload = renderPatients;
   </script>
 </body>
 </html>
