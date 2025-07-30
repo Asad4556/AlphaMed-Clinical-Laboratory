@@ -1,93 +1,80 @@
 <!DOCTYPE html>
-<html lang="ur" dir="rtl">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>رجسٹریشن سلِپ - الفا میڈ لیب</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Patient Slip - Alpha Med</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
   <style>
-    body {
-      background-color: #121212;
-      color: #00ffff;
-      font-family: 'Noto Nastaliq Urdu', 'Segoe UI', Tahoma, sans-serif;
-      padding: 30px;
-      text-align: center;
-    }
-    .slip-container {
-      background-color: #222;
-      border-radius: 15px;
-      padding: 20px;
-      max-width: 400px;
-      margin: 0 auto;
-      box-shadow: 0 0 20px #00ffffaa;
-      position: relative;
-    }
-    h2 {
-      margin-bottom: 15px;
-      color: #00ffff;
-    }
-    .info {
-      text-align: right;
-      margin: 10px 0;
-      font-size: 18px;
-    }
-    #barcodeCanvas {
-      margin-top: 20px;
-    }
-    button {
-      margin-top: 25px;
-      padding: 10px 20px;
-      background-color: #00ffff;
-      border: none;
-      border-radius: 8px;
-      color: #000;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    button:hover {
-      background-color: #00bbbb;
+    @media print {
+      .no-print { display: none; }
+      body { background: white !important; }
     }
   </style>
 </head>
-<body>
+<body class="bg-gray-100 text-black py-6 px-4">
 
-  <div class="slip-container">
-    <h2>مریض کی رجسٹریشن سلِپ</h2>
-    <div class="info"><strong>نام:</strong> <span id="slipName">...لوڈ ہو رہا ہے</span></div>
-    <div class="info"><strong>ایم آر این:</strong> <span id="slipMRN">...لوڈ ہو رہا ہے</span></div>
-    <div class="info"><strong>سیمپل نمبر:</strong> <span id="slipSample">...لوڈ ہو رہا ہے</span></div>
-    <div class="info"><strong>سیکشنز:</strong> <span id="slipSection">...لوڈ ہو رہا ہے</span></div>
-    <canvas id="barcodeCanvas"></canvas>
+  <div class="max-w-2xl mx-auto bg-white p-6 rounded-lg border shadow-md">
 
-    <button onclick="window.print()">پرنٹ کریں</button>
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+      <div class="flex items-center space-x-3">
+        <img src="logo.png" alt="Alpha Med Logo" class="w-16 h-16">
+        <div>
+          <h2 class="text-xl font-bold text-blue-800">Alpha Med Clinical Laboratory</h2>
+          <p class="text-sm text-gray-600">Advanced Diagnostic Services</p>
+        </div>
+      </div>
+      <div id="qrCode"></div>
+    </div>
+
+    <!-- Patient Details -->
+    <div class="grid grid-cols-2 gap-4 text-sm">
+      <div><strong>Patient Name:</strong> Asad Khan</div>
+      <div><strong>Father/S/O:</strong> Kaleem Ullah</div>
+      <div><strong>CNIC:</strong> 34501-8971113-7</div>
+      <div><strong>Phone No:</strong> 0300-1234567</div>
+      <div><strong>Sample No:</strong> SMP-00045</div>
+      <div><strong>MRN No:</strong> MRN-2345</div>
+      <div><strong>Age:</strong> 32</div>
+      <div><strong>Date:</strong> <span id="date"></span></div>
+    </div>
+
+    <!-- Test Info -->
+    <div class="mt-4 border-t pt-3 text-sm">
+      <div><strong>Department:</strong> Hematology</div>
+      <div><strong>Test Name:</strong> Complete Blood Count (CBC)</div>
+    </div>
+
+    <!-- Footer -->
+    <div class="mt-4 text-xs text-gray-500 border-t pt-4 text-center">
+      Please bring this slip at the time of report collection.  
+    </div>
+
+    <!-- Print Button -->
+    <div class="mt-6 text-center no-print">
+      <button onclick="window.print()" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+        🖨️ Print Slip
+      </button>
+    </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
   <script>
-    function loadSlip() {
-      const patient = JSON.parse(localStorage.getItem("lastRegistered"));
-      if (!patient) {
-        alert("کوئی رجسٹریشن ڈیٹا موجود نہیں۔");
-        window.location.href = "register_patient.html";
-        return;
-      }
+    // Date
+    document.getElementById("date").textContent = new Date().toLocaleDateString();
 
-      document.getElementById("slipName").innerText = patient.name;
-      document.getElementById("slipMRN").innerText = patient.mrn;
-      document.getElementById("slipSample").innerText = patient.sample;
-      document.getElementById("slipSection").innerText = patient.section.join(", ");
-
-      JsBarcode("#barcodeCanvas", patient.mrn + "-" + patient.sample, {
-        format: "CODE128",
-        displayValue: true,
-        width: 2,
-        height: 40,
-        fontSize: 14
-      });
-    }
-
-    loadSlip();
+    // QR Code
+    const qrData = `
+    Alpha Med Clinical Laboratory
+    Name: Asad Khan
+    CNIC: 34501-8971113-7
+    Test: CBC
+    Sample No: SMP-00045
+    `;
+    QRCode.toCanvas(qrData, { width: 96 }, function(err, canvas) {
+      if (!err) document.getElementById("qrCode").appendChild(canvas);
+    });
   </script>
-
 </body>
 </html>
