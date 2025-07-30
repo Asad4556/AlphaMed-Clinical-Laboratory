@@ -1,74 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AlphaMed Clinical Laboratory</title>
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: #f9f9f9;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-    }
-
-    .container {
-      text-align: center;
-      background: white;
-      padding: 40px 30px;
-      border-radius: 12px;
-      box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
-    }
-
-    .logo {
-      width: 100px;
-      height: auto;
-      margin-bottom: 20px;
-    }
-
-    h1 {
-      margin-bottom: 10px;
-      font-size: 28px;
-      color: #333;
-    }
-
-    p {
-      font-size: 16px;
-      color: #777;
-      margin-bottom: 30px;
-    }
-
-    .btn {
-      display: inline-block;
-      padding: 12px 25px;
-      background: #1e90ff;
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
-      border-radius: 6px;
-      transition: background 0.3s ease;
-      margin: 0 10px;
-    }
-
-    .btn:hover {
-      background: #187bcd;
-    }
-  </style>
+  <title>Login - Alpha Med Lab</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-6">
 
-  <div class="container">
-    <img src="logo.png" alt="AlphaMed Logo" class="logo" />
-    <h1>AlphaMed Clinical Laboratory</h1>
-    <p>Advanced diagnostic services with accuracy and care</p>
-    <a href="admin.html" class="btn">Admin Login</a>
-    <a href="reception.html" class="btn">Reception Login</a>
-    <a href="technician.html" class="btn">Technician Login</a>
+  <div class="bg-white shadow-xl rounded-xl w-full max-w-md p-6">
+    <div class="text-center mb-6">
+      <img src="/assets/logo.png" alt="Alpha Med" class="h-16 mx-auto mb-2"/>
+      <h1 class="text-2xl font-bold text-blue-700">Alpha Med Clinical Lab</h1>
+      <p class="text-sm text-gray-500">Sign in to continue</p>
+    </div>
+
+    <form id="loginForm" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium">Username or Email</label>
+        <input type="text" id="username" class="input" required />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium">Password</label>
+        <input type="password" id="password" class="input" required />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium">Login As</label>
+        <select id="role" class="input" required>
+          <option value="admin">Admin</option>
+          <option value="technician">Technician</option>
+          <option value="reception">Receptionist</option>
+        </select>
+      </div>
+
+      <div id="error" class="text-red-600 text-sm"></div>
+
+      <button type="submit" class="bg-blue-600 text-white w-full py-2 rounded hover:bg-blue-700">Login</button>
+    </form>
   </div>
 
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const role = document.getElementById("role").value;
+      const error = document.getElementById("error");
+
+      if (username === "" || password === "") {
+        error.textContent = "Please fill all fields.";
+        return;
+      }
+
+      // Simulate login & redirect
+      if (role === "admin") {
+        window.location.href = "admin-dashboard.html";
+      } else if (role === "technician") {
+        window.location.href = "technician_dashboard.html";
+      } else if (role === "reception") {
+        window.location.href = "reception_dashboard.html";
+      } else {
+        error.textContent = "Invalid role selected.";
+      }
+    });
+  </script>
+
+  <style>
+    .input {
+      @apply border border-gray-300 rounded-md p-2 w-full mt-1;
+    }
+  </style>
 </body>
 </html>
