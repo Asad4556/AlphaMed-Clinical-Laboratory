@@ -5,99 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Dashboard - Alpha Med</title>
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Scripts -->
-  <script src="storage.js"></script>
-  <script src="dashboard-summary.js" defer></script>
-</head>
-<body class="bg-gray-100 text-gray-800 p-6 min-h-screen">
-
-  <!-- Header -->
-  <header class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold text-blue-700">🧪 Alpha Med Admin Dashboard</h1>
-    <a href="login.html" class="text-red-600 hover:underline text-sm">Logout</a>
-  </header>
-
-  <!-- Load Summary Button -->
-  <div class="mb-6 flex justify-between items-center">
-    <h2 class="text-xl font-semibold">📊 Dashboard Summary</h2>
-    <button onclick="loadSummary()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
-      🔄 Load Summary
-    </button>
-  </div>
-
-  <!-- Summary Grid -->
-  <div id="summaryContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-    <!-- JS will populate these -->
-    <div class="card">
-      <h3>Total Patients</h3>
-      <p>1200</p>
-      <button class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded mt-4">🔍 View Details</button>
-    </div>
-    <div class="card">
-      <h3>Tests Conducted</h3>
-      <p>5000</p>
-      <button class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded mt-4">🔍 View Details</button>
-    </div>
-    <div class="card">
-      <h3>Pending Results</h3>
-      <p>200</p>
-      <button class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded mt-4">🔍 View Details</button>
-    </div>
-    <div class="card">
-      <h3>Users Registered</h3>
-      <p>15</p>
-      <button class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded mt-4">🔍 View Details</button>
-    </div>
-  </div>
-
-  <!-- Quick Access -->
-  <div>
-    <h2 class="text-lg font-semibold mb-2">🔗 Quick Access</h2>
-    <ul class="space-y-2 text-blue-700 text-sm">
-      <li><a href="manage_users.html" class="hover:underline">👤 Manage Users</a></li>
-      <li><a href="settings.html" class="hover:underline">⚙️ Settings</a></li>
-      <li><a href="export.html" class="hover:underline">📁 Export Data</a></li>
-      <li><a href="reception_dashboard.html" class="hover:underline">📝 Patient Entries</a></li>
-      <li><a href="view_reports.html" class="hover:underline">📄 View Reports</a></li>
-    </ul>
-    <button onclick="quickAccessAction()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded mt-4">
-      🔗 Go to Quick Access
-    </button>
-  </div>
-
-  <script>
-    function loadSummary() {
-      const summaryContainer = document.getElementById('summaryContainer');
-      summaryContainer.innerHTML = ''; // Clear existing content
-
-      // Simulating fetching data from localStorage or an API
-      const summaryData = getFromStorage("dashboard_summary") || [];
-
-      if (summaryData.length === 0) {
-        summaryContainer.innerHTML = `<p class="text-center text-gray-600">No summary data available.</p>`;
-        return;
-      }
-
-      summaryData.forEach(item => {
-        const card = document.createElement("div");
-        card.className = "card";
-
-        card.innerHTML = `
-          <h3>${item.title}</h3>
-          <p>${item.count}</p>
-          <button class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded mt-4">🔍 View Details</button>
-        `;
-        
-        summaryContainer.appendChild(card);
-      });
-    }
-
-    function quickAccessAction() {
-      alert("Quick Access Button clicked!");
-    }
-  </script>
-
   <style>
     .card {
       @apply bg-white rounded-xl p-4 shadow text-center transition-transform duration-300 transform hover:scale-105;
@@ -108,7 +15,103 @@
     .card p {
       @apply text-sm text-gray-500 mt-1;
     }
+    @media print {
+      .no-print {
+        display: none;
+      }
+    }
   </style>
+</head>
+<body class="bg-gray-100 text-gray-800 p-6 min-h-screen">
+
+  <header class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-blue-700">🧪 Alpha Med Admin Dashboard</h1>
+    <div>
+      <span id="userRole" class="text-sm text-gray-600 mr-4"></span>
+      <a href="login.html" class="text-red-600 hover:underline text-sm">Logout</a>
+    </div>
+  </header>
+
+  <div class="mb-6 flex justify-between items-center">
+    <h2 class="text-xl font-semibold">📊 Dashboard Summary</h2>
+    <button onclick="loadSummary()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
+      🔄 Load Summary
+    </button>
+  </div>
+
+  <div id="summaryContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10"></div>
+
+  <div>
+    <h2 class="text-lg font-semibold mb-2">🔗 Access</h2>
+    <ul class="space-y-2 text-blue-700 text-sm">
+      <li><a href="reception_dashboard.html" class="hover:underline">📝 Patient Entries (Reception)</a></li>
+      <li><a href="technician_dashboard.html" class="hover:underline">🔬 Technician Panel</a></li>
+      <li><a href="manage_users.html" class="hover:underline">👤 Manage Users</a></li>
+      <li><a href="change_password.html" class="hover:underline">🔑 Change Password</a></li>
+      <li><a href="settings.html" class="hover:underline">⚙️ Settings</a></li>
+      <li><a href="export.html" class="hover:underline">📁 Export Data</a></li>
+      <li><a href="view_reports.html" class="hover:underline">📄 View Reports</a></li>
+    </ul>
+  </div>
+
+  <script>
+    function getFromStorage(key) {
+      const data = localStorage.getItem(key);
+      return data ? JSON.parse(data) : [];
+    }
+
+    function loadSummary() {
+      const summaryContainer = document.getElementById('summaryContainer');
+      summaryContainer.innerHTML = '';
+
+      const patients = getFromStorage("patients");
+      const users = getFromStorage("users");
+
+      let totalTests = 0;
+      let pendingResults = 0;
+
+      patients.forEach(p => {
+        if (Array.isArray(p.tests)) {
+          p.tests.forEach(section => {
+            totalTests += section.tests.length;
+          });
+        }
+        if (!p.reportGenerated) {
+          pendingResults++;
+        }
+      });
+
+      const summaryData = [
+        { title: "Total Patients", count: patients.length },
+        { title: "Tests Conducted", count: totalTests },
+        { title: "Pending Results", count: pendingResults },
+        { title: "Users Registered", count: users.length }
+      ];
+
+      summaryData.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <h3>${item.title}</h3>
+          <p>${item.count}</p>
+          <button class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded mt-4">🔍 View Details</button>
+        `;
+        summaryContainer.appendChild(card);
+      });
+    }
+
+    function detectRole() {
+      const user = JSON.parse(localStorage.getItem("loggedInUser"));
+      if (user && user.role) {
+        document.getElementById("userRole").textContent = `Role: ${user.role}`;
+      }
+    }
+
+    window.onload = () => {
+      loadSummary();
+      detectRole();
+    };
+  </script>
 
 </body>
 </html>
