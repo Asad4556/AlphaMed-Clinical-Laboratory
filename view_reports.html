@@ -1,78 +1,112 @@
 <!DOCTYPE html>
-<html lang="ur">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>رپورٹس دیکھیں</title>
+  <meta charset="UTF-8" />
+  <title>View Reports - Alpha-Med Clinical Lab</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="storage.js" defer></script>
+  <script src="script.js" defer></script>
+  <style>
+    .report-card {
+      border: 1px solid #ddd;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      background-color: #fff;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+    .watermark {
+      position: fixed;
+      top: 45%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 40px;
+      color: rgba(0,0,0,0.05);
+      z-index: 0;
+      pointer-events: none;
+    }
+    .report-footer {
+      text-align: center;
+      font-size: 12px;
+      margin-top: 40px;
+      color: gray;
+    }
+    @media print {
+      .search-section, .print-button {
+        display: none;
+      }
+      .watermark {
+        display: block;
+      }
+    }
+  </style>
 </head>
-<body class="bg-gray-100 text-gray-900">
-  <div class="max-w-6xl mx-auto p-6">
-    <h1 class="text-2xl font-bold mb-4">📋 مریض رپورٹس</h1>
+<body>
+  <div class="container">
+    <h2>Patient Lab Reports</h2>
 
-    <div id="reportList" class="space-y-4">
-      <!-- رپورٹس یہاں آۓ گی -->
+    <div class="search-section">
+      <input type="text" id="searchInput" placeholder="Search by MRN, CNIC or Name" oninput="filterReports()" />
+      <select id="deptFilter" onchange="filterReports()">
+        <option value="">All Departments</option>
+        <option value="Hematology">Hematology</option>
+        <option value="Serology">Serology</option>
+        <option value="Histopathology">Histopathology</option>
+        <option value="Microbiology">Microbiology</option>
+        <option value="Biochemistry">Biochemistry</option>
+        <option value="Culture Tests">Culture Tests</option>
+        <option value="Special Chemistry">Special Chemistry</option>
+        <option value="Molecular Biology">Molecular Biology</option>
+        <option value="Blood Banking">Blood Banking</option>
+      </select>
+      <button class="print-button" onclick="window.print()">🖨️ Print</button>
     </div>
+
+    <div id="reportList"></div>
+
+    <div class="watermark">Alpha-Med Clinical Lab</div>
+    <div class="report-footer">© Alpha-Med Clinical Lab – This report is system generated</div>
   </div>
 
   <script>
-    function loadReports() {
-      const listContainer = document.getElementById("reportList");
-      listContainer.innerHTML = "";
+    function filterReports() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const dept = document.getElementById('deptFilter').value;
+      const reports = JSON.parse(localStorage.getItem('testResults') || '[]');
+      const container = document.getElementById('reportList');
+      container.innerHTML = '';
 
-      const patients = JSON.parse(localStorage.getItem("registeredPatients") || "[]");
+      const filtered = reports.filter(r =>
+        (!dept || r.department === dept) &&
+        (r.mrn.toLowerCase().includes(search) || 
+         r.cnic.toLowerCase().includes(search) ||
+         r.name.toLowerCase().includes(search))
+      );
 
-      if (patients.length === 0) {
-        listContainer.innerHTML = "<p>🚫 کوئی رپورٹ دستیاب نہیں۔</p>";
+      if (filtered.length === 0) {
+        container.innerHTML = "<p>No reports found.</p>";
         return;
       }
 
-      patients.forEach((patient) => {
-        const card = document.createElement("div");
-        card.className = "bg-white p-4 rounded shadow";
-
+      filtered.forEach(r => {
+        const card = document.createElement('div');
+        card.className = 'report-card';
         card.innerHTML = `
-          <h2 class="text-xl font-semibold mb-2">${patient.name} (MRN: ${patient.mrn})</h2>
-          <p><strong>CNIC:</strong> ${patient.cnic} | <strong>Sample#:</strong> ${patient.sampleNo}</p>
-          <div class="mt-3 space-y-3">
-            ${renderReport(patient.selectedTests)}
-          </div>
+          <strong>MRN:</strong> ${r.mrn}<br>
+          <strong>Name:</strong> ${r.name}<br>
+          <strong>CNIC:</strong> ${r.cnic}<br>
+          <strong>Department:</strong> ${r.department}<br>
+          <strong>Tests:</strong><br>
+          <ul>
+            ${r.tests.map(t => `<li>${t.name}: ${t.result} ${t.unit || ''}</li>`).join('')}
+          </ul>
+          <small><em>Date: ${r.date || new Date().toLocaleDateString()}</em></small>
         `;
-
-        listContainer.appendChild(card);
+        container.appendChild(card);
       });
     }
 
-    function renderReport(tests) {
-      let html = "";
-      tests.forEach((test) => {
-        html += `<div class="border p-3 rounded">
-          <strong>${test.name}</strong>
-          <table class="w-full mt-2 border-t">
-            <thead>
-              <tr>
-                <th class="text-left">پیرامیٹر</th>
-                <th class="text-left">نتیجہ</th>
-                <th class="text-left">رینج</th>
-                <th class="text-left">یونٹ</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${test.parameters.map((param) => `
-                <tr>
-                  <td>${param.name}</td>
-                  <td>${param.result || "⏳"}</td>
-                  <td>${param.range}</td>
-                  <td>${param.unit}</td>
-                </tr>
-              `).join("")}
-            </tbody>
-          </table>
-        </div>`;
-      });
-      return html;
-    }
-
-    loadReports();
+    window.onload = filterReports;
   </script>
 </body>
 </html>
