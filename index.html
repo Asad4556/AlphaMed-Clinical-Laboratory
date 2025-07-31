@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ur" dir="rtl">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -18,20 +18,41 @@
     <form id="loginForm" class="space-y-4">
       <div>
         <label class="block text-sm font-medium">یوزر نیم یا ای میل</label>
-        <input type="text" id="username" class="input" required autofocus />
+        <input
+          type="text"
+          id="username"
+          class="border border-gray-300 rounded-md p-2 w-full mt-1"
+          required
+          autofocus
+        />
       </div>
 
       <div>
         <label class="block text-sm font-medium">پاس ورڈ</label>
         <div class="relative">
-          <input type="password" id="password" class="input pr-10" required />
-          <button type="button" onclick="togglePassword()" class="absolute right-2 top-2 text-gray-500 hover:text-gray-700 text-sm">👁️</button>
+          <input
+            type="password"
+            id="password"
+            class="border border-gray-300 rounded-md p-2 w-full mt-1 pr-10"
+            required
+          />
+          <button
+            type="button"
+            onclick="togglePassword()"
+            class="absolute right-2 top-2 text-gray-500 hover:text-gray-700 text-sm"
+          >
+            👁️
+          </button>
         </div>
       </div>
 
       <div>
         <label class="block text-sm font-medium">رول منتخب کریں</label>
-        <select id="role" class="input" required>
+        <select
+          id="role"
+          class="border border-gray-300 rounded-md p-2 w-full mt-1"
+          required
+        >
           <option value="">رول منتخب کریں</option>
           <option value="admin">ایڈمن</option>
           <option value="technician">ٹیکنیشن</option>
@@ -41,7 +62,12 @@
 
       <div id="error" class="text-red-600 text-sm"></div>
 
-      <button type="submit" class="bg-blue-600 text-white w-full py-2 rounded hover:bg-blue-700">لاگ ان</button>
+      <button
+        type="submit"
+        class="bg-blue-600 text-white w-full py-2 rounded hover:bg-blue-700"
+      >
+        لاگ ان
+      </button>
     </form>
   </div>
 
@@ -53,7 +79,7 @@
     }
 
     // لاگ ان فارم ہینڈلر
-    document.getElementById("loginForm").addEventListener("submit", function(e) {
+    document.getElementById("loginForm").addEventListener("submit", function (e) {
       e.preventDefault();
 
       const username = document.getElementById("username").value.trim();
@@ -79,10 +105,5 @@
     });
   </script>
 
-  <style>
-    .input {
-      @apply border border-gray-300 rounded-md p-2 w-full mt-1;
-    }
-  </style>
 </body>
 </html>
