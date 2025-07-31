@@ -1,73 +1,50 @@
 <!DOCTYPE html>
-<html lang="ur" dir="rtl">
+<html lang="ur">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ریسپشن ڈیش بورڈ - Alpha Med</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <title>ریسیپشن ڈیش بورڈ</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body class="bg-gray-100 min-h-screen font-sans">
-
-  <!-- Header -->
-  <header class="bg-white shadow p-4 flex justify-between items-center">
-    <div class="flex items-center gap-3">
-      <img src="logo.png" alt="Alpha Med Logo" class="w-10 h-10 object-contain">
-      <h1 class="text-xl font-bold text-blue-700">ریسپشن ڈیش بورڈ</h1>
+<body class="bg-gray-50 p-6 text-gray-900">
+  <div class="max-w-6xl mx-auto">
+    <h1 class="text-2xl font-bold mb-4">🏥 رجسٹرڈ مریض</h1>
+    <div id="patientsList" class="space-y-4">
+      <!-- مریض یہاں لوڈ ہوں گے -->
     </div>
-    <button onclick="logout()" class="text-sm text-red-600 hover:underline">🚪 لاگ آؤٹ</button>
-  </header>
-
-  <!-- Main Content -->
-  <main class="p-6 max-w-6xl mx-auto">
-    
-    <!-- Summary Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <div class="bg-white rounded-xl shadow p-5 text-center">
-        <h3 class="text-gray-500 text-sm">آج کے مریض</h3>
-        <p class="text-2xl font-bold text-blue-700" id="patientsToday">۰</p>
-      </div>
-      <div class="bg-white rounded-xl shadow p-5 text-center">
-        <h3 class="text-gray-500 text-sm">زیر التواء سلپس</h3>
-        <p class="text-2xl font-bold text-yellow-500" id="pendingSlips">۰</p>
-      </div>
-      <div class="bg-white rounded-xl shadow p-5 text-center">
-        <h3 class="text-gray-500 text-sm">تیار رپورٹس</h3>
-        <p class="text-2xl font-bold text-green-600" id="readyReports">۰</p>
-      </div>
-      <div class="bg-white rounded-xl shadow p-5 text-center">
-        <h3 class="text-gray-500 text-sm">وٹس ایپ نوٹیفیکیشنز</h3>
-        <p class="text-2xl font-bold text-purple-600" id="sentMsgs">۰</p>
-      </div>
-    </div>
-
-    <!-- Quick Links -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <a href="register_patient.html" class="block bg-blue-600 text-white p-6 rounded-lg shadow hover:bg-blue-700 transition text-center font-medium">
-        ➕ نیا مریض رجسٹر کریں
-      </a>
-      <a href="registration-slip.html" class="block bg-green-600 text-white p-6 rounded-lg shadow hover:bg-green-700 transition text-center font-medium">
-        🧾 رجسٹریشن سلپس دیکھیں
-      </a>
-      <a href="view_reports.html" class="block bg-purple-600 text-white p-6 rounded-lg shadow hover:bg-purple-700 transition text-center font-medium">
-        📄 رپورٹس دیکھیں
-      </a>
-    </div>
-
-  </main>
+  </div>
 
   <script>
-    function logout() {
-      if (confirm("کیا آپ واقعی لاگ آؤٹ کرنا چاہتے ہیں؟")) {
-        window.location.href = "login.html";
+    function loadPatients() {
+      const list = document.getElementById("patientsList");
+      const patients = JSON.parse(localStorage.getItem("registeredPatients") || "[]");
+
+      if (patients.length === 0) {
+        list.innerHTML = "<p>🚫 کوئی مریض رجسٹرڈ نہیں ہے۔</p>";
+        return;
       }
+
+      patients.forEach((p, index) => {
+        const card = document.createElement("div");
+        card.className = "bg-white p-4 rounded shadow";
+
+        const tests = p.selectedTests.map(test => `<li>${test.name}</li>`).join("");
+
+        card.innerHTML = `
+          <h2 class="text-xl font-semibold">${p.name} (MRN: ${p.mrn})</h2>
+          <p><strong>CNIC:</strong> ${p.cnic}</p>
+          <p><strong>Sample#:</strong> ${p.sampleNo}</p>
+          <p><strong>Gender:</strong> ${p.gender} | <strong>Age:</strong> ${p.age}</p>
+          <div class="mt-2">
+            <strong>منتخب ٹیسٹ:</strong>
+            <ul class="list-disc list-inside">${tests}</ul>
+          </div>
+        `;
+
+        list.appendChild(card);
+      });
     }
 
-    // Demo values (can be replaced with dynamic values)
-    document.getElementById("patientsToday").textContent = "۲۴";
-    document.getElementById("pendingSlips").textContent = "۶";
-    document.getElementById("readyReports").textContent = "۱۴";
-    document.getElementById("sentMsgs").textContent = "۱۸";
+    loadPatients();
   </script>
-
 </body>
 </html>
