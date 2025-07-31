@@ -1,42 +1,118 @@
-<script>
-  // Helper to get query param from URL
-  function getQueryParam(key) {
-    const params = new URLSearchParams(window.location.search);
-    return params.get(key);
-  }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Registration Slip - AlphaMed Lab</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #fff;
+      background-image: url('logo.png'); 
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 300px;
+      opacity: 0.98;
+    }
 
-  const sampleNo = getQueryParam("sample");
-  const patients = JSON.parse(localStorage.getItem("patients") || "[]");
-  const patient = patients.find(p => p.sampleNo === sampleNo);
+    .slip {
+      max-width: 700px;
+      margin: auto;
+      padding: 30px;
+      border: 2px dashed #013243;
+      border-radius: 10px;
+      background-color: rgba(255, 255, 255, 0.95);
+      position: relative;
+    }
 
-  if (!patient) {
-    alert("❌ Patient not found.");
-  } else {
-    document.getElementById("patientName").textContent = patient.name || "N/A";
-    document.getElementById("fatherName").textContent = patient.father || "N/A";
-    document.getElementById("cnic").textContent = patient.cnic || "N/A";
-    document.getElementById("phone").textContent = patient.phone || "N/A";
-    document.getElementById("sampleNo").textContent = patient.sampleNo || "N/A";
-    document.getElementById("mrnNo").textContent = patient.mrn || "N/A";
-    document.getElementById("dob").textContent = patient.dob || "N/A";
+    h2 {
+      text-align: center;
+      color: #013243;
+      margin-bottom: 30px;
+    }
 
-    // Test info
-    const deptList = patient.tests.map(t => t.section).join(", ");
-    const testList = patient.tests.map(t => t.tests.join(", ")).join(", ");
+    .info {
+      font-size: 16px;
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
 
-    document.getElementById("department").textContent = deptList || "N/A";
-    document.getElementById("testName").textContent = testList || "N/A";
-    document.getElementById("date").textContent = new Date(patient.registeredAt).toLocaleDateString();
+    .label {
+      font-weight: bold;
+      color: #014a63;
+    }
 
-    const qrData = `
-      Alpha Med Clinical Laboratory
-      Name: ${patient.name}
-      Sample: ${patient.sampleNo}
-      MRN: ${patient.mrn}
-      CNIC: ${patient.cnic}
-    `;
-    QRCode.toCanvas(document.getElementById("qrCode"), qrData.trim(), { width: 96 }, err => {
-      if (err) console.error(err);
-    });
-  }
-</script>
+    .footer {
+      margin-top: 40px;
+      text-align: center;
+      font-weight: bold;
+      color: #555;
+      font-size: 15px;
+    }
+
+    #qrCode {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    button {
+      margin-top: 30px;
+      padding: 10px 20px;
+      background: #013243;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #02516c;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="slip">
+    <h2>Patient Registration Slip</h2>
+
+    <div class="info" id="slipData">
+      Loading...
+    </div>
+
+    <div id="qrCode"></div>
+
+    <div class="footer">Alpha-Med Clinical Lab</div>
+
+    <button onclick="window.print()">🖨️ Print Slip</button>
+  </div>
+
+  <script src="qr-generator.js"></script>
+  <script>
+    const data = JSON.parse(localStorage.getItem("latestPatient"));
+    const div = document.getElementById("slipData");
+
+    if (data) {
+      div.innerHTML = `
+        <div><span class="label">MRN:</span> ${data.mrn}</div>
+        <div><span class="label">Name:</span> ${data.name}</div>
+        <div><span class="label">CNIC:</span> ${data.cnic}</div>
+        <div><span class="label">Phone:</span> ${data.phone}</div>
+        <div><span class="label">Department:</span> ${data.department}</div>
+        <div><span class="label">Test:</span> ${data.test}</div>
+        <div><span class="label">Date:</span> ${data.date}</div>
+      `;
+
+      generateQRCode(JSON.stringify(data), "qrCode");
+    } else {
+      div.innerHTML = "❌ No patient data found.";
+    }
+  </script>
+
+</body>
+</html>
