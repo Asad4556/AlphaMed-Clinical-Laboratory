@@ -1,187 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Manage Users</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <title>Manage Users - Alpha-Med Lab</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-gray-100 p-6">
-  <div class="max-w-4xl mx-auto bg-white p-6 rounded shadow">
-    <h1 class="text-2xl font-bold mb-4">Manage Users</h1>
+<body>
+  <h2 class="center">Manage Users</h2>
 
-    <!-- Add User Form -->
-    <form id="addUserForm" class="grid grid-cols-2 gap-4 mb-6">
-      <input id="userName" class="border p-2 rounded" type="text" placeholder="Name" required />
-      <input id="userCNIC" class="border p-2 rounded" type="text" placeholder="CNIC" required />
-      <input id="userPassword" class="border p-2 rounded" type="password" placeholder="Password" required />
-      <select id="userRole" class="border p-2 rounded" required>
+  <div class="form-section">
+    <form id="userForm">
+      <input type="text" id="cnic" placeholder="CNIC (e.g. 34501-1234567-1)" required>
+      <input type="text" id="name" placeholder="Full Name" required>
+      <select id="role" required>
         <option value="">Select Role</option>
-        <option value="admin">Admin</option>
-        <option value="technician">Technician</option>
-        <option value="receptionist">Receptionist</option>
+        <option value="Receptionist">Receptionist</option>
+        <option value="Technician">Technician</option>
+        <option value="Admin">Admin</option>
       </select>
-      <button type="submit" class="col-span-2 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Add User</button>
+      <input type="password" id="password" placeholder="Password" required>
+      <button type="submit">Add User</button>
     </form>
+  </div>
 
-    <!-- Role Filter -->
-    <div class="mb-4">
-      <label class="font-semibold mr-2">Filter by Role:</label>
-      <select id="filterRole" class="border p-2 rounded">
-        <option value="">All</option>
-        <option value="admin">Admin</option>
-        <option value="technician">Technician</option>
-        <option value="receptionist">Receptionist</option>
-      </select>
-    </div>
+  <div class="search-bar">
+    <input type="text" id="searchUser" placeholder="Search by CNIC or Name...">
+  </div>
 
-    <!-- User Table -->
-    <table class="w-full border-collapse">
+  <div class="table-section">
+    <table id="userTable">
       <thead>
-        <tr class="bg-gray-200">
-          <th class="p-2 border">#</th>
-          <th class="p-2 border">Name</th>
-          <th class="p-2 border">CNIC</th>
-          <th class="p-2 border">Role</th>
-          <th class="p-2 border">Actions</th>
+        <tr>
+          <th>CNIC</th>
+          <th>Name</th>
+          <th>Role</th>
+          <th>Password</th>
+          <th>Actions</th>
         </tr>
       </thead>
-      <tbody id="userTable"></tbody>
+      <tbody>
+        <!-- Users will be populated here -->
+      </tbody>
     </table>
   </div>
 
-  <!-- Edit Modal -->
-  <div id="editModal" class="fixed inset-0 hidden items-center justify-center bg-black bg-opacity-50 z-50">
-    <div class="bg-white p-6 rounded w-full max-w-md">
-      <h2 class="text-xl font-bold mb-4">Edit User</h2>
-      <input id="editName" class="border p-2 rounded w-full mb-2" placeholder="Name" />
-      <input id="editCNIC" class="border p-2 rounded w-full mb-2" placeholder="CNIC" />
-      <select id="editRole" class="border p-2 rounded w-full mb-4">
-        <option value="admin">Admin</option>
-        <option value="technician">Technician</option>
-        <option value="receptionist">Receptionist</option>
-      </select>
-      <div class="text-right">
-        <button onclick="closeEditModal()" class="bg-gray-300 px-4 py-2 rounded mr-2">Cancel</button>
-        <button onclick="saveEdit()" class="bg-blue-600 text-white px-4 py-2 rounded">Save</button>
-      </div>
-    </div>
-  </div>
-
   <script>
-    const userTable = document.getElementById("userTable");
-    const filterRole = document.getElementById("filterRole");
-    const addUserForm = document.getElementById("addUserForm");
+    const userForm = document.getElementById("userForm");
+    const userTable = document.getElementById("userTable").getElementsByTagName('tbody')[0];
+    const searchInput = document.getElementById("searchUser");
 
-    let editIndex = null;
-
-    function getUsers() {
-      return JSON.parse(localStorage.getItem("users") || "[]");
-    }
-
-    function setUsers(users) {
-      localStorage.setItem("users", JSON.stringify(users));
-    }
-
-    function renderUsers(role = "") {
-      const users = getUsers();
+    function loadUsers() {
       userTable.innerHTML = "";
-      users
-        .filter(user => !role || user.role === role)
-        .forEach((user, index) => {
-          userTable.innerHTML += `
-            <tr class="border-b">
-              <td class="p-2 border">${index + 1}</td>
-              <td class="p-2 border">${user.name}</td>
-              <td class="p-2 border">${user.cnic}</td>
-              <td class="p-2 border capitalize">${user.role}</td>
-              <td class="p-2 border text-sm">
-                <button class="text-blue-600 hover:underline mr-2" onclick="openEditModal(${index})">Edit</button>
-                <button class="text-red-600 hover:underline" onclick="deleteUser(${index})">Delete</button>
-              </td>
-            </tr>`;
-        });
+      const users = JSON.parse(localStorage.getItem("users") || "[]");
+      users.forEach((user, index) => {
+        const row = userTable.insertRow();
+        row.innerHTML = `
+          <td>${user.cnic}</td>
+          <td>${user.name}</td>
+          <td>${user.role}</td>
+          <td>${user.password}</td>
+          <td>
+            <button onclick="deleteUser(${index})">Delete</button>
+          </td>
+        `;
+      });
     }
-
-    addUserForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const name = document.getElementById("userName").value.trim();
-      const cnic = document.getElementById("userCNIC").value.trim();
-      const password = document.getElementById("userPassword").value;
-      const role = document.getElementById("userRole").value;
-
-      if (!name || !cnic || !password || !role) {
-        alert("All fields are required.");
-        return;
-      }
-
-      const users = getUsers();
-      if (users.some(user => user.cnic === cnic)) {
-        alert("CNIC already exists.");
-        return;
-      }
-
-      users.push({ name, cnic, password, role });
-      setUsers(users);
-      renderUsers(filterRole.value);
-      addUserForm.reset();
-    });
-
-    filterRole.addEventListener("change", () => renderUsers(filterRole.value));
 
     function deleteUser(index) {
-      if (confirm("Delete this user?")) {
-        const users = getUsers();
-        users.splice(index, 1);
-        setUsers(users);
-        renderUsers(filterRole.value);
+      const users = JSON.parse(localStorage.getItem("users") || "[]");
+      users.splice(index, 1);
+      localStorage.setItem("users", JSON.stringify(users));
+      loadUsers();
+    }
+
+    userForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const cnic = document.getElementById("cnic").value.trim();
+      const name = document.getElementById("name").value.trim();
+      const role = document.getElementById("role").value;
+      const password = document.getElementById("password").value;
+
+      const users = JSON.parse(localStorage.getItem("users") || "[]");
+      users.push({ cnic, name, role, password });
+      localStorage.setItem("users", JSON.stringify(users));
+      userForm.reset();
+      loadUsers();
+    });
+
+    searchInput.addEventListener("input", () => {
+      const filter = searchInput.value.toLowerCase();
+      const rows = userTable.getElementsByTagName("tr");
+      for (let row of rows) {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(filter) ? "" : "none";
       }
-    }
+    });
 
-    function openEditModal(index) {
-      const user = getUsers()[index];
-      document.getElementById("editName").value = user.name;
-      document.getElementById("editCNIC").value = user.cnic;
-      document.getElementById("editRole").value = user.role;
-      document.getElementById("editModal").classList.remove("hidden");
-      editIndex = index;
-    }
-
-    function closeEditModal() {
-      document.getElementById("editModal").classList.add("hidden");
-    }
-
-    function saveEdit() {
-      const name = document.getElementById("editName").value.trim();
-      const cnic = document.getElementById("editCNIC").value.trim();
-      const role = document.getElementById("editRole").value;
-      const users = getUsers();
-
-      if (!name || !cnic || !role) {
-        alert("All fields are required.");
-        return;
-      }
-
-      const duplicate = users.find((u, i) => u.cnic === cnic && i !== editIndex);
-      if (duplicate) {
-        alert("CNIC already in use.");
-        return;
-      }
-
-      users[editIndex] = { ...users[editIndex], name, cnic, role };
-      setUsers(users);
-      closeEditModal();
-      renderUsers(filterRole.value);
-    }
-
-    // Set only one default admin if no users exist
-    if (!localStorage.getItem("users") || getUsers().length === 0) {
-      setUsers([
-        { name: "Admin", cnic: "34501-8971113-7", password: "Asad@2723", role: "admin" }
-      ]);
-    }
-
-    renderUsers();
+    // Initial load
+    loadUsers();
   </script>
 </body>
 </html>
