@@ -6,6 +6,15 @@
   <title>Admin Dashboard - Alpha Med</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="storage.js"></script>
+
+  <!-- Access control for Admin only -->
+  <script>
+    const user = JSON.parse(localStorage.getItem("currentUser"));
+    if (!user || user.role !== "Admin") {
+      alert("❌ Access Denied. Only Admin can access this page.");
+      window.location.href = "login.html";
+    }
+  </script>
 </head>
 <body class="bg-gray-100 text-gray-800 p-6 min-h-screen">
 
@@ -19,7 +28,6 @@
   <div class="mb-6">
     <h2 class="text-xl font-semibold">📊 Dashboard Summary</h2>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4" id="summaryContainer">
-      <!-- Future Summary Content -->
       <div class="bg-white p-4 rounded shadow text-center">Coming Soon...</div>
     </div>
   </div>
@@ -151,7 +159,6 @@
 
       const users = JSON.parse(localStorage.getItem("users")) || [];
 
-      // Check for duplicate username
       if (users.some(u => u.username === username)) {
         alert("❌ Username already exists.");
         return;
