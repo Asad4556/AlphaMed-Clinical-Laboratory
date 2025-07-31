@@ -1,145 +1,75 @@
-// reception.js
+const form = document.getElementById("patientForm");
+const list = document.getElementById("patientList");
+const container = document.getElementById("labSectionContainer");
 
-// ✅ DOM elements
-const searchBtn = document.getElementById("searchBtn");
-const searchInput = document.getElementById("searchInput");
-const patientInfo = document.getElementById("patientInfo");
-const assignSection = document.getElementById("assignSection");
-const pName = document.getElementById("pName");
-const pMRN = document.getElementById("pMRN");
-const pSample = document.getElementById("pSample");
+let patients = [];
+let mrnCounter = 1;
 
-const departmentSelect = document.getElementById("departmentSelect");
-const testSelect = document.getElementById("testSelect");
-const addTestBtn = document.getElementById("addTestBtn");
-const selectedTestsDiv = document.getElementById("selectedTests");
-const saveTestsBtn = document.getElementById("saveTestsBtn");
+// labSections.js سے لیب ڈیٹا لوڈ کریں
+window.addEventListener("DOMContentLoaded", () => {
+  labDepartments.forEach((dept, index) => {
+    const sectionDiv = document.createElement("div");
+    sectionDiv.className = "border rounded p-3";
 
-let currentPatient = null;
-let selectedTests = [];
+    const title = document.createElement("h3");
+    title.textContent = dept.name;
+    title.className = "font-bold text-blue-700 mb-2";
 
-// ✅ Load departments in dropdown
-function populateDepartments() {
-  departmentSelect.innerHTML = "<option value=''>-- Select Department --</option>";
+    sectionDiv.appendChild(title);
 
-  if (!Array.isArray(labDepartments)) {
-    console.error("❌ labDepartments data not loaded!");
-    alert("ڈیپارٹمنٹ ڈیٹا لوڈ نہیں ہو سکا۔");
-    return;
-  }
-
-  labDepartments.forEach(dep => {
-    const opt = document.createElement("option");
-    opt.value = dep.name;
-    opt.textContent = dep.name;
-    departmentSelect.appendChild(opt);
-  });
-}
-
-// ✅ Load tests when department changes
-departmentSelect.addEventListener("change", function () {
-  const selectedDept = this.value;
-  const dept = labDepartments.find(d => d.name === selectedDept);
-
-  testSelect.innerHTML = "<option value=''>-- Select Test --</option>";
-  if (dept && Array.isArray(dept.tests)) {
     dept.tests.forEach(test => {
-      const opt = document.createElement("option");
-      opt.value = test.name;
-      opt.textContent = test.name;
-      testSelect.appendChild(opt);
+      const label = document.createElement("label");
+      label.className = "block";
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.value = test.name;
+      checkbox.className = "mr-2";
+
+      label.appendChild(checkbox);
+      label.append(test.name);
+      sectionDiv.appendChild(label);
     });
-  }
+
+    container.appendChild(sectionDiv);
+  });
 });
 
-// ✅ Search for patient
-searchBtn.addEventListener("click", function () {
-  const query = searchInput.value.trim();
-  const patients = getFromStorage("patients");
+// فارم سبمٹ
+form.addEventListener("submit", function (e) {
+  e.preventDefault();
 
-  const found = patients.find(p => p.cnic === query || p.mrn === query);
+  const name = document.getElementById("patientName").value;
+  const cnic = document.getElementById("patientCNIC").value;
+  const sampleNumber = document.getElementById("sampleNumber").value;
 
-  if (found) {
-    currentPatient = found;
-    showPatientInfo(found);
-    assignSection.classList.remove("hidden");
-    selectedTests = found.tests || [];
-    renderSelectedTests();
-  } else {
-    alert("مریض نہیں ملا!");
-  }
-});
+  const mrn = "MRN" + String(mrnCounter).padStart(3, "0"); // MRN001, MRN002
+  mrnCounter++;
 
-// ✅ Show patient info
-function showPatientInfo(patient) {
-  pName.textContent = patient.name;
-  pMRN.textContent = patient.mrn;
-  pSample.textContent = patient.sampleNo;
-  patientInfo.classList.remove("hidden");
-}
+  const selectedTests = Array.from(document.querySelectorAll("input[type='checkbox']:checked")).map(cb => cb.value);
 
-// ✅ Add selected test
-addTestBtn.addEventListener("click", function () {
-  const testName = testSelect.value;
-  const department = departmentSelect.value;
-
-  if (!testName || !department) {
-    alert("براہ کرم ڈیپارٹمنٹ اور ٹیسٹ منتخب کریں!");
+  if (selectedTests.length === 0) {
+    alert("براہ کرم کم از کم ایک ٹیسٹ منتخب کریں۔");
     return;
   }
 
-  if (selectedTests.some(t => t.name === testName)) {
-    alert("یہ ٹیسٹ پہلے ہی شامل کیا جا چکا ہے۔");
-    return;
-  }
+  patients.push({ name, cnic, mrn, sampleNumber, selectedTests });
 
-  selectedTests.push({ name: testName, department });
-  renderSelectedTests();
+  renderList();
+  form.reset();
 });
 
-// ✅ Show selected tests
-function renderSelectedTests() {
-  selectedTestsDiv.innerHTML = "";
-  selectedTests.forEach((t, index) => {
-    const div = document.createElement("div");
-    div.className = "border-b py-1 flex justify-between";
-    div.innerHTML = `
-      <span>${t.department} - <strong>${t.name}</strong></span>
-      <button onclick="removeTest(${index})" class="text-red-500">❌</button>
+function renderList() {
+  list.innerHTML = "";
+  patients.forEach(p => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="border px-2 py-1">${p.name}</td>
+      <td class="border px-2 py-1">${p.cnic}</td>
+      <td class="border px-2 py-1">${p.mrn}</td>
+      <td class="border px-2 py-1">${p.sampleNumber}</td>
+      <td class="border px-2 py-1">${p.selectedTests.join(", ")}</td>
     `;
-    selectedTestsDiv.appendChild(div);
+    list.appendChild(tr);
   });
 }
-
-// ✅ Remove test
-function removeTest(index) {
-  selectedTests.splice(index, 1);
-  renderSelectedTests();
-}
-
-// ✅ Save tests to patient record
-saveTestsBtn.addEventListener("click", function () {
-  if (!currentPatient) return;
-
-  updateStorage("patients", p => p.mrn === currentPatient.mrn, old => ({
-    ...old,
-    tests: selectedTests,
-    status: "tests-assigned"
-  }));
-
-  alert("✅ ٹیسٹس محفوظ ہو گئے!");
-  resetForm();
-});
-
-// ✅ Reset all
-function resetForm() {
-  currentPatient = null;
-  selectedTests = [];
-  searchInput.value = "";
-  patientInfo.classList.add("hidden");
-  assignSection.classList.add("hidden");
-  selectedTestsDiv.innerHTML = "";
-}
-
-// ✅ Initial call
-populateDepartments();
