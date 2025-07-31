@@ -1,118 +1,65 @@
-// Load result status on page load
 document.addEventListener("DOMContentLoaded", () => {
-  renderResultStatusTable();
-});
+  const container = document.getElementById("testResultsContainer");
 
-// Search patient by CNIC or MRN
-document.getElementById("searchBtn").addEventListener("click", () => {
-  const query = document.getElementById("searchInput").value.trim();
-  const patients = getFromStorage("patients");
+  const patients = JSON.parse(localStorage.getItem("registeredPatients") || "[]");
 
-  const found = patients.find(p =>
-    p.cnic === query || p.mrn === query
-  );
-
-  if (found) {
-    showPatient(found);
-  } else {
-    alert("Patient not found!");
-  }
-});
-
-// Show patient and their tests
-function showPatient(patient) {
-  document.getElementById("patientInfo").classList.remove("hidden");
-  document.getElementById("resultForm").classList.remove("hidden");
-
-  document.getElementById("pName").textContent = patient.name;
-  document.getElementById("pMRN").textContent = patient.mrn;
-  document.getElementById("pSample").textContent = patient.sampleNo;
-
-  const testFields = document.getElementById("testFields");
-  testFields.innerHTML = "";
-
-  // Fetch assigned tests (from reception)
-  const assignedTests = getFromStorage("reception_tests").filter(
-    t => t.mrn === patient.mrn
-  );
-
-  if (assignedTests.length === 0) {
-    testFields.innerHTML = "<p class='text-red-500'>No tests assigned.</p>";
+  if (patients.length === 0) {
+    container.innerHTML = `<div class="text-red-600 text-center py-8">❌ No registered patients found.</div>`;
     return;
   }
 
-  assignedTests.forEach(test => {
-    const field = document.createElement("div");
-    field.innerHTML = `
-      <label class="block font-medium">${test.name}</label>
-      <input type="text" name="${test.name}" class="w-full border px-2 py-1 rounded" placeholder="Enter result" required />
+  patients.forEach((patient, patientIndex) => {
+    const card = document.createElement("div");
+    card.className = "bg-white shadow p-4 rounded mb-6";
+
+    const testDetails = patient.selectedTests?.map((test, testIndex) => {
+      const parameters = test.parameters.map((param, paramIndex) => {
+        const inputId = `p${patientIndex}-t${testIndex}-param${paramIndex}`;
+        return `
+          <div class="grid grid-cols-4 gap-2 mb-2">
+            <label class="col-span-1 font-medium">${param.name}</label>
+            <input type="text" id="${inputId}" class="col-span-1 border px-2 py-1 rounded" placeholder="Enter result"/>
+            <span class="col-span-1 text-sm text-gray-500">${param.unit}</span>
+            <span class="col-span-1 text-sm text-gray-400">Ref: ${param.range}</span>
+          </div>
+        `;
+      }).join("");
+
+      return `
+        <div class="border border-blue-200 rounded p-3 mb-4">
+          <h4 class="font-semibold text-blue-600 mb-2">${test.name}</h4>
+          ${parameters}
+        </div>
+      `;
+    }).join("");
+
+    card.innerHTML = `
+      <h2 class="text-lg font-bold mb-2">🧑 ${patient.name} (${patient.mrn})</h2>
+      <p class="mb-2"><strong>CNIC:</strong> ${patient.cnic}</p>
+      <p class="mb-4"><strong>Sample No:</strong> ${patient.sampleNo}</p>
+      ${testDetails || "<div class='text-gray-400'>No tests selected.</div>"}
+      <button onclick="saveResults(${patientIndex})" class="mt-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">💾 Save Results</button>
     `;
-    testFields.appendChild(field);
+
+    container.appendChild(card);
+  });
+});
+
+function saveResults(patientIndex) {
+  const patients = JSON.parse(localStorage.getItem("registeredPatients") || "[]");
+
+  const patient = patients[patientIndex];
+  if (!patient || !patient.selectedTests) return;
+
+  patient.selectedTests.forEach((test, testIndex) => {
+    test.parameters.forEach((param, paramIndex) => {
+      const inputId = `p${patientIndex}-t${testIndex}-param${paramIndex}`;
+      const input = document.getElementById(inputId);
+      param.result = input.value;
+    });
   });
 
-  // Save test results
-  document.getElementById("resultForm").onsubmit = function (e) {
-    e.preventDefault();
-
-    const formData = new FormData(e.target);
-    const results = [];
-
-    for (let pair of formData.entries()) {
-      results.push({ testName: pair[0], value: pair[1] });
-    }
-
-    const resultData = {
-      mrn: patient.mrn,
-      name: patient.name,
-      sampleNo: patient.sampleNo,
-      results,
-      savedAt: new Date().toLocaleString()
-    };
-
-    // Save to results
-    const allResults = getFromStorage("results");
-    const index = allResults.findIndex(r => r.mrn === patient.mrn);
-    if (index !== -1) {
-      allResults[index] = resultData;
-    } else {
-      allResults.push(resultData);
-    }
-    localStorage.setItem("results", JSON.stringify(allResults));
-
-    alert("✅ Results saved successfully.");
-    e.target.reset();
-    document.getElementById("resultForm").classList.add("hidden");
-    document.getElementById("patientInfo").classList.add("hidden");
-
-    renderResultStatusTable();
-  };
-}
-
-// Show status table (Pending / Approved)
-function renderResultStatusTable() {
-  const patients = getFromStorage("patients");
-  const results = getFromStorage("results");
-  const tbody = document.getElementById("resultTableBody");
-  tbody.innerHTML = "";
-
-  patients.forEach(p => {
-    const isDone = results.some(r => r.mrn === p.mrn);
-    const status = isDone
-      ? `<span class="text-green-600 font-semibold">✅ Approved</span>`
-      : `<span class="text-yellow-600 font-semibold">⏳ Pending</span>`;
-
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td class="p-2 border">${p.mrn}</td>
-      <td class="p-2 border">${p.name}</td>
-      <td class="p-2 border">${p.sampleNo}</td>
-      <td class="p-2 border">${status}</td>
-    `;
-    tbody.appendChild(row);
-  });
-}
-
-// Storage helper
-function getFromStorage(key) {
-  return JSON.parse(localStorage.getItem(key)) || [];
+  patients[patientIndex] = patient;
+  localStorage.setItem("registeredPatients", JSON.stringify(patients));
+  alert("✅ Test results saved!");
 }
