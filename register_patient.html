@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Register Patient - Alpha Med</title>
-
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="test-data.js"></script> <!-- ✅ Test data external file -->
 </head>
 <body class="bg-gray-100 p-6 text-gray-800">
 
@@ -14,7 +14,7 @@
   <div class="bg-white p-6 rounded-xl shadow-lg">
     <form id="patientForm" class="space-y-5">
 
-      <!-- Patient Details -->
+      <!-- Patient Info -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label class="block font-semibold mb-1">Patient Name</label>
@@ -38,11 +38,11 @@
         </div>
       </div>
 
-      <!-- Section + Tests -->
+      <!-- Lab Sections & Tests -->
       <div class="mt-8">
         <h2 class="text-lg font-semibold mb-4">🔬 Select Lab Sections & Tests</h2>
         <div id="labSections" class="space-y-4">
-          <!-- Populated via JS -->
+          <!-- Will populate from test-data.js -->
         </div>
       </div>
 
@@ -54,29 +54,6 @@
   </div>
 
   <script>
-    const sectionsData = [
-      {
-        name: "Hematology",
-        tests: ["CBC", "Platelet Count", "ESR"]
-      },
-      {
-        name: "Biochemistry",
-        tests: ["LFT", "RFT", "Blood Sugar"]
-      },
-      {
-        name: "Serology",
-        tests: ["HBsAg", "HCV", "HIV"]
-      },
-      {
-        name: "Microbiology",
-        tests: ["Urine Culture", "Blood Culture"]
-      },
-      {
-        name: "Radiology",
-        tests: ["X-Ray Chest", "Ultrasound Abdomen"]
-      }
-    ];
-
     function generateID(prefix) {
       return `${prefix}-${Date.now().toString().slice(-6)}${Math.floor(Math.random() * 900 + 100)}`;
     }
@@ -92,9 +69,16 @@
       localStorage.setItem(key, JSON.stringify(items));
     }
 
+    // Populate Sections & Tests
     function populateSections() {
       const container = document.getElementById("labSections");
-      sectionsData.forEach(section => {
+
+      if (!window.labSectionsData || !Array.isArray(window.labSectionsData)) {
+        container.innerHTML = "<p class='text-red-500'>❌ Test data not loaded.</p>";
+        return;
+      }
+
+      window.labSectionsData.forEach(section => {
         const wrapper = document.createElement("div");
         wrapper.className = "bg-gray-50 border rounded p-4";
 
@@ -117,7 +101,8 @@
       });
     }
 
-    document.getElementById("patientForm").onsubmit = function (e) {
+    // Handle Form Submit
+    document.getElementById("patientForm").addEventListener("submit", function (e) {
       e.preventDefault();
 
       const patient = {
@@ -132,7 +117,6 @@
         tests: []
       };
 
-      // Collect selected tests
       const checkboxes = document.querySelectorAll('#labSections input[type="checkbox"]:checked');
       const grouped = {};
       checkboxes.forEach(cb => {
@@ -142,10 +126,7 @@
       });
 
       for (const section in grouped) {
-        patient.tests.push({
-          section: section,
-          tests: grouped[section]
-        });
+        patient.tests.push({ section: section, tests: grouped[section] });
       }
 
       if (patient.tests.length === 0) {
@@ -156,8 +137,9 @@
       addToStorage("patients", patient);
       alert("✅ Patient registered successfully.");
       this.reset();
-    };
+    });
 
+    // Load Sections on Page Load
     window.onload = populateSections;
   </script>
 </body>
