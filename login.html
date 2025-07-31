@@ -3,68 +3,51 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Login - Alpha Med</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body {
-      background: linear-gradient(to bottom right, #cfe8ff, #a0d2eb);
-    }
-  </style>
+  <title>Login - Alpha-Med Clinical Lab</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/png" href="logo.png" />
 </head>
-<body class="min-h-screen flex items-center justify-center px-4">
+<body class="login-body">
 
-  <div class="bg-white shadow-2xl p-8 rounded-xl w-full max-w-md">
-    <div class="text-center mb-6">
-      <img src="logo.png" alt="Alpha Med Logo" class="w-16 mx-auto mb-3">
-      <h1 class="text-2xl font-bold text-blue-700">Alpha Med Clinical Lab</h1>
-      <p class="text-gray-500 text-sm">Admin Login Portal</p>
+  <div class="login-container">
+    <div class="logo-side">
+      <img src="logo.png" alt="Lab Logo" class="logo-img" />
     </div>
 
-    <form id="loginForm" class="space-y-4">
-      <!-- CNIC Field -->
-      <div>
-        <label for="cnic" class="block text-sm font-medium text-gray-700">CNIC</label>
-        <input type="text" id="cnic" required placeholder="xxxxx-xxxxxxx-x"
-               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
+    <div class="login-form">
+      <h2>Login</h2>
+
+      <form id="loginForm">
+        <label for="cnic">CNIC:</label>
+        <input type="text" id="cnic" name="cnic" placeholder="e.g. 34501-1234567-1" required />
+
+        <label for="password">Password:</label>
+        <div class="password-wrapper">
+          <input type="password" id="password" name="password" placeholder="Enter Password" required />
+          <button type="button" id="togglePassword" title="Show/Hide Password">👁️</button>
+        </div>
+
+        <button type="submit" class="btn-login">Login</button>
+        <p id="error" class="error-msg"></p>
+      </form>
+
+      <div class="extra-options">
+        <a href="change_password.html">Change Password</a> |
+        <a href="create_account.html">Create Account</a>
       </div>
+    </div>
 
-      <!-- Password Field -->
-      <div>
-        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-        <input type="password" id="password" required placeholder="••••••••"
-               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
-      </div>
-
-      <!-- Error Message -->
-      <div id="errorMsg" class="text-red-600 text-sm hidden">Invalid CNIC or Password.</div>
-
-      <!-- Login Button -->
-      <button type="submit"
-              class="w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700 transition duration-200">
-        Login
-      </button>
-    </form>
+    <div class="logo-side">
+      <img src="logo.png" alt="Pakistan Logo" class="logo-img" />
+    </div>
   </div>
 
-  <!-- Login Script -->
-  <script>
-    // Hardcoded Admin Credentials
-    const adminCNIC = "34501-8971113-7";
-    const adminPassword = "Asad@2723";
+  <!-- Footer Chat Buttons -->
+  <div class="chat-buttons">
+    <a href="https://wa.me/923398067880" target="_blank" class="whatsapp-btn">WhatsApp</a>
+    <a href="#" class="livechat-btn">Live Chat</a>
+  </div>
 
-    document.getElementById("loginForm").addEventListener("submit", function (e) {
-      e.preventDefault();
-
-      const cnic = document.getElementById("cnic").value.trim();
-      const password = document.getElementById("password").value.trim();
-      const error = document.getElementById("errorMsg");
-
-      if (cnic === adminCNIC && password === adminPassword) {
-        window.location.href = "admin-dashboard.html";
-      } else {
-        error.classList.remove("hidden");
-      }
-    });
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
