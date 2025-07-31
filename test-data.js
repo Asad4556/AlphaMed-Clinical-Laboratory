@@ -17,13 +17,21 @@ const labDepartments = [
       },
       {
         name: "ESR",
-        parameters: [{ name: "ESR", range: "0–20", unit: "mm/hr" }]
+        parameters: [
+          { name: "ESR", range: "0–20", unit: "mm/hr" }
+        ]
       },
       {
         name: "PT / INR",
         parameters: [
           { name: "PT", range: "10–14", unit: "sec" },
           { name: "INR", range: "0.8–1.2", unit: "" }
+        ]
+      },
+      {
+        name: "APTT",
+        parameters: [
+          { name: "APTT", range: "25–35", unit: "sec" }
         ]
       }
     ]
@@ -58,6 +66,22 @@ const labDepartments = [
           { name: "LDL", range: "<100", unit: "mg/dL" },
           { name: "Triglycerides", range: "<150", unit: "mg/dL" }
         ]
+      },
+      {
+        name: "Blood Glucose",
+        parameters: [
+          { name: "Fasting", range: "70–100", unit: "mg/dL" },
+          { name: "Random", range: "<140", unit: "mg/dL" }
+        ]
+      },
+      {
+        name: "Electrolytes",
+        parameters: [
+          { name: "Sodium", range: "135–145", unit: "mmol/L" },
+          { name: "Potassium", range: "3.5–5.0", unit: "mmol/L" },
+          { name: "Chloride", range: "98–106", unit: "mmol/L" },
+          { name: "Bicarbonate", range: "22–28", unit: "mmol/L" }
+        ]
       }
     ]
   },
@@ -67,11 +91,12 @@ const labDepartments = [
       { name: "HBsAg", parameters: [{ name: "Result", range: "Negative", unit: "" }] },
       { name: "Anti-HCV", parameters: [{ name: "Result", range: "Negative", unit: "" }] },
       { name: "HIV", parameters: [{ name: "Result", range: "Non-reactive", unit: "" }] },
-      { name: "CRP", parameters: [{ name: "CRP", range: "<6", unit: "mg/L" }] }
+      { name: "CRP", parameters: [{ name: "CRP", range: "<6", unit: "mg/L" }] },
+      { name: "Dengue IgM/IgG", parameters: [{ name: "Result", range: "Negative", unit: "" }] }
     ]
   },
   {
-    name: "Special Chemistry / Hormones",
+    name: "Hormones / Special Chemistry",
     tests: [
       {
         name: "Thyroid Panel (T3 T4 TSH)",
@@ -81,65 +106,64 @@ const labDepartments = [
           { name: "T4", range: "5.1–14.1", unit: "µg/dL" }
         ]
       },
-      {
-        name: "Vitamin D",
-        parameters: [{ name: "Vitamin D", range: "30–100", unit: "ng/mL" }]
-      },
-      {
-        name: "Ferritin",
-        parameters: [{ name: "Ferritin", range: "30–300", unit: "ng/mL" }]
-      }
+      { name: "Vitamin D", parameters: [{ name: "Vitamin D", range: "30–100", unit: "ng/mL" }] },
+      { name: "Ferritin", parameters: [{ name: "Ferritin", range: "30–300", unit: "ng/mL" }] },
+      { name: "Insulin", parameters: [{ name: "Insulin", range: "2–25", unit: "µIU/mL" }] },
+      { name: "Cortisol", parameters: [{ name: "Cortisol", range: "6–23", unit: "µg/dL" }] }
     ]
   },
   {
     name: "Microbiology / Culture",
     tests: [
-      {
-        name: "Urine Culture",
-        parameters: [{ name: "Result", range: "No Growth", unit: "" }]
-      },
-      {
-        name: "Blood Culture",
-        parameters: [{ name: "Result", range: "No Growth", unit: "" }]
-      }
+      { name: "Urine Culture", parameters: [{ name: "Result", range: "No Growth", unit: "" }] },
+      { name: "Blood Culture", parameters: [{ name: "Result", range: "No Growth", unit: "" }] },
+      { name: "Throat Swab", parameters: [{ name: "Result", range: "No Pathogen", unit: "" }] }
     ]
   },
   {
     name: "Molecular Biology / PCR",
     tests: [
-      {
-        name: "COVID-19 PCR",
-        parameters: [{ name: "Result", range: "Negative", unit: "" }]
-      },
-      {
-        name: "HCV RNA PCR",
-        parameters: [{ name: "Result", range: "Undetected", unit: "IU/mL" }]
-      }
+      { name: "COVID-19 PCR", parameters: [{ name: "Result", range: "Negative", unit: "" }] },
+      { name: "HCV RNA PCR", parameters: [{ name: "Result", range: "Undetected", unit: "IU/mL" }] },
+      { name: "HBV DNA PCR", parameters: [{ name: "Result", range: "Undetected", unit: "IU/mL" }] }
     ]
   },
   {
     name: "Blood Banking",
     tests: [
-      {
-        name: "Blood Group",
-        parameters: [{ name: "Group", range: "A/B/AB/O", unit: "" }]
-      },
-      {
-        name: "Rh Factor",
-        parameters: [{ name: "Rh", range: "Positive/Negative", unit: "" }]
-      }
+      { name: "Blood Group", parameters: [{ name: "Group", range: "A/B/AB/O", unit: "" }] },
+      { name: "Rh Factor", parameters: [{ name: "Rh", range: "Positive/Negative", unit: "" }] },
+      { name: "Crossmatch", parameters: [{ name: "Result", range: "Compatible/Incompatible", unit: "" }] }
     ]
   },
   {
     name: "Histopathology / Cytology",
     tests: [
+      { name: "Biopsy", parameters: [{ name: "Diagnosis", range: "Benign/Malignant", unit: "" }] },
+      { name: "Pap Smear", parameters: [{ name: "Result", range: "Normal/Abnormal", unit: "" }] }
+    ]
+  },
+  {
+    name: "Urine / Stool Analysis",
+    tests: [
       {
-        name: "Biopsy",
-        parameters: [{ name: "Diagnosis", range: "Benign/Malignant", unit: "" }]
+        name: "Urine D/R",
+        parameters: [
+          { name: "Color", range: "Yellow", unit: "" },
+          { name: "Appearance", range: "Clear", unit: "" },
+          { name: "pH", range: "4.5–8.0", unit: "" },
+          { name: "Protein", range: "Negative", unit: "" },
+          { name: "Sugar", range: "Negative", unit: "" }
+        ]
       },
       {
-        name: "Pap Smear",
-        parameters: [{ name: "Result", range: "Normal/Abnormal", unit: "" }]
+        name: "Stool D/R",
+        parameters: [
+          { name: "Color", range: "Brown", unit: "" },
+          { name: "Consistency", range: "Formed", unit: "" },
+          { name: "Occult Blood", range: "Negative", unit: "" },
+          { name: "Ova/Parasite", range: "None", unit: "" }
+        ]
       }
     ]
   }
