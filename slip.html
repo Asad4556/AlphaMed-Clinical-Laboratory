@@ -1,79 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Patient Slip - Alpha Med</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <meta charset="UTF-8">
+  <title>Patient Slip - Alpha-Med Clinical Lab</title>
+  <link rel="stylesheet" href="style.css">
   <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 30px;
+      background-color: #fff;
+      background-image: url('logo.png');
+      background-size: 200px;
+      background-position: center;
+      background-repeat: no-repeat;
+      opacity: 0.95;
+    }
+
+    .slip-container {
+      max-width: 700px;
+      margin: 0 auto;
+      border: 2px solid #000;
+      padding: 20px;
+      background-color: white;
+      position: relative;
+    }
+
+    .lab-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .lab-header h2 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .lab-header p {
+      font-size: 14px;
+    }
+
+    .section {
+      margin-bottom: 15px;
+    }
+
+    .section h3 {
+      font-size: 18px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 5px;
+    }
+
+    .section p {
+      margin: 5px 0;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 30px;
+      font-weight: bold;
+      font-size: 16px;
+      border-top: 1px dashed #000;
+      padding-top: 10px;
+    }
+
     @media print {
-      .no-print { display: none; }
-      body { background: white !important; }
+      button {
+        display: none;
+      }
+
+      body {
+        background: white;
+      }
+    }
+
+    .watermark {
+      position: absolute;
+      top: 40%;
+      left: 25%;
+      font-size: 50px;
+      color: #cccccc;
+      transform: rotate(-30deg);
+      pointer-events: none;
+      opacity: 0.2;
+      z-index: 0;
     }
   </style>
 </head>
-<body class="bg-gray-100 text-black py-6 px-4">
-
-  <div class="max-w-2xl mx-auto bg-white p-6 rounded-lg border shadow-md">
-
-    <!-- Header -->
-    <div class="flex justify-between items-center mb-6">
-      <div class="flex items-center space-x-3">
-        <img src="logo.png" alt="Alpha Med Logo" class="w-16 h-16">
-        <div>
-          <h2 class="text-xl font-bold text-blue-800">Alpha Med Clinical Laboratory</h2>
-          <p class="text-sm text-gray-600">Advanced Diagnostic Services</p>
-        </div>
-      </div>
-      <div id="qrCode"></div>
+<body>
+  <div class="slip-container">
+    <div class="lab-header">
+      <h2>Alpha-Med Clinical Lab</h2>
+      <p>Email: info@alphamedlab.com | Phone: 0300-0000000</p>
     </div>
 
-    <!-- Patient Details -->
-    <div class="grid grid-cols-2 gap-4 text-sm">
-      <div><strong>Patient Name:</strong> Asad Khan</div>
-      <div><strong>Father/S/O:</strong> Kaleem Ullah</div>
-      <div><strong>CNIC:</strong> 34501-8971113-7</div>
-      <div><strong>Phone No:</strong> 0300-1234567</div>
-      <div><strong>Sample No:</strong> SMP-00045</div>
-      <div><strong>MRN No:</strong> MRN-2345</div>
-      <div><strong>Age:</strong> 32</div>
-      <div><strong>Date:</strong> <span id="date"></span></div>
+    <div class="section">
+      <h3>Patient Information</h3>
+      <p><strong>Name:</strong> <span id="patientName"></span></p>
+      <p><strong>Age:</strong> <span id="patientAge"></span></p>
+      <p><strong>Gender:</strong> <span id="patientGender"></span></p>
+      <p><strong>CNIC:</strong> <span id="patientCNIC"></span></p>
+      <p><strong>Contact:</strong> <span id="patientPhone"></span></p>
     </div>
 
-    <!-- Test Info -->
-    <div class="mt-4 border-t pt-3 text-sm">
-      <div><strong>Department:</strong> Hematology</div>
-      <div><strong>Test Name:</strong> Complete Blood Count (CBC)</div>
+    <div class="section">
+      <h3>Test Details</h3>
+      <ul id="testList"></ul>
     </div>
 
-    <!-- Footer -->
-    <div class="mt-4 text-xs text-gray-500 border-t pt-4 text-center">
-      Please bring this slip at the time of report collection.  
+    <div class="section">
+      <h3>Registered By</h3>
+      <p><strong>Receptionist:</strong> <span id="receptionist"></span></p>
+      <p><strong>Date:</strong> <span id="registrationDate"></span></p>
     </div>
 
-    <!-- Print Button -->
-    <div class="mt-6 text-center no-print">
-      <button onclick="window.print()" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
-        🖨️ Print Slip
-      </button>
+    <div class="footer">
+      Alpha-Med Clinical Lab
     </div>
+
+    <div class="watermark">Alpha-Med</div>
+  </div>
+
+  <div style="text-align:center; margin-top:20px;">
+    <button onclick="window.print()">🖨️ Print Slip</button>
   </div>
 
   <script>
-    // Date
-    document.getElementById("date").textContent = new Date().toLocaleDateString();
+    document.addEventListener("DOMContentLoaded", () => {
+      const data = JSON.parse(localStorage.getItem("currentSlipData"));
+      if (!data) {
+        alert("No slip data found!");
+        return;
+      }
 
-    // QR Code
-    const qrData = `
-    Alpha Med Clinical Laboratory
-    Name: Asad Khan
-    CNIC: 34501-8971113-7
-    Test: CBC
-    Sample No: SMP-00045
-    `;
-    QRCode.toCanvas(qrData, { width: 96 }, function(err, canvas) {
-      if (!err) document.getElementById("qrCode").appendChild(canvas);
+      document.getElementById("patientName").innerText = data.name;
+      document.getElementById("patientAge").innerText = data.age;
+      document.getElementById("patientGender").innerText = data.gender;
+      document.getElementById("patientCNIC").innerText = data.cnic;
+      document.getElementById("patientPhone").innerText = data.phone;
+
+      document.getElementById("receptionist").innerText = data.receptionist;
+      document.getElementById("registrationDate").innerText = data.date;
+
+      const testList = document.getElementById("testList");
+      data.tests.forEach(test => {
+        const li = document.createElement("li");
+        li.innerText = test;
+        testList.appendChild(li);
+      });
     });
   </script>
 </body>
