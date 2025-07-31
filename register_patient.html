@@ -1,90 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Register Patient</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-gray-100 min-h-screen p-6">
+<body class="p-4 bg-gray-100">
+  <div class="max-w-xl mx-auto bg-white shadow-md rounded p-4">
+    <h1 class="text-2xl font-bold mb-4">📝 Register Patient</h1>
 
-  <div class="bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto">
-    <h2 class="text-2xl font-bold mb-6">🔬 Select Lab Sections & Tests</h2>
+    <!-- Patient Form -->
+    <form id="patientForm">
+      <!-- Name, CNIC, MRN, Phone etc... -->
+      <!-- (آپ کے باقی input fields یہاں ہوں گے) -->
 
-    <!-- Department Dropdown -->
-    <div class="mb-4">
-      <label class="block font-medium mb-1">Select Department</label>
-      <select id="labDepartment" class="border rounded w-full p-2">
-        <option value="">-- Choose Department --</option>
+      <!-- Lab Section Dropdown -->
+      <h2 class="font-semibold mb-2 mt-4">🔬 Select Lab Sections & Tests</h2>
+
+      <select id="departmentSelect" class="border rounded px-2 py-1 w-full mb-2">
+        <option value="">-- Select Department --</option>
       </select>
-    </div>
 
-    <!-- Test Dropdown -->
-    <div class="mb-4">
-      <label class="block font-medium mb-1">Select Test</label>
-      <select id="testName" class="border rounded w-full p-2">
-        <option value="">-- Choose Test --</option>
+      <select id="testSelect" class="border rounded px-2 py-1 w-full">
+        <option value="">-- Select Test --</option>
       </select>
-    </div>
 
-    <!-- Test Parameters (Optional, if needed) -->
-    <div id="parameters" class="bg-gray-50 p-4 rounded hidden">
-      <h3 class="font-semibold mb-2">Test Parameters</h3>
-      <ul id="parameterList" class="list-disc pl-5 text-sm text-gray-700">
-        <!-- Dynamically Filled -->
-      </ul>
-    </div>
+      <button type="submit" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded">💾 Register</button>
+    </form>
   </div>
 
+  <!-- JS Scripts -->
   <script src="test-data.js"></script>
   <script>
-    const deptSelect = document.getElementById("labDepartment");
-    const testSelect = document.getElementById("testName");
-    const parameterBox = document.getElementById("parameters");
-    const parameterList = document.getElementById("parameterList");
+    const departmentSelect = document.getElementById("departmentSelect");
+    const testSelect = document.getElementById("testSelect");
 
-    // Populate Department Dropdown
-    labDepartments.forEach(dept => {
-      const opt = document.createElement("option");
-      opt.value = dept.name;
-      opt.textContent = dept.name;
-      deptSelect.appendChild(opt);
-    });
-
-    // On Department Change, Populate Test Dropdown
-    deptSelect.addEventListener("change", () => {
-      testSelect.innerHTML = `<option value="">-- Choose Test --</option>`;
-      parameterBox.classList.add("hidden");
-      const selectedDept = labDepartments.find(d => d.name === deptSelect.value);
-      if (selectedDept) {
-        selectedDept.tests.forEach(test => {
-          const opt = document.createElement("option");
-          opt.value = test.name;
-          opt.textContent = test.name;
-          testSelect.appendChild(opt);
-        });
-      }
-    });
-
-    // On Test Change, Show Parameters
-    testSelect.addEventListener("change", () => {
-      parameterList.innerHTML = "";
-      const selectedDept = labDepartments.find(d => d.name === deptSelect.value);
-      if (!selectedDept) return;
-
-      const selectedTest = selectedDept.tests.find(t => t.name === testSelect.value);
-      if (!selectedTest || !selectedTest.parameters) {
-        parameterBox.classList.add("hidden");
-        return;
-      }
-
-      selectedTest.parameters.forEach(p => {
-        const li = document.createElement("li");
-        li.textContent = `${p.name} (Range: ${p.range} ${p.unit})`;
-        parameterList.appendChild(li);
+    if (typeof labDepartments === "undefined") {
+      console.error("❌ labDepartments not loaded");
+    } else {
+      // Fill department dropdown
+      labDepartments.forEach((dept, index) => {
+        const option = document.createElement("option");
+        option.value = index;
+        option.textContent = dept.name;
+        departmentSelect.appendChild(option);
       });
 
-      parameterBox.classList.remove("hidden");
-    });
+      // Change event
+      departmentSelect.addEventListener("change", () => {
+        testSelect.innerHTML = '<option value="">-- Select Test --</option>';
+        const selectedIndex = departmentSelect.value;
+        if (selectedIndex === "") return;
+
+        const selectedDept = labDepartments[selectedIndex];
+        selectedDept.tests.forEach(test => {
+          const option = document.createElement("option");
+          option.value = test.name;
+          option.textContent = test.name;
+          testSelect.appendChild(option);
+        });
+      });
+    }
   </script>
 </body>
 </html>
