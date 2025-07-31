@@ -1,50 +1,118 @@
 <!DOCTYPE html>
-<html lang="ur">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>ریسیپشن ڈیش بورڈ</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reception Dashboard - AlphaMed Lab</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f4f7fb;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #013243;
+      color: white;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header img {
+      height: 50px;
+    }
+    h1 {
+      font-size: 22px;
+      margin: 0;
+    }
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      padding: 30px;
+    }
+    .card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      padding: 25px;
+      text-align: center;
+      transition: transform 0.2s;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    .card h2 {
+      margin-bottom: 10px;
+      font-size: 20px;
+      color: #013243;
+    }
+    .card a {
+      display: inline-block;
+      margin-top: 10px;
+      text-decoration: none;
+      color: white;
+      background-color: #013243;
+      padding: 10px 20px;
+      border-radius: 5px;
+    }
+    footer {
+      text-align: center;
+      padding: 15px;
+      background: #eee;
+      font-size: 13px;
+      color: #444;
+    }
+  </style>
 </head>
-<body class="bg-gray-50 p-6 text-gray-900">
-  <div class="max-w-6xl mx-auto">
-    <h1 class="text-2xl font-bold mb-4">🏥 رجسٹرڈ مریض</h1>
-    <div id="patientsList" class="space-y-4">
-      <!-- مریض یہاں لوڈ ہوں گے -->
+<body>
+
+  <header>
+    <img src="logo.png" alt="Lab Logo">
+    <h1>Reception Dashboard - AlphaMed Clinical Lab</h1>
+    <button onclick="logout()" style="background:red; color:white; padding:10px 20px; border:none; border-radius:5px;">Logout</button>
+  </header>
+
+  <div class="dashboard">
+    <div class="card">
+      <h2>📝 Register New Patient</h2>
+      <a href="register_patient.html">Register</a>
+    </div>
+
+    <div class="card">
+      <h2>📋 View Registered Patients</h2>
+      <a href="reception.html">View List</a>
+    </div>
+
+    <div class="card">
+      <h2>📄 Print Registration Slip</h2>
+      <a href="registration-slip.html">Print Slip</a>
+    </div>
+
+    <div class="card">
+      <h2>🔍 Search & Reports</h2>
+      <a href="report.html">Search</a>
+    </div>
+
+    <div class="card">
+      <h2>🧪 All Lab Tests</h2>
+      <a href="labSections.html">Lab Sections</a>
     </div>
   </div>
 
+  <footer>
+    &copy; 2025 AlphaMed Clinical Lab — Powered by M.Hanif & Sons IT
+  </footer>
+
   <script>
-    function loadPatients() {
-      const list = document.getElementById("patientsList");
-      const patients = JSON.parse(localStorage.getItem("registeredPatients") || "[]");
-
-      if (patients.length === 0) {
-        list.innerHTML = "<p>🚫 کوئی مریض رجسٹرڈ نہیں ہے۔</p>";
-        return;
+    function logout() {
+      if (confirm("Logout from Reception?")) {
+        window.location.href = "login.html";
       }
-
-      patients.forEach((p, index) => {
-        const card = document.createElement("div");
-        card.className = "bg-white p-4 rounded shadow";
-
-        const tests = p.selectedTests.map(test => `<li>${test.name}</li>`).join("");
-
-        card.innerHTML = `
-          <h2 class="text-xl font-semibold">${p.name} (MRN: ${p.mrn})</h2>
-          <p><strong>CNIC:</strong> ${p.cnic}</p>
-          <p><strong>Sample#:</strong> ${p.sampleNo}</p>
-          <p><strong>Gender:</strong> ${p.gender} | <strong>Age:</strong> ${p.age}</p>
-          <div class="mt-2">
-            <strong>منتخب ٹیسٹ:</strong>
-            <ul class="list-disc list-inside">${tests}</ul>
-          </div>
-        `;
-
-        list.appendChild(card);
-      });
     }
-
-    loadPatients();
   </script>
+
 </body>
 </html>
