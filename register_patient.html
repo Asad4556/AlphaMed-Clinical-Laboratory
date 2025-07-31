@@ -1,171 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Patient Registration</title>
+  <meta charset="UTF-8">
+  <title>Register Patient</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <style>
-    body {
-      background: #f0f4f8;
-    }
-    .print-hide {
-      display: none;
-    }
-  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
 </head>
-<body class="p-6">
+<body class="p-6 bg-gray-100">
+
   <div class="max-w-4xl mx-auto bg-white p-6 rounded shadow">
-    <h1 class="text-2xl font-bold mb-4">📝 Patient Registration</h1>
+    <h1 class="text-2xl font-bold mb-4 text-blue-700">📝 Patient Registration</h1>
 
-    <form id="registrationForm" class="space-y-4">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm font-medium">Patient Name</label>
-          <input type="text" id="patientName" required class="w-full border rounded p-2" />
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium">Age</label>
-          <input type="number" id="age" required class="w-full border rounded p-2" />
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium">Gender</label>
-          <select id="gender" required class="w-full border rounded p-2">
-            <option value="">Select</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium">Sample Number</label>
-          <input type="text" id="sampleNumber" required class="w-full border rounded p-2" />
-        </div>
-      </div>
-
-      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Register</button>
-    </form>
-
-    <hr class="my-6" />
-
-    <div class="flex items-center justify-between mb-4">
-      <h2 class="text-xl font-semibold">🧾 Registered Patients</h2>
-      <button onclick="exportExcel()" class="bg-green-600 text-white px-3 py-1 rounded">Export Excel</button>
+    <!-- Patient Form -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <input id="patientName" class="border p-2" placeholder="👤 Patient Name" />
+      <input id="age" type="number" class="border p-2" placeholder="🎂 Age" />
+      <input id="gender" class="border p-2" placeholder="⚥ Gender" />
+      <input id="cnic" class="border p-2" placeholder="🆔 CNIC" />
+      <input id="sampleNumber" class="border p-2" placeholder="🧪 Sample Number" />
     </div>
 
-    <div id="patientsList" class="overflow-x-auto">
-      <table class="w-full table-auto border">
-        <thead class="bg-gray-100">
-          <tr>
-            <th class="border px-2 py-1">MRN</th>
-            <th class="border px-2 py-1">Name</th>
-            <th class="border px-2 py-1">Age</th>
-            <th class="border px-2 py-1">Gender</th>
-            <th class="border px-2 py-1">Sample #</th>
-            <th class="border px-2 py-1">Actions</th>
-          </tr>
-        </thead>
-        <tbody id="patientTable"></tbody>
-      </table>
+    <div class="mt-4">
+      <button onclick="nextStep()" class="bg-blue-600 text-white px-4 py-2 rounded">Next ➡️</button>
+    </div>
+
+    <!-- Test Selection -->
+    <div id="testSelection" class="hidden mt-6">
+      <h2 class="text-xl font-semibold mb-2">🔬 Select Tests</h2>
+      <div id="testList" class="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-64 overflow-y-auto border p-3 rounded"></div>
+
+      <div class="mt-4">
+        <button onclick="registerPatient()" class="bg-green-600 text-white px-4 py-2 rounded">💾 Register</button>
+      </div>
+    </div>
+
+    <!-- QR and Slip -->
+    <div id="qrSection" class="hidden mt-6">
+      <h2 class="text-xl font-semibold mb-2">📄 Registration Slip</h2>
+      <canvas id="qrCode"></canvas>
+      <p id="qrText" class="mt-2 text-sm text-gray-600"></p>
+      <button onclick="window.print()" class="mt-4 bg-gray-700 text-white px-3 py-2 rounded">🖨 Print Slip</button>
     </div>
   </div>
 
-  <!-- Patient Slip (Print) -->
-  <div id="slipArea" class="print-hide"></div>
+  <!-- Patient Table -->
+  <div class="max-w-4xl mx-auto mt-10 bg-white p-6 rounded shadow">
+    <h2 class="text-xl font-semibold mb-4">📋 Registered Patients</h2>
+    <table class="w-full text-sm border">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="border p-2">MRN</th>
+          <th class="border p-2">Name</th>
+          <th class="border p-2">Sample #</th>
+          <th class="border p-2">Tests</th>
+        </tr>
+      </thead>
+      <tbody id="patientTable"></tbody>
+    </table>
+  </div>
 
-  <script>
-    let mrnCounter = localStorage.getItem('mrnCounter') || 1000;
-    let patients = JSON.parse(localStorage.getItem('patients')) || [];
-
-    const form = document.getElementById("registrationForm");
-    const table = document.getElementById("patientTable");
-    const slipArea = document.getElementById("slipArea");
-
-    function renderPatients() {
-      table.innerHTML = "";
-      patients.forEach((p, index) => {
-        const row = `
-          <tr>
-            <td class='border px-2'>${p.mrn}</td>
-            <td class='border px-2'>${p.name}</td>
-            <td class='border px-2'>${p.age}</td>
-            <td class='border px-2'>${p.gender}</td>
-            <td class='border px-2'>${p.sample}</td>
-            <td class='border px-2'>
-              <button onclick='printSlip(${index})' class='text-blue-600'>Print</button> |
-              <button onclick='deletePatient(${index})' class='text-red-600'>Delete</button>
-            </td>
-          </tr>`;
-        table.innerHTML += row;
-      });
-    }
-
-    function savePatients() {
-      localStorage.setItem("patients", JSON.stringify(patients));
-      localStorage.setItem("mrnCounter", mrnCounter);
-    }
-
-    function deletePatient(index) {
-      if (confirm("Delete this patient?")) {
-        patients.splice(index, 1);
-        savePatients();
-        renderPatients();
-      }
-    }
-
-    function printSlip(index) {
-      const p = patients[index];
-      slipArea.innerHTML = `
-        <div class='p-4'>
-          <h1 class='text-xl font-bold mb-2'>Patient Slip</h1>
-          <p><strong>MRN:</strong> ${p.mrn}</p>
-          <p><strong>Name:</strong> ${p.name}</p>
-          <p><strong>Age:</strong> ${p.age}</p>
-          <p><strong>Gender:</strong> ${p.gender}</p>
-          <p><strong>Sample #:</strong> ${p.sample}</p>
-          <hr class='my-2' />
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${p.mrn}" />
-        </div>`;
-
-      const printWin = window.open('', '', 'width=400,height=400');
-      printWin.document.write(slipArea.innerHTML);
-      printWin.document.close();
-      printWin.print();
-    }
-
-    function exportExcel() {
-      const wb = XLSX.utils.book_new();
-      const ws = XLSX.utils.json_to_sheet(patients);
-      XLSX.utils.book_append_sheet(wb, ws, "Patients");
-      XLSX.writeFile(wb, "Patients_List.xlsx");
-    }
-
-    form.addEventListener("submit", function(e) {
-      e.preventDefault();
-      const name = document.getElementById("patientName").value;
-      const age = document.getElementById("age").value;
-      const gender = document.getElementById("gender").value;
-      const sample = document.getElementById("sampleNumber").value;
-
-      const newPatient = {
-        mrn: `MRN-${mrnCounter++}`,
-        name,
-        age,
-        gender,
-        sample
-      };
-
-      patients.push(newPatient);
-      savePatients();
-      renderPatients();
-      form.reset();
-      printSlip(patients.length - 1);
-    });
-
-    renderPatients();
-  </script>
+  <script src="labSections.js"></script>
+  <script src="register_patient.js"></script>
 </body>
 </html>
