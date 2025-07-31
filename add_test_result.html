@@ -3,133 +3,120 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Add Test Result - Alpha Med</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="storage.js"></script> <!-- Make sure it's included -->
+  <title>Add Test Result - AlphaMed Clinical Lab</title>
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="technician.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f5f7fa;
+      padding: 20px;
+    }
+    h2 {
+      color: #333;
+      text-align: center;
+    }
+    .search-box {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    input[type="text"] {
+      width: 300px;
+      padding: 10px;
+      border: 1px solid #aaa;
+      border-radius: 5px;
+    }
+    .result-form {
+      max-width: 700px;
+      margin: auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .result-form label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+    .result-form input, .result-form select, .result-form textarea {
+      width: 100%;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 6px;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .patient-list {
+      margin-top: 30px;
+    }
+  </style>
 </head>
-<body class="bg-gray-100 min-h-screen p-4">
+<body>
+  <h2>Add Test Result - AlphaMed Clinical Lab</h2>
 
-  <div class="max-w-5xl mx-auto bg-white shadow-lg p-6 rounded-xl">
-    <h1 class="text-2xl font-bold text-blue-700 mb-4">🧪 Add Test Result - Alpha Med Clinical Lab</h1>
+  <div class="search-box">
+    <input type="text" id="searchMRN" placeholder="Enter MRN to search patient..." onkeyup="searchPatient()" />
+  </div>
 
-    <!-- Patient Info -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-      <input type="text" placeholder="Enter MRN (e.g. MRN-123456)" class="input" id="mrnInput">
-      <button onclick="loadPatient()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">🔍 Load</button>
-    </div>
+  <div id="patientInfo" class="result-form" style="display:none;">
+    <h3>Patient Details</h3>
+    <p><strong>Name:</strong> <span id="patientName"></span></p>
+    <p><strong>MRN:</strong> <span id="patientMRN"></span></p>
+    <p><strong>Department:</strong> <span id="patientDept"></span></p>
 
-    <div id="patientInfo" class="mb-6 hidden">
-      <p><strong>Name:</strong> <span id="pName"></span></p>
-      <p><strong>Sample No:</strong> <span id="pSample"></span></p>
-      <p><strong>Department:</strong> <span id="pDept"></span></p>
-    </div>
+    <h4>Enter Test Result</h4>
+    <label for="testName">Test Name</label>
+    <input type="text" id="testName" required />
 
-    <!-- Assigned Tests -->
-    <div class="mb-6 hidden" id="testSection">
-      <h2 class="text-lg font-semibold mb-2">Assigned Tests</h2>
-      <div id="testList" class="space-y-2"></div>
-    </div>
+    <label for="result">Result</label>
+    <textarea id="result" rows="4" placeholder="Enter result details..." required></textarea>
 
-    <!-- Submit -->
-    <div class="text-right hidden" id="submitSection">
-      <button onclick="submitResults()" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">✅ Submit Results</button>
-    </div>
+    <button onclick="saveTestResult()">Save Result</button>
   </div>
 
   <script>
-    let currentMRN = "";
-    let testInputs = [];
-
-    function loadPatient() {
-      const mrn = document.getElementById("mrnInput").value.trim();
-      if (!mrn) return alert("Please enter MRN");
-
-      const patients = getFromStorage("patients");
-      const tests = getFromStorage("reception_tests");
-
-      if (!patients || !tests) return alert("Data not found in localStorage!");
-
-      const patient = patients.find(p => p.mrn === mrn);
-      if (!patient) return alert("Patient not found");
-
-      const assignedTests = tests.filter(t => t.mrn === mrn);
-      if (assignedTests.length === 0) return alert("No tests assigned to this patient");
-
-      // Fill UI
-      document.getElementById("pName").innerText = patient.name;
-      document.getElementById("pSample").innerText = patient.sampleNo;
-      document.getElementById("pDept").innerText = patient.department;
-
-      document.getElementById("patientInfo").classList.remove("hidden");
-      document.getElementById("testSection").classList.remove("hidden");
-      document.getElementById("submitSection").classList.remove("hidden");
-
-      const testListDiv = document.getElementById("testList");
-      testListDiv.innerHTML = "";
-      testInputs = [];
-
-      assignedTests.forEach((test, index) => {
-        const row = document.createElement("div");
-        row.className = "grid grid-cols-3 gap-2";
-
-        row.innerHTML = `
-          <input type="text" class="input" value="${test.name}" disabled />
-          <input type="text" placeholder="Enter Result" class="input" id="result-${index}">
-          <input type="text" class="input" value="${test.normalRange}" disabled />
-        `;
-
-        testListDiv.appendChild(row);
-        testInputs.push({
-          name: test.name,
-          range: test.normalRange,
-          inputId: `result-${index}`,
-        });
-      });
-
-      currentMRN = mrn;
+    function searchPatient() {
+      const mrn = document.getElementById("searchMRN").value.trim();
+      const storedPatients = JSON.parse(localStorage.getItem("patients")) || [];
+      const patient = storedPatients.find(p => p.mrn === mrn);
+      
+      if (patient) {
+        document.getElementById("patientName").innerText = patient.name;
+        document.getElementById("patientMRN").innerText = patient.mrn;
+        document.getElementById("patientDept").innerText = patient.department;
+        document.getElementById("patientInfo").style.display = "block";
+      } else {
+        document.getElementById("patientInfo").style.display = "none";
+      }
     }
 
-    function submitResults() {
-      const results = [];
-
-      for (const test of testInputs) {
-        const value = document.getElementById(test.inputId).value.trim();
-        if (!value) return alert(`Result missing for: ${test.name}`);
-
-        // Optional: Add validation for numeric tests
-        // if (isNaN(value)) return alert(`Invalid result for: ${test.name}. Please enter a number.`);
-
-        results.push({
-          mrn: currentMRN,
-          testName: test.name,
-          result: value,
-          normalRange: test.range,
-        });
+    function saveTestResult() {
+      const mrn = document.getElementById("patientMRN").innerText;
+      const testName = document.getElementById("testName").value.trim();
+      const result = document.getElementById("result").value.trim();
+      if (!testName || !result) {
+        alert("Please enter all fields.");
+        return;
       }
 
-      const allResults = getFromStorage("test_results") || [];
-      saveToStorage("test_results", [...allResults, ...results]);
+      const storedResults = JSON.parse(localStorage.getItem("results") || "[]");
+      storedResults.push({ mrn, testName, result, date: new Date().toLocaleString() });
+      localStorage.setItem("results", JSON.stringify(storedResults));
 
-      alert("Test results submitted successfully!");
-
-      // Clear inputs after submission
-      resetForm();
-    }
-
-    function resetForm() {
-      document.getElementById("mrnInput").value = '';
-      document.getElementById("testList").innerHTML = '';
-      document.getElementById("patientInfo").classList.add("hidden");
-      document.getElementById("testSection").classList.add("hidden");
-      document.getElementById("submitSection").classList.add("hidden");
+      alert("Result saved successfully!");
+      document.getElementById("testName").value = "";
+      document.getElementById("result").value = "";
     }
   </script>
-
-  <style>
-    .input {
-      @apply border border-gray-300 rounded px-3 py-2 w-full;
-    }
-  </style>
-
 </body>
 </html>
