@@ -1,26 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Technician Panel - Alpha Med</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Technician Panel - Alpha-Med Clinical Lab</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="technician.js" defer></script>
 </head>
-<body class="bg-gray-100 min-h-screen">
-  <div class="container mx-auto px-4 py-6">
-    <h1 class="text-3xl font-bold text-blue-700 mb-4">🔬 Technician Dashboard</h1>
+<body>
+  <header>🧪 Technician Dashboard - Alpha-Med Clinical Lab</header>
 
-    <!-- Patients List -->
-    <div id="patientList" class="bg-white p-4 rounded shadow">
-      <h2 class="text-xl font-semibold mb-2">🧾 Pending Tests</h2>
-      <div id="patientsContainer">
-        <!-- Dynamically filled by technician.js -->
-      </div>
+  <div class="container">
+    <div class="form-section">
+      <h2>Enter Test Result</h2>
+
+      <!-- Patient Selector -->
+      <label for="patientSelect">Select Registered Patient:</label>
+      <select id="patientSelect" required>
+        <option value="">-- Select Patient --</option>
+        <!-- Populated dynamically from registered patients -->
+      </select>
+
+      <!-- Test Name -->
+      <label for="testName">Test Name:</label>
+      <input type="text" id="testName" placeholder="e.g. Blood Sugar" required />
+
+      <!-- Result -->
+      <label for="testResult">Result:</label>
+      <input type="text" id="testResult" placeholder="e.g. 90 mg/dL" required />
+
+      <!-- Normal Range (auto display) -->
+      <p id="normalRange" style="color: #555; margin-bottom: 15px;"></p>
+
+      <!-- Add Result Button -->
+      <button onclick="addTestResult()">Add Result</button>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="search-bar">
+      <input type="text" id="searchInput" onkeyup="filterResults()" placeholder="Search Results...">
+    </div>
+
+    <!-- Table of Added Results -->
+    <div class="card">
+      <h3>Entered Test Results</h3>
+      <table id="resultsTable">
+        <thead>
+          <tr>
+            <th>Patient</th>
+            <th>Test</th>
+            <th>Result</th>
+            <th>Normal Range</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Filled by JS -->
+        </tbody>
+      </table>
     </div>
   </div>
 
-  <script src="storage.js"></script>
-  <script src="labSections.js"></script>
-  <script src="technician.js"></script>
+  <footer>&copy; 2025 Alpha-Med Clinical Lab | Technician Panel</footer>
 </body>
 </html>
