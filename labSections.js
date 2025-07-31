@@ -1,129 +1,146 @@
-export const labSections = [
+const labDepartments = [
   {
-    id: "hematology",
-    name: "Hematology",
+    name: "Hematology / Coagulation",
     tests: [
-      { id: "cbc", name: "Complete Blood Count (CBC)", normalRange: "Lab Defined" },
-      { id: "hb", name: "Hemoglobin (Hb)", normalRange: "13–17 g/dL" },
-      { id: "tlc", name: "Total Leukocyte Count (TLC)", normalRange: "4,000–11,000/μL" },
-      { id: "dlc", name: "Differential Leukocyte Count (DLC)", normalRange: "Lab Defined" },
-      { id: "platelet", name: "Platelet Count", normalRange: "150,000–400,000/μL" },
-      { id: "esr", name: "ESR", normalRange: "0–20 mm/hr" },
-      { id: "reticulocyte", name: "Reticulocyte Count", normalRange: "0.5–2.5%" },
-      { id: "smear", name: "Peripheral Smear", normalRange: "Normal morphology" },
-      { id: "btct", name: "BT/CT", normalRange: "Bleeding <7 mins / Clotting 8–15 mins" },
-      { id: "hb-electro", name: "Hemoglobin Electrophoresis", normalRange: "HbA, HbA2, HbF" }
-    ],
+      {
+        name: "Complete Blood Count (CBC)",
+        parameters: [
+          { name: "WBC", range: "4.0–11.0", unit: "×10³/µL" },
+          { name: "RBC", range: "4.5–6.0", unit: "×10⁶/µL" },
+          { name: "Hemoglobin", range: "13–17", unit: "g/dL" },
+          { name: "Hematocrit", range: "40–50", unit: "%" },
+          { name: "Platelets", range: "150–400", unit: "×10³/µL" },
+          { name: "MCV", range: "80–100", unit: "fL" },
+          { name: "MCH", range: "27–33", unit: "pg" },
+          { name: "MCHC", range: "32–36", unit: "g/dL" }
+        ]
+      },
+      {
+        name: "ESR",
+        parameters: [{ name: "ESR", range: "0–20", unit: "mm/hr" }]
+      },
+      {
+        name: "PT / INR",
+        parameters: [
+          { name: "PT", range: "10–14", unit: "sec" },
+          { name: "INR", range: "0.8–1.2", unit: "" }
+        ]
+      }
+    ]
   },
   {
-    id: "serology",
-    name: "Serology",
+    name: "Biochemistry / Metabolic Panels",
     tests: [
-      { id: "hbsag", name: "HBsAg", normalRange: "Negative" },
-      { id: "hcv", name: "Anti-HCV", normalRange: "Negative" },
-      { id: "hiv", name: "HIV I/II", normalRange: "Negative" },
-      { id: "widal", name: "Widal Test", normalRange: "Negative" },
-      { id: "aso", name: "ASO Titre", normalRange: "<200 IU/mL" },
-      { id: "ra", name: "RA Factor", normalRange: "<14 IU/mL" },
-      { id: "crp-qual", name: "CRP (Qualitative)", normalRange: "Negative" },
-      { id: "vdrl", name: "VDRL", normalRange: "Non-reactive" },
-      { id: "tpha", name: "TPHA", normalRange: "Negative" }
-    ],
+      {
+        name: "Liver Function Test (LFT)",
+        parameters: [
+          { name: "ALT", range: "7–56", unit: "U/L" },
+          { name: "AST", range: "5–40", unit: "U/L" },
+          { name: "ALP", range: "44–147", unit: "U/L" },
+          { name: "Bilirubin Total", range: "<1.2", unit: "mg/dL" },
+          { name: "Bilirubin Direct", range: "<0.3", unit: "mg/dL" },
+          { name: "Albumin", range: "3.5–5.0", unit: "g/dL" }
+        ]
+      },
+      {
+        name: "Renal Function Test (RFT)",
+        parameters: [
+          { name: "Urea", range: "10–50", unit: "mg/dL" },
+          { name: "Creatinine", range: "0.6–1.3", unit: "mg/dL" },
+          { name: "Uric Acid", range: "3.5–7.2", unit: "mg/dL" }
+        ]
+      },
+      {
+        name: "Lipid Profile",
+        parameters: [
+          { name: "Total Cholesterol", range: "<200", unit: "mg/dL" },
+          { name: "HDL", range: ">40", unit: "mg/dL" },
+          { name: "LDL", range: "<100", unit: "mg/dL" },
+          { name: "Triglycerides", range: "<150", unit: "mg/dL" }
+        ]
+      }
+    ]
   },
   {
-    id: "histopathology",
-    name: "Histopathology",
+    name: "Serology / Immunology",
     tests: [
-      { id: "biopsy", name: "Biopsy (Skin, Breast, etc.)", normalRange: "As per report" },
-      { id: "fnac", name: "FNAC (Fine Needle Aspiration Cytology)", normalRange: "As per report" },
-      { id: "pap-smear", name: "Pap Smear", normalRange: "Negative for malignancy" },
-      { id: "endometrial", name: "Endometrial Curettage", normalRange: "Normal histology" },
-      { id: "surgical", name: "Surgical Specimen Analysis", normalRange: "As per findings" }
-    ],
+      { name: "HBsAg", parameters: [{ name: "Result", range: "Negative", unit: "" }] },
+      { name: "Anti-HCV", parameters: [{ name: "Result", range: "Negative", unit: "" }] },
+      { name: "HIV", parameters: [{ name: "Result", range: "Non-reactive", unit: "" }] },
+      { name: "CRP", parameters: [{ name: "CRP", range: "<6", unit: "mg/L" }] }
+    ]
   },
   {
-    id: "microbiology",
-    name: "Microbiology",
+    name: "Special Chemistry / Hormones",
     tests: [
-      { id: "urine-re", name: "Urine R/E", normalRange: "No pus cells / No bacteria" },
-      { id: "urine-culture", name: "Urine Culture", normalRange: "No growth" },
-      { id: "stool-re", name: "Stool R/E", normalRange: "No ova/cysts" },
-      { id: "stool-culture", name: "Stool Culture", normalRange: "Normal flora only" },
-      { id: "sputum-afb", name: "Sputum for AFB", normalRange: "Negative" },
-      { id: "sputum-culture", name: "Sputum Culture", normalRange: "Sterile" },
-      { id: "throat-culture", name: "Throat Swab Culture", normalRange: "No pathogenic growth" }
-    ],
+      {
+        name: "Thyroid Panel (T3 T4 TSH)",
+        parameters: [
+          { name: "TSH", range: "0.4–4.0", unit: "mIU/L" },
+          { name: "T3", range: "80–200", unit: "ng/dL" },
+          { name: "T4", range: "5.1–14.1", unit: "µg/dL" }
+        ]
+      },
+      {
+        name: "Vitamin D",
+        parameters: [{ name: "Vitamin D", range: "30–100", unit: "ng/mL" }]
+      },
+      {
+        name: "Ferritin",
+        parameters: [{ name: "Ferritin", range: "30–300", unit: "ng/mL" }]
+      }
+    ]
   },
   {
-    id: "biochemistry",
-    name: "Biochemistry",
+    name: "Microbiology / Culture",
     tests: [
-      { id: "fbs", name: "Fasting Blood Sugar", normalRange: "70–100 mg/dL" },
-      { id: "rbs", name: "Random Blood Sugar", normalRange: "<140 mg/dL" },
-      { id: "hba1c", name: "HbA1c", normalRange: "<5.7%" },
-      { id: "urea", name: "Urea", normalRange: "10–50 mg/dL" },
-      { id: "creatinine", name: "Creatinine", normalRange: "0.6–1.3 mg/dL" },
-      { id: "uric", name: "Uric Acid", normalRange: "3.5–7.2 mg/dL" },
-      { id: "bilirubin", name: "Bilirubin Total/Direct", normalRange: "<1.2 / <0.3 mg/dL" },
-      { id: "alt", name: "SGPT (ALT)", normalRange: "7–56 U/L" },
-      { id: "ast", name: "SGOT (AST)", normalRange: "5–40 U/L" },
-      { id: "alp", name: "Alkaline Phosphatase", normalRange: "44–147 U/L" },
-      { id: "chol", name: "Cholesterol", normalRange: "<200 mg/dL" },
-      { id: "lipids", name: "HDL / LDL / Triglycerides", normalRange: "Lab Defined" },
-      { id: "calcium", name: "Calcium", normalRange: "8.6–10.3 mg/dL" },
-      { id: "phosphorus", name: "Phosphorus", normalRange: "2.5–4.5 mg/dL" },
-      { id: "protein", name: "Total Protein", normalRange: "6.0–8.3 g/dL" },
-      { id: "albumin", name: "Albumin", normalRange: "3.5–5.0 g/dL" }
-    ],
+      {
+        name: "Urine Culture",
+        parameters: [{ name: "Result", range: "No Growth", unit: "" }]
+      },
+      {
+        name: "Blood Culture",
+        parameters: [{ name: "Result", range: "No Growth", unit: "" }]
+      }
+    ]
   },
   {
-    id: "culture",
-    name: "Culture Tests",
+    name: "Molecular Biology / PCR",
     tests: [
-      { id: "urine-cs", name: "Urine Culture and Sensitivity", normalRange: "Sterile" },
-      { id: "blood-culture", name: "Blood Culture", normalRange: "No growth" },
-      { id: "pus-culture", name: "Pus Culture", normalRange: "No pathogenic growth" },
-      { id: "sputum-culture2", name: "Sputum Culture", normalRange: "Sterile" },
-      { id: "stool-culture2", name: "Stool Culture", normalRange: "No pathogens" },
-      { id: "wound-swab", name: "Wound Swab Culture", normalRange: "No growth" }
-    ],
+      {
+        name: "COVID-19 PCR",
+        parameters: [{ name: "Result", range: "Negative", unit: "" }]
+      },
+      {
+        name: "HCV RNA PCR",
+        parameters: [{ name: "Result", range: "Undetected", unit: "IU/mL" }]
+      }
+    ]
   },
   {
-    id: "special-chemistry",
-    name: "Special Chemistry",
-    tests: [
-      { id: "crp-quant", name: "CRP (Quantitative)", normalRange: "<6 mg/L" },
-      { id: "ferritin", name: "Ferritin", normalRange: "30–300 ng/mL" },
-      { id: "vitd", name: "Vitamin D (25-OH)", normalRange: "30–100 ng/mL" },
-      { id: "vitb12", name: "Vitamin B12", normalRange: "200–900 pg/mL" },
-      { id: "t3", name: "T3", normalRange: "80–200 ng/dL" },
-      { id: "t4", name: "T4", normalRange: "5.1–14.1 μg/dL" },
-      { id: "tsh", name: "TSH", normalRange: "0.4–4.0 mIU/L" },
-      { id: "prolactin", name: "Prolactin", normalRange: "4.8–23.3 ng/mL" },
-      { id: "psa", name: "PSA (Total)", normalRange: "<4 ng/mL" },
-      { id: "hcg", name: "β-hCG", normalRange: "Pregnancy Dependent" }
-    ],
-  },
-  {
-    id: "molecular",
-    name: "Molecular Biology",
-    tests: [
-      { id: "covid-pcr", name: "COVID-19 PCR", normalRange: "Negative" },
-      { id: "hcv-rna", name: "HCV RNA (PCR)", normalRange: "Undetected" },
-      { id: "hbv-dna", name: "HBV DNA (PCR)", normalRange: "Undetected" },
-      { id: "tb-pcr", name: "Mycobacterium Tuberculosis PCR", normalRange: "Not Detected" },
-      { id: "cmv-dna", name: "CMV DNA PCR", normalRange: "Negative" }
-    ],
-  },
-  {
-    id: "blood-banking",
     name: "Blood Banking",
     tests: [
-      { id: "blood-group", name: "Blood Group", normalRange: "A/B/AB/O +/−" },
-      { id: "rh-typing", name: "Rh Typing", normalRange: "Positive / Negative" },
-      { id: "crossmatch", name: "Crossmatching", normalRange: "Compatible" },
-      { id: "coombs", name: "Coombs Test (Direct/Indirect)", normalRange: "Negative" },
-      { id: "irreg-antibodies", name: "Screening for Irregular Antibodies", normalRange: "Negative" }
-    ],
+      {
+        name: "Blood Group",
+        parameters: [{ name: "Group", range: "A/B/AB/O", unit: "" }]
+      },
+      {
+        name: "Rh Factor",
+        parameters: [{ name: "Rh", range: "Positive/Negative", unit: "" }]
+      }
+    ]
+  },
+  {
+    name: "Histopathology / Cytology",
+    tests: [
+      {
+        name: "Biopsy",
+        parameters: [{ name: "Diagnosis", range: "Benign/Malignant", unit: "" }]
+      },
+      {
+        name: "Pap Smear",
+        parameters: [{ name: "Result", range: "Normal/Abnormal", unit: "" }]
+      }
+    ]
   }
 ];
