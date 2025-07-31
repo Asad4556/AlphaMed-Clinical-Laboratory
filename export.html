@@ -1,91 +1,120 @@
-function loadResults() {
-  const results = JSON.parse(localStorage.getItem("results") || "[]");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Export Data | Alpha-Med Clinical Lab</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f5f7fa;
+    }
+    h2 {
+      color: #2c3e50;
+      margin-bottom: 10px;
+    }
+    button {
+      margin-right: 10px;
+      padding: 8px 14px;
+      background-color: #2c3e50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+    th, td {
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #2c3e50;
+      color: white;
+    }
+  </style>
+</head>
+<body>
 
-  const from = new Date(document.querySelector("#fromDate").value);
-  const to = new Date(document.querySelector("#toDate").value);
-  const department = document.querySelector("#department").value;
+  <h2>Export Patient Data</h2>
 
-  const filtered = results.filter(r => {
-    const date = new Date(r.date);
-    const matchDept = department ? r.department === department : true;
-    const matchDate = (!isNaN(from) ? date >= from : true) && (!isNaN(to) ? date <= to : true);
-    return matchDept && matchDate;
-  });
+  <button onclick="exportToExcel()">Export to Excel</button>
+  <button onclick="exportToPDF()">Export to PDF</button>
 
-  const tbody = document.querySelector("#resultsBody");
-  tbody.innerHTML = "";
+  <table id="exportTable">
+    <thead>
+      <tr>
+        <th>MRN</th>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Department</th>
+        <th>Test</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Filled by JS -->
+    </tbody>
+  </table>
 
-  if (filtered.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-gray-500">No results found for the selected filters.</td></tr>`;
-  }
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const data = JSON.parse(localStorage.getItem("patients")) || [];
+      const tbody = document.querySelector("#exportTable tbody");
 
-  filtered.forEach(r => {
-    r.tests.forEach(test => {
-      const row = `
-        <tr class="border-b">
-          <td class="p-3">${r.name}</td>
-          <td class="p-3">${r.mrn}</td>
-          <td class="p-3">${test.name}</td>
-          <td class="p-3">${r.date}</td>
-          <td class="p-3">${test.result}</td>
-        </tr>
-      `;
-      tbody.innerHTML += row;
+      data.forEach(item => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${item.mrn || '-'}</td>
+          <td>${item.name || '-'}</td>
+          <td>${item.phone || '-'}</td>
+          <td>${item.department || '-'}</td>
+          <td>${item.test || '-'}</td>
+          <td>${item.date || '-'}</td>
+        `;
+        tbody.appendChild(row);
+      });
     });
-  });
 
-  return filtered;
-}
+    function exportToExcel() {
+      const table = document.getElementById("exportTable");
+      const wb = XLSX.utils.table_to_book(table, {sheet:"Patient Data"});
+      XLSX.writeFile(wb, "AlphaMed_Patient_Data.xlsx");
+    }
 
-function exportExcel() {
-  const data = loadResults();
-  if (data.length === 0) {
-    alert("No results to export.");
-    return;
-  }
+    async function exportToPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
 
-  const rows = [["Patient Name", "MRN", "Test", "Date", "Result"]];
-  data.forEach(r => {
-    r.tests.forEach(test => {
-      rows.push([r.name, r.mrn, test.name, r.date, test.result]);
-    });
-  });
+      doc.text("Alpha-Med Clinical Lab", 14, 15);
+      doc.text("Patient Data Export", 14, 25);
 
-  const ws = XLSX.utils.aoa_to_sheet(rows);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Reports");
-  XLSX.writeFile(wb, "Reports.xlsx");
+      const rows = [];
+      const table = document.querySelectorAll("#exportTable tbody tr");
+      table.forEach(tr => {
+        const row = [];
+        tr.querySelectorAll("td").forEach(td => row.push(td.innerText));
+        rows.push(row);
+      });
 
-  alert("Excel file has been exported.");
-}
+      doc.autoTable({
+        head: [["MRN", "Name", "Phone", "Department", "Test", "Date"]],
+        body: rows,
+        startY: 35,
+        theme: 'striped'
+      });
 
-async function exportPDF() {
-  const data = loadResults();
-  if (data.length === 0) {
-    alert("No results to export.");
-    return;
-  }
+      doc.save("AlphaMed_Patient_Data.pdf");
+    }
+  </script>
 
-  const rows = [];
-  data.forEach(r => {
-    r.tests.forEach(test => {
-      rows.push([r.name, r.mrn, test.name, r.date, test.result]);
-    });
-  });
-
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-
-  doc.setFontSize(14);
-  doc.text("Exported Reports", 14, 15);
-
-  doc.autoTable({
-    startY: 20,
-    head: [["Patient Name", "MRN", "Test", "Date", "Result"]],
-    body: rows,
-  });
-
-  doc.save("Reports.pdf");
-
-  alert("PDF file has been exported.");
-}
+</body>
+</html>
