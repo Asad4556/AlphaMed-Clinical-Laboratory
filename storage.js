@@ -1,68 +1,74 @@
-// ✅ Save data to localStorage
-function saveToStorage(key, data) {
-  localStorage.setItem(key, JSON.stringify(data));
+// Store registered patient data
+function savePatientData(patient) {
+  const patients = JSON.parse(localStorage.getItem("patients") || "[]");
+  patients.push(patient);
+  localStorage.setItem("patients", JSON.stringify(patients));
 }
 
-// ✅ Load data from localStorage
-function getFromStorage(key) {
-  return JSON.parse(localStorage.getItem(key) || "[]");
+// Get all registered patients
+function getAllPatients() {
+  return JSON.parse(localStorage.getItem("patients") || "[]");
 }
 
-// ✅ Add new item to an existing list
-function addToStorage(key, newItem) {
-  const data = getFromStorage(key);
-  data.push(newItem);
-  saveToStorage(key, data);
+// Store test result for a patient
+function saveTestResult(cnic, testResult) {
+  const results = JSON.parse(localStorage.getItem("testResults") || "{}");
+  results[cnic] = testResult;
+  localStorage.setItem("testResults", JSON.stringify(results));
 }
 
-// ✅ Add item only if not already exists (by unique key like CNIC or MRN)
-function addUniqueToStorage(key, newItem, uniqueKey = "id") {
-  const data = getFromStorage(key);
-  const exists = data.some(item => item[uniqueKey] === newItem[uniqueKey]);
-  if (!exists) {
-    data.push(newItem);
-    saveToStorage(key, data);
-  }
+// Get test result by CNIC
+function getTestResult(cnic) {
+  const results = JSON.parse(localStorage.getItem("testResults") || "{}");
+  return results[cnic] || null;
 }
 
-// ✅ Get a single item matching a condition
-function getOneFromStorage(key, conditionFn) {
-  const data = getFromStorage(key);
-  return data.find(conditionFn);
+// Store receptionist info
+function saveReceptionist(name) {
+  localStorage.setItem("receptionist", name);
 }
 
-// ✅ Delete item(s) matching condition
-function deleteFromStorage(key, conditionFn) {
-  let data = getFromStorage(key);
-  data = data.filter(item => !conditionFn(item));
-  saveToStorage(key, data);
+// Get receptionist info
+function getReceptionist() {
+  return localStorage.getItem("receptionist") || "Unknown";
 }
 
-// ✅ Update item(s) matching condition
-function updateStorage(key, conditionFn, updateFn) {
-  let data = getFromStorage(key);
-  data = data.map(item => {
-    if (conditionFn(item)) {
-      return updateFn(item);
+// Store user account data
+function saveUser(user) {
+  const users = JSON.parse(localStorage.getItem("users") || "[]");
+  users.push(user);
+  localStorage.setItem("users", JSON.stringify(users));
+}
+
+// Validate login
+function validateLogin(cnic, password) {
+  const users = JSON.parse(localStorage.getItem("users") || "[]");
+  return users.find(u => u.cnic === cnic && u.password === password);
+}
+
+// Store technician test input
+function storeTechnicianData(cnic, testData) {
+  const technicianRecords = JSON.parse(localStorage.getItem("technicianData") || "{}");
+  technicianRecords[cnic] = testData;
+  localStorage.setItem("technicianData", JSON.stringify(technicianRecords));
+}
+
+// Get all technician test inputs
+function getAllTechnicianData() {
+  return JSON.parse(localStorage.getItem("technicianData") || "{}");
+}
+
+// Filter technician test data based on registered CNICs
+function getTechnicianDataForRegisteredPatients() {
+  const registered = getAllPatients().map(p => p.cnic);
+  const allTechData = getAllTechnicianData();
+  const filtered = {};
+
+  for (let cnic of registered) {
+    if (allTechData[cnic]) {
+      filtered[cnic] = allTechData[cnic];
     }
-    return item;
-  });
-  saveToStorage(key, data);
-}
+  }
 
-// ✅ Remove entire key from localStorage
-function clearStorageKey(key) {
-  localStorage.removeItem(key);
+  return filtered;
 }
-
-// ✅ Wrap all methods in one service for easy use
-const StorageService = {
-  save: saveToStorage,
-  get: getFromStorage,
-  add: addToStorage,
-  addUnique: addUniqueToStorage,
-  getOne: getOneFromStorage,
-  delete: deleteFromStorage,
-  update: updateStorage,
-  clear: clearStorageKey
-};
