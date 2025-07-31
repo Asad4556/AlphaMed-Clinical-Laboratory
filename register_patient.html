@@ -5,115 +5,160 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Register Patient - Alpha Med</title>
 
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 </head>
-<body class="bg-gray-100 p-6">
+<body class="bg-gray-100 p-6 text-gray-800">
 
-  <h1 class="text-2xl font-bold mb-4">📝 Register Patient</h1>
+  <h1 class="text-2xl font-bold mb-6 text-blue-700">📝 Patient Registration</h1>
 
-  <!-- Form -->
-  <div class="bg-white p-4 rounded shadow mb-6">
-    <form id="patientForm" class="space-y-4">
-      <div>
-        <label class="block font-semibold mb-1">Patient Name</label>
-        <input type="text" id="name" required class="w-full border px-2 py-1 rounded"/>
-      </div>
-      <div>
-        <label class="block font-semibold mb-1">Father Name / S/o</label>
-        <input type="text" id="father" required class="w-full border px-2 py-1 rounded"/>
-      </div>
-      <div>
-        <label class="block font-semibold mb-1">CNIC</label>
-        <input type="text" id="cnic" required class="w-full border px-2 py-1 rounded"/>
-      </div>
-      <div>
-        <label class="block font-semibold mb-1">Phone No</label>
-        <input type="text" id="phone" required class="w-full border px-2 py-1 rounded"/>
-      </div>
-      <div>
-        <label class="block font-semibold mb-1">Date of Birth</label>
-        <input type="date" id="dob" required class="w-full border px-2 py-1 rounded"/>
+  <div class="bg-white p-6 rounded-xl shadow-lg">
+    <form id="patientForm" class="space-y-5">
+
+      <!-- Patient Details -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block font-semibold mb-1">Patient Name</label>
+          <input type="text" id="name" required class="w-full border rounded px-3 py-2" />
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">Father Name</label>
+          <input type="text" id="father" required class="w-full border rounded px-3 py-2" />
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">CNIC</label>
+          <input type="text" id="cnic" required class="w-full border rounded px-3 py-2" />
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">Phone No</label>
+          <input type="text" id="phone" required class="w-full border rounded px-3 py-2" />
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">Date of Birth</label>
+          <input type="date" id="dob" required class="w-full border rounded px-3 py-2" />
+        </div>
       </div>
 
-      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Save Patient</button>
+      <!-- Section + Tests -->
+      <div class="mt-8">
+        <h2 class="text-lg font-semibold mb-4">🔬 Select Lab Sections & Tests</h2>
+        <div id="labSections" class="space-y-4">
+          <!-- Populated via JS -->
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">
+        💾 Register Patient
+      </button>
     </form>
   </div>
 
-  <!-- QR Code Preview -->
-  <div id="qrPreview" class="mb-6"></div>
-
-  <!-- Patient List -->
-  <div class="bg-white p-4 rounded shadow">
-    <h2 class="text-xl font-semibold mb-2">📋 Registered Patients</h2>
-    <ul id="patientList" class="text-sm space-y-2"></ul>
-  </div>
-
   <script>
-    // Storage helper functions
-    function getFromStorage(key) {
-      const data = localStorage.getItem(key);
-      return data ? JSON.parse(data) : [];
-    }
-    function addToStorage(key, item) {
-      const arr = getFromStorage(key);
-      arr.push(item);
-      localStorage.setItem(key, JSON.stringify(arr));
-    }
+    const sectionsData = [
+      {
+        name: "Hematology",
+        tests: ["CBC", "Platelet Count", "ESR"]
+      },
+      {
+        name: "Biochemistry",
+        tests: ["LFT", "RFT", "Blood Sugar"]
+      },
+      {
+        name: "Serology",
+        tests: ["HBsAg", "HCV", "HIV"]
+      },
+      {
+        name: "Microbiology",
+        tests: ["Urine Culture", "Blood Culture"]
+      },
+      {
+        name: "Radiology",
+        tests: ["X-Ray Chest", "Ultrasound Abdomen"]
+      }
+    ];
 
-    // Simple ID generator based on timestamp + random
     function generateID(prefix) {
       return `${prefix}-${Date.now().toString().slice(-6)}${Math.floor(Math.random() * 900 + 100)}`;
     }
 
-    const form = document.getElementById("patientForm");
-    const list = document.getElementById("patientList");
-    const qr = document.getElementById("qrPreview");
-
-    function renderPatients() {
-      const patients = getFromStorage("patients");
-      if (patients.length === 0) {
-        list.innerHTML = `<li class="text-gray-500">No patients registered yet.</li>`;
-        return;
-      }
-      list.innerHTML = patients.map(p => `
-        <li class="border-b py-1">
-          <strong>${p.name}</strong> (MRN: ${p.mrn}, Sample: ${p.sampleNo}) - ${p.phone}
-        </li>
-      `).join("");
+    function getFromStorage(key) {
+      const data = localStorage.getItem(key);
+      return data ? JSON.parse(data) : [];
     }
 
-    function generateQRCode(patient) {
-      const qrData = `Alpha Med Lab\nName: ${patient.name}\nMRN: ${patient.mrn}\nSample: ${patient.sampleNo}\nPhone: ${patient.phone}`;
-      QRCode.toCanvas(qr, qrData, function (err) {
-        if (err) {
-          qr.innerHTML = "Failed to generate QR code";
-        }
+    function addToStorage(key, item) {
+      const items = getFromStorage(key);
+      items.push(item);
+      localStorage.setItem(key, JSON.stringify(items));
+    }
+
+    function populateSections() {
+      const container = document.getElementById("labSections");
+      sectionsData.forEach(section => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "bg-gray-50 border rounded p-4";
+
+        const title = document.createElement("h3");
+        title.className = "font-bold mb-2 text-blue-600";
+        title.textContent = section.name;
+        wrapper.appendChild(title);
+
+        section.tests.forEach(test => {
+          const label = document.createElement("label");
+          label.className = "block text-sm mb-1";
+          label.innerHTML = `
+            <input type="checkbox" data-section="${section.name}" value="${test}" class="mr-2">
+            ${test}
+          `;
+          wrapper.appendChild(label);
+        });
+
+        container.appendChild(wrapper);
       });
     }
 
-    form.onsubmit = e => {
+    document.getElementById("patientForm").onsubmit = function (e) {
       e.preventDefault();
 
-      const newPatient = {
-        name: form.name.value.trim(),
-        father: form.father.value.trim(),
-        cnic: form.cnic.value.trim(),
-        phone: form.phone.value.trim(),
-        dob: form.dob.value,
+      const patient = {
+        name: document.getElementById("name").value.trim(),
+        father: document.getElementById("father").value.trim(),
+        cnic: document.getElementById("cnic").value.trim(),
+        phone: document.getElementById("phone").value.trim(),
+        dob: document.getElementById("dob").value,
         mrn: generateID("MRN"),
         sampleNo: generateID("SMP"),
-        registeredAt: new Date().toLocaleString()
+        registeredAt: new Date().toLocaleString(),
+        tests: []
       };
 
-      addToStorage("patients", newPatient);
-      generateQRCode(newPatient);
-      renderPatients();
-      form.reset();
+      // Collect selected tests
+      const checkboxes = document.querySelectorAll('#labSections input[type="checkbox"]:checked');
+      const grouped = {};
+      checkboxes.forEach(cb => {
+        const section = cb.dataset.section;
+        if (!grouped[section]) grouped[section] = [];
+        grouped[section].push(cb.value);
+      });
+
+      for (const section in grouped) {
+        patient.tests.push({
+          section: section,
+          tests: grouped[section]
+        });
+      }
+
+      if (patient.tests.length === 0) {
+        alert("⚠️ Please select at least one test.");
+        return;
+      }
+
+      addToStorage("patients", patient);
+      alert("✅ Patient registered successfully.");
+      this.reset();
     };
 
-    renderPatients();
+    window.onload = populateSections;
   </script>
 </body>
 </html>
