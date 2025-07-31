@@ -2,116 +2,107 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Dashboard - Alpha Med</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Admin Dashboard - AlphaMed Clinical Lab</title>
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="dashboard-summary.js"></script>
   <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f6f9;
+    }
+
+    header {
+      background-color: #2c3e50;
+      padding: 20px;
+      color: white;
+      text-align: center;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      padding: 30px;
+    }
+
     .card {
-      @apply bg-white rounded-xl p-4 shadow text-center transition-transform duration-300 transform hover:scale-105;
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
     }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
     .card h3 {
-      @apply text-2xl font-bold text-blue-700;
+      margin-bottom: 10px;
+      color: #34495e;
     }
+
     .card p {
-      @apply text-sm text-gray-500 mt-1;
+      color: #888;
+      font-size: 14px;
     }
-    @media print {
-      .no-print {
-        display: none;
-      }
+
+    .footer {
+      margin-top: 40px;
+      text-align: center;
+      color: #999;
+      font-size: 14px;
+      padding-bottom: 20px;
     }
   </style>
 </head>
-<body class="bg-gray-100 text-gray-800 p-6 min-h-screen">
+<body>
 
-  <header class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold text-blue-700">🧪 Alpha Med Admin Dashboard</h1>
-    <div>
-      <span id="userRole" class="text-sm text-gray-600 mr-4"></span>
-      <a href="login.html" class="text-red-600 hover:underline text-sm">Logout</a>
-    </div>
+  <header>
+    <h1>Admin Dashboard</h1>
+    <p>AlphaMed Clinical Lab - Full Access Panel</p>
   </header>
 
-  <div class="mb-6 flex justify-between items-center">
-    <h2 class="text-xl font-semibold">📊 Dashboard Summary</h2>
-    <button onclick="loadSummary()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
-      🔄 Load Summary
-    </button>
+  <div class="dashboard">
+    <div class="card" onclick="location.href='manage_users.html'">
+      <h3>Manage Users</h3>
+      <p>Add, edit, or remove users (Receptionist & Technician)</p>
+    </div>
+
+    <div class="card" onclick="location.href='register_patient.html'">
+      <h3>Register Patient</h3>
+      <p>Reception module access</p>
+    </div>
+
+    <div class="card" onclick="location.href='add_test_result.html'">
+      <h3>Enter Test Results</h3>
+      <p>Technician result entry panel</p>
+    </div>
+
+    <div class="card" onclick="location.href='view_reports.html'">
+      <h3>View Reports</h3>
+      <p>All patient reports overview</p>
+    </div>
+
+    <div class="card" onclick="location.href='export.html'">
+      <h3>Export Data</h3>
+      <p>Export results to Excel or PDF</p>
+    </div>
+
+    <div class="card" onclick="location.href='settings.html'">
+      <h3>System Settings</h3>
+      <p>Change password, branding, etc.</p>
+    </div>
   </div>
 
-  <div id="summaryContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10"></div>
-
-  <div>
-    <h2 class="text-lg font-semibold mb-2">🔗 Access</h2>
-    <ul class="space-y-2 text-blue-700 text-sm">
-      <li><a href="reception_dashboard.html" class="hover:underline">📝 Patient Entries (Reception)</a></li>
-      <li><a href="technician_dashboard.html" class="hover:underline">🔬 Technician Panel</a></li>
-      <li><a href="manage_users.html" class="hover:underline">👤 Manage Users</a></li>
-      <li><a href="change_password.html" class="hover:underline">🔑 Change Password</a></li>
-      <li><a href="settings.html" class="hover:underline">⚙️ Settings</a></li>
-      <li><a href="export.html" class="hover:underline">📁 Export Data</a></li>
-      <li><a href="view_reports.html" class="hover:underline">📄 View Reports</a></li>
-    </ul>
+  <div class="footer">
+    &copy; 2025 AlphaMed Clinical Lab - Admin Control Panel
   </div>
-
-  <script>
-    function getFromStorage(key) {
-      const data = localStorage.getItem(key);
-      return data ? JSON.parse(data) : [];
-    }
-
-    function loadSummary() {
-      const summaryContainer = document.getElementById('summaryContainer');
-      summaryContainer.innerHTML = '';
-
-      const patients = getFromStorage("patients");
-      const users = getFromStorage("users");
-
-      let totalTests = 0;
-      let pendingResults = 0;
-
-      patients.forEach(p => {
-        if (Array.isArray(p.tests)) {
-          p.tests.forEach(section => {
-            totalTests += section.tests.length;
-          });
-        }
-        if (!p.reportGenerated) {
-          pendingResults++;
-        }
-      });
-
-      const summaryData = [
-        { title: "Total Patients", count: patients.length },
-        { title: "Tests Conducted", count: totalTests },
-        { title: "Pending Results", count: pendingResults },
-        { title: "Users Registered", count: users.length }
-      ];
-
-      summaryData.forEach(item => {
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `
-          <h3>${item.title}</h3>
-          <p>${item.count}</p>
-          <button class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded mt-4">🔍 View Details</button>
-        `;
-        summaryContainer.appendChild(card);
-      });
-    }
-
-    function detectRole() {
-      const user = JSON.parse(localStorage.getItem("loggedInUser"));
-      if (user && user.role) {
-        document.getElementById("userRole").textContent = `Role: ${user.role}`;
-      }
-    }
-
-    window.onload = () => {
-      loadSummary();
-      detectRole();
-    };
-  </script>
 
 </body>
 </html>
