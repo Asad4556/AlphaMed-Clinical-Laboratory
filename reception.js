@@ -1,25 +1,28 @@
-const form = document.getElementById("patientForm");
-const list = document.getElementById("patientList");
-const container = document.getElementById("labSectionContainer");
+let currentMRN = 1;
+const patients = [];
 
-let patients = [];
-let mrnCounter = 1;
+function nextStep() {
+  document.getElementById("testSelection").classList.remove("hidden");
+  renderTests();
+}
 
-// labSections.js سے لیب ڈیٹا لوڈ کریں
-window.addEventListener("DOMContentLoaded", () => {
-  labDepartments.forEach((dept, index) => {
-    const sectionDiv = document.createElement("div");
-    sectionDiv.className = "border rounded p-3";
+function renderTests() {
+  const container = document.getElementById("testList");
+  container.innerHTML = "";
 
-    const title = document.createElement("h3");
-    title.textContent = dept.name;
-    title.className = "font-bold text-blue-700 mb-2";
+  labDepartments.forEach(dep => {
+    const section = document.createElement("div");
+    section.className = "border p-2 rounded";
 
-    sectionDiv.appendChild(title);
+    const heading = document.createElement("h4");
+    heading.textContent = dep.name;
+    heading.className = "font-semibold mb-1";
 
-    dept.tests.forEach(test => {
+    section.appendChild(heading);
+
+    dep.tests.forEach(test => {
       const label = document.createElement("label");
-      label.className = "block";
+      label.className = "block text-sm";
 
       const checkbox = document.createElement("input");
       checkbox.type = "checkbox";
@@ -27,49 +30,64 @@ window.addEventListener("DOMContentLoaded", () => {
       checkbox.className = "mr-2";
 
       label.appendChild(checkbox);
-      label.append(test.name);
-      sectionDiv.appendChild(label);
+      label.appendChild(document.createTextNode(test.name));
+      section.appendChild(label);
     });
 
-    container.appendChild(sectionDiv);
-  });
-});
-
-// فارم سبمٹ
-form.addEventListener("submit", function (e) {
-  e.preventDefault();
-
-  const name = document.getElementById("patientName").value;
-  const cnic = document.getElementById("patientCNIC").value;
-  const sampleNumber = document.getElementById("sampleNumber").value;
-
-  const mrn = "MRN" + String(mrnCounter).padStart(3, "0"); // MRN001, MRN002
-  mrnCounter++;
-
-  const selectedTests = Array.from(document.querySelectorAll("input[type='checkbox']:checked")).map(cb => cb.value);
-
-  if (selectedTests.length === 0) {
-    alert("براہ کرم کم از کم ایک ٹیسٹ منتخب کریں۔");
-    return;
-  }
-
-  patients.push({ name, cnic, mrn, sampleNumber, selectedTests });
-
-  renderList();
-  form.reset();
-});
-
-function renderList() {
-  list.innerHTML = "";
-  patients.forEach(p => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td class="border px-2 py-1">${p.name}</td>
-      <td class="border px-2 py-1">${p.cnic}</td>
-      <td class="border px-2 py-1">${p.mrn}</td>
-      <td class="border px-2 py-1">${p.sampleNumber}</td>
-      <td class="border px-2 py-1">${p.selectedTests.join(", ")}</td>
-    `;
-    list.appendChild(tr);
+    container.appendChild(section);
   });
 }
+
+function registerPatient() {
+  const name = document.getElementById("patientName").value;
+  const age = document.getElementById("age").value;
+  const gender = document.getElementById("gender").value;
+  const cnic = document.getElementById("cnic").value;
+  const sampleNumber = document.getElementById("sampleNumber").value;
+
+  const tests = Array.from(document.querySelectorAll("#testList input:checked")).map(cb => cb.value);
+
+  const mrn = `MRN-${String(currentMRN).padStart(4, '0')}`;
+  currentMRN++;
+
+  const patient = { mrn, name, age, gender, cnic, sampleNumber, tests };
+  patients.push(patient);
+  localStorage.setItem("patients", JSON.stringify(patients));
+
+  // QR Code
+  const qr = new QRious({
+    element: document.getElementById("qrCode"),
+    value: `MRN: ${mrn}\nName: ${name}\nTests: ${tests.join(', ')}`,
+    size: 150
+  });
+
+  document.getElementById("qrText").innerText = `MRN: ${mrn}\nName: ${name}`;
+  document.getElementById("qrSection").classList.remove("hidden");
+
+  renderPatientTable();
+}
+
+function renderPatientTable() {
+  const tbody = document.getElementById("patientTable");
+  tbody.innerHTML = "";
+
+  patients.forEach(p => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td class="border p-2">${p.mrn}</td>
+      <td class="border p-2">${p.name}</td>
+      <td class="border p-2">${p.sampleNumber}</td>
+      <td class="border p-2">${p.tests.join(", ")}</td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+window.onload = () => {
+  const saved = JSON.parse(localStorage.getItem("patients") || "[]");
+  saved.forEach(p => patients.push(p));
+  if (patients.length > 0) {
+    currentMRN = patients.length + 1;
+  }
+  renderPatientTable();
+};
