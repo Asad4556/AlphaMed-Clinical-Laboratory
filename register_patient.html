@@ -2,66 +2,170 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Register Patient</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Patient Registration</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    body {
+      background: #f0f4f8;
+    }
+    .print-hide {
+      display: none;
+    }
+  </style>
 </head>
-<body class="p-4 bg-gray-100">
-  <div class="max-w-xl mx-auto bg-white shadow-md rounded p-4">
-    <h1 class="text-2xl font-bold mb-4">📝 Register Patient</h1>
+<body class="p-6">
+  <div class="max-w-4xl mx-auto bg-white p-6 rounded shadow">
+    <h1 class="text-2xl font-bold mb-4">📝 Patient Registration</h1>
 
-    <!-- Patient Form -->
-    <form id="patientForm">
-      <!-- Name, CNIC, MRN, Phone etc... -->
-      <!-- (آپ کے باقی input fields یہاں ہوں گے) -->
+    <form id="registrationForm" class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium">Patient Name</label>
+          <input type="text" id="patientName" required class="w-full border rounded p-2" />
+        </div>
 
-      <!-- Lab Section Dropdown -->
-      <h2 class="font-semibold mb-2 mt-4">🔬 Select Lab Sections & Tests</h2>
+        <div>
+          <label class="block text-sm font-medium">Age</label>
+          <input type="number" id="age" required class="w-full border rounded p-2" />
+        </div>
 
-      <select id="departmentSelect" class="border rounded px-2 py-1 w-full mb-2">
-        <option value="">-- Select Department --</option>
-      </select>
+        <div>
+          <label class="block text-sm font-medium">Gender</label>
+          <select id="gender" required class="w-full border rounded p-2">
+            <option value="">Select</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </div>
 
-      <select id="testSelect" class="border rounded px-2 py-1 w-full">
-        <option value="">-- Select Test --</option>
-      </select>
+        <div>
+          <label class="block text-sm font-medium">Sample Number</label>
+          <input type="text" id="sampleNumber" required class="w-full border rounded p-2" />
+        </div>
+      </div>
 
-      <button type="submit" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded">💾 Register</button>
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Register</button>
     </form>
+
+    <hr class="my-6" />
+
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-xl font-semibold">🧾 Registered Patients</h2>
+      <button onclick="exportExcel()" class="bg-green-600 text-white px-3 py-1 rounded">Export Excel</button>
+    </div>
+
+    <div id="patientsList" class="overflow-x-auto">
+      <table class="w-full table-auto border">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="border px-2 py-1">MRN</th>
+            <th class="border px-2 py-1">Name</th>
+            <th class="border px-2 py-1">Age</th>
+            <th class="border px-2 py-1">Gender</th>
+            <th class="border px-2 py-1">Sample #</th>
+            <th class="border px-2 py-1">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="patientTable"></tbody>
+      </table>
+    </div>
   </div>
 
-  <!-- JS Scripts -->
-  <script src="test-data.js"></script>
+  <!-- Patient Slip (Print) -->
+  <div id="slipArea" class="print-hide"></div>
+
   <script>
-    const departmentSelect = document.getElementById("departmentSelect");
-    const testSelect = document.getElementById("testSelect");
+    let mrnCounter = localStorage.getItem('mrnCounter') || 1000;
+    let patients = JSON.parse(localStorage.getItem('patients')) || [];
 
-    if (typeof labDepartments === "undefined") {
-      console.error("❌ labDepartments not loaded");
-    } else {
-      // Fill department dropdown
-      labDepartments.forEach((dept, index) => {
-        const option = document.createElement("option");
-        option.value = index;
-        option.textContent = dept.name;
-        departmentSelect.appendChild(option);
-      });
+    const form = document.getElementById("registrationForm");
+    const table = document.getElementById("patientTable");
+    const slipArea = document.getElementById("slipArea");
 
-      // Change event
-      departmentSelect.addEventListener("change", () => {
-        testSelect.innerHTML = '<option value="">-- Select Test --</option>';
-        const selectedIndex = departmentSelect.value;
-        if (selectedIndex === "") return;
-
-        const selectedDept = labDepartments[selectedIndex];
-        selectedDept.tests.forEach(test => {
-          const option = document.createElement("option");
-          option.value = test.name;
-          option.textContent = test.name;
-          testSelect.appendChild(option);
-        });
+    function renderPatients() {
+      table.innerHTML = "";
+      patients.forEach((p, index) => {
+        const row = `
+          <tr>
+            <td class='border px-2'>${p.mrn}</td>
+            <td class='border px-2'>${p.name}</td>
+            <td class='border px-2'>${p.age}</td>
+            <td class='border px-2'>${p.gender}</td>
+            <td class='border px-2'>${p.sample}</td>
+            <td class='border px-2'>
+              <button onclick='printSlip(${index})' class='text-blue-600'>Print</button> |
+              <button onclick='deletePatient(${index})' class='text-red-600'>Delete</button>
+            </td>
+          </tr>`;
+        table.innerHTML += row;
       });
     }
+
+    function savePatients() {
+      localStorage.setItem("patients", JSON.stringify(patients));
+      localStorage.setItem("mrnCounter", mrnCounter);
+    }
+
+    function deletePatient(index) {
+      if (confirm("Delete this patient?")) {
+        patients.splice(index, 1);
+        savePatients();
+        renderPatients();
+      }
+    }
+
+    function printSlip(index) {
+      const p = patients[index];
+      slipArea.innerHTML = `
+        <div class='p-4'>
+          <h1 class='text-xl font-bold mb-2'>Patient Slip</h1>
+          <p><strong>MRN:</strong> ${p.mrn}</p>
+          <p><strong>Name:</strong> ${p.name}</p>
+          <p><strong>Age:</strong> ${p.age}</p>
+          <p><strong>Gender:</strong> ${p.gender}</p>
+          <p><strong>Sample #:</strong> ${p.sample}</p>
+          <hr class='my-2' />
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${p.mrn}" />
+        </div>`;
+
+      const printWin = window.open('', '', 'width=400,height=400');
+      printWin.document.write(slipArea.innerHTML);
+      printWin.document.close();
+      printWin.print();
+    }
+
+    function exportExcel() {
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.json_to_sheet(patients);
+      XLSX.utils.book_append_sheet(wb, ws, "Patients");
+      XLSX.writeFile(wb, "Patients_List.xlsx");
+    }
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+      const name = document.getElementById("patientName").value;
+      const age = document.getElementById("age").value;
+      const gender = document.getElementById("gender").value;
+      const sample = document.getElementById("sampleNumber").value;
+
+      const newPatient = {
+        mrn: `MRN-${mrnCounter++}`,
+        name,
+        age,
+        gender,
+        sample
+      };
+
+      patients.push(newPatient);
+      savePatients();
+      renderPatients();
+      form.reset();
+      printSlip(patients.length - 1);
+    });
+
+    renderPatients();
   </script>
 </body>
 </html>
