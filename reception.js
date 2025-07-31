@@ -1,6 +1,6 @@
 // reception.js
 
-// DOM elements
+// ✅ DOM elements
 const searchBtn = document.getElementById("searchBtn");
 const searchInput = document.getElementById("searchInput");
 const patientInfo = document.getElementById("patientInfo");
@@ -21,6 +21,13 @@ let selectedTests = [];
 // ✅ Load departments in dropdown
 function populateDepartments() {
   departmentSelect.innerHTML = "<option value=''>-- Select Department --</option>";
+
+  if (!Array.isArray(labDepartments)) {
+    console.error("❌ labDepartments data not loaded!");
+    alert("ڈیپارٹمنٹ ڈیٹا لوڈ نہیں ہو سکا۔");
+    return;
+  }
+
   labDepartments.forEach(dep => {
     const opt = document.createElement("option");
     opt.value = dep.name;
@@ -29,13 +36,13 @@ function populateDepartments() {
   });
 }
 
-// ✅ Load tests based on selected department
+// ✅ Load tests when department changes
 departmentSelect.addEventListener("change", function () {
   const selectedDept = this.value;
   const dept = labDepartments.find(d => d.name === selectedDept);
 
   testSelect.innerHTML = "<option value=''>-- Select Test --</option>";
-  if (dept) {
+  if (dept && Array.isArray(dept.tests)) {
     dept.tests.forEach(test => {
       const opt = document.createElement("option");
       opt.value = test.name;
@@ -45,7 +52,7 @@ departmentSelect.addEventListener("change", function () {
   }
 });
 
-// ✅ Search patient
+// ✅ Search for patient
 searchBtn.addEventListener("click", function () {
   const query = searchInput.value.trim();
   const patients = getFromStorage("patients");
@@ -81,7 +88,6 @@ addTestBtn.addEventListener("click", function () {
     return;
   }
 
-  // Avoid duplicate
   if (selectedTests.some(t => t.name === testName)) {
     alert("یہ ٹیسٹ پہلے ہی شامل کیا جا چکا ہے۔");
     return;
@@ -91,7 +97,7 @@ addTestBtn.addEventListener("click", function () {
   renderSelectedTests();
 });
 
-// ✅ Render selected tests
+// ✅ Show selected tests
 function renderSelectedTests() {
   selectedTestsDiv.innerHTML = "";
   selectedTests.forEach((t, index) => {
@@ -111,7 +117,7 @@ function removeTest(index) {
   renderSelectedTests();
 }
 
-// ✅ Save tests to patient
+// ✅ Save tests to patient record
 saveTestsBtn.addEventListener("click", function () {
   if (!currentPatient) return;
 
@@ -125,7 +131,7 @@ saveTestsBtn.addEventListener("click", function () {
   resetForm();
 });
 
-// ✅ Reset form
+// ✅ Reset all
 function resetForm() {
   currentPatient = null;
   selectedTests = [];
@@ -135,5 +141,5 @@ function resetForm() {
   selectedTestsDiv.innerHTML = "";
 }
 
-// ✅ Initialize
+// ✅ Initial call
 populateDepartments();
