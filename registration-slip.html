@@ -1,116 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Registration Slip - Alpha Med</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-  <style>
-    @media print {
-      .no-print {
-        display: none;
-      }
-      body {
-        background: white !important;
-      }
-    }
-  </style>
-</head>
-<body class="bg-white text-black min-h-screen py-6 px-4">
+<script>
+  // Helper to get query param from URL
+  function getQueryParam(key) {
+    const params = new URLSearchParams(window.location.search);
+    return params.get(key);
+  }
 
-  <!-- Container -->
-  <div class="max-w-2xl mx-auto border border-gray-400 rounded-lg p-6 shadow-lg">
+  const sampleNo = getQueryParam("sample");
+  const patients = JSON.parse(localStorage.getItem("patients") || "[]");
+  const patient = patients.find(p => p.sampleNo === sampleNo);
 
-    <!-- Header -->
-    <div class="flex items-center justify-between mb-6">
-      <div class="flex items-center space-x-3">
-        <img src="logo.png" alt="Logo" class="w-16 h-16" />
-        <div>
-          <h1 class="text-2xl font-bold text-blue-800">Alpha Med Clinical Laboratory</h1>
-          <p class="text-sm text-gray-600">Advanced Diagnostic Services</p>
-        </div>
-      </div>
-      <div id="qrCode"></div>
-    </div>
+  if (!patient) {
+    alert("❌ Patient not found.");
+  } else {
+    document.getElementById("patientName").textContent = patient.name || "N/A";
+    document.getElementById("fatherName").textContent = patient.father || "N/A";
+    document.getElementById("cnic").textContent = patient.cnic || "N/A";
+    document.getElementById("phone").textContent = patient.phone || "N/A";
+    document.getElementById("sampleNo").textContent = patient.sampleNo || "N/A";
+    document.getElementById("mrnNo").textContent = patient.mrn || "N/A";
+    document.getElementById("dob").textContent = patient.dob || "N/A";
 
-    <!-- Patient Info -->
-    <div class="grid grid-cols-2 gap-4 text-sm">
-      <div><strong>Patient Name:</strong> <span id="patientName">Loading...</span></div>
-      <div><strong>Father Name:</strong> <span id="fatherName">Loading...</span></div>
-      <div><strong>CNIC:</strong> <span id="cnic">Loading...</span></div>
-      <div><strong>Phone No:</strong> <span id="phone">Loading...</span></div>
-      <div><strong>Sample No:</strong> <span id="sampleNo">Loading...</span></div>
-      <div><strong>MRN No:</strong> <span id="mrnNo">Loading...</span></div>
-      <div><strong>Date of Birth:</strong> <span id="dob">Loading...</span></div>
-      <div><strong>Department:</strong> <span id="department">Loading...</span></div>
-      <div><strong>Test Name:</strong> <span id="testName">Loading...</span></div>
-      <div><strong>Date:</strong> <span id="date"></span></div>
-    </div>
+    // Test info
+    const deptList = patient.tests.map(t => t.section).join(", ");
+    const testList = patient.tests.map(t => t.tests.join(", ")).join(", ");
 
-    <!-- Footer -->
-    <div class="mt-6 border-t pt-4 text-xs text-center text-gray-500">
-      This is a computer-generated slip. No signature required.
-    </div>
+    document.getElementById("department").textContent = deptList || "N/A";
+    document.getElementById("testName").textContent = testList || "N/A";
+    document.getElementById("date").textContent = new Date(patient.registeredAt).toLocaleDateString();
 
-    <!-- Print Button -->
-    <div class="mt-6 text-center no-print">
-      <button onclick="window.print()" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
-        🖨️ Print Slip
-      </button>
-    </div>
-
-  </div>
-
-  <script>
-    // Show today's date
-    document.getElementById("date").textContent = new Date().toLocaleDateString();
-
-    // Utility to get patients from localStorage
-    function getFromStorage(key) {
-      const data = localStorage.getItem(key);
-      return data ? JSON.parse(data) : [];
-    }
-
-    // Load the most recent patient (you can modify to pick by MRN or other criteria)
-    const patients = getFromStorage("patients");
-    if (patients.length === 0) {
-      alert("No registered patients found!");
-      document.getElementById("patientName").textContent = "N/A";
-      // Clear other fields similarly or keep default
-    } else {
-      const patient = patients[patients.length - 1]; // last registered
-
-      // Fill patient details
-      document.getElementById("patientName").textContent = patient.name || "N/A";
-      document.getElementById("fatherName").textContent = patient.father || "N/A";
-      document.getElementById("cnic").textContent = patient.cnic || "N/A";
-      document.getElementById("phone").textContent = patient.phone || "N/A";
-      document.getElementById("sampleNo").textContent = patient.sampleNo || "N/A";
-      document.getElementById("mrnNo").textContent = patient.mrn || "N/A";
-      document.getElementById("dob").textContent = patient.dob || "N/A";
-
-      // For demo, department and test name are static or you can add logic to fetch tests associated with patient.
-      // If you store tests separately linked with MRN, you can fetch and display them here.
-      const department = localStorage.getItem("lastDepartment") || "Hematology";
-      const testName = localStorage.getItem("lastTestName") || "Complete Blood Count";
-
-      document.getElementById("department").textContent = department;
-      document.getElementById("testName").textContent = testName;
-
-      // Generate QR content
-      const qrData = `
-        Alpha Med Clinical Laboratory
-        Patient: ${patient.name}
-        CNIC: ${patient.cnic}
-        Sample: ${patient.sampleNo}
-        Test: ${testName}
-      `;
-
-      QRCode.toCanvas(document.getElementById("qrCode"), qrData.trim(), { width: 96 }, function (err) {
-        if (err) console.error(err);
-      });
-    }
-  </script>
-</body>
-</html>
+    const qrData = `
+      Alpha Med Clinical Laboratory
+      Name: ${patient.name}
+      Sample: ${patient.sampleNo}
+      MRN: ${patient.mrn}
+      CNIC: ${patient.cnic}
+    `;
+    QRCode.toCanvas(document.getElementById("qrCode"), qrData.trim(), { width: 96 }, err => {
+      if (err) console.error(err);
+    });
+  }
+</script>
