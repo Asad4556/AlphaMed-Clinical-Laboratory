@@ -1,53 +1,208 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ur" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Reception Panel</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ریسپشن</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="labSections.js" defer></script>
+  <script src="reception.js" defer></script>
 </head>
-<body class="p-4">
+<body class="bg-gray-100 font-sans">
 
-  <h1 class="text-2xl font-bold mb-4">🏥 Patient Test Assignment (Reception)</h1>
+  <div class="max-w-6xl mx-auto p-6">
+    <h1 class="text-3xl font-bold text-center mb-6 text-blue-800">👩‍⚕️ مریض کی رجسٹریشن</h1>
 
-  <!-- Patient Info -->
-  <div class="mb-4">
-    <label>Patient MRN or CNIC:</label>
-    <input type="text" id="searchInput" class="border px-2 py-1 w-64 rounded" placeholder="Enter MRN or CNIC" />
-    <button id="searchBtn" class="bg-blue-600 text-white px-4 py-1 rounded ml-2">Search</button>
-  </div>
+    <!-- مریض کا فارم -->
+    <form id="patientForm" class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-white p-4 rounded shadow mb-6">
+      <input type="text" id="patientName" placeholder="نام" required class="border px-3 py-2 rounded" />
+      <input type="text" id="patientCNIC" placeholder="CNIC" required class="border px-3 py-2 rounded" />
+      <input type="text" id="sampleNumber" placeholder="Sample Number" required class="border px-3 py-2 rounded" />
 
-  <!-- Patient Display -->
-  <div id="patientInfo" class="hidden mb-4 border p-3 rounded bg-gray-100">
-    <p><strong>Name:</strong> <span id="pName"></span></p>
-    <p><strong>MRN:</strong> <span id="pMRN"></span></p>
-    <p><strong>Sample No:</strong> <span id="pSample"></span></p>
-  </div>
+      <!-- لیب سیکشنز -->
+      <div class="md:col-span-3">
+        <label class="font-semibold mb-2 block">🔬 لیب سیکشنز اور ٹیسٹس منتخب کریں:</label>
+        <div id="labSectionContainer" class="space-y-4"></div>
+      </div>
 
-  <!-- Assign Tests -->
-  <div id="assignSection" class="hidden border p-4 rounded bg-white">
-    <h2 class="text-lg font-semibold mb-2">🧪 Assign Tests</h2>
+      <button type="submit" class="col-span-1 md:col-span-3 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        💾 رجسٹر کریں
+      </button>
+    </form>
 
-    <div class="mb-3">
-      <label>Department:</label>
-      <select id="departmentSelect" class="border px-2 py-1 rounded w-64"></select>
+    <!-- مریضوں کی فہرست -->
+    <div class="bg-white rounded shadow p-4">
+      <h2 class="text-xl font-bold mb-4 text-blue-700">📋 رجسٹرڈ مریض</h2>
+      <table class="w-full border-collapse text-sm">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="border px-2 py-1">نام</th>
+            <th class="border px-2 py-1">CNIC</th>
+            <th class="border px-2 py-1">MRN</th>
+            <th class="border px-2 py-1">Sample #</th>
+            <th class="border px-2 py-1">منتخب ٹیسٹ</th>
+          </tr>
+        </thead>
+        <tbody id="patientList" class="text-center"></tbody>
+      </table>
     </div>
-
-    <div class="mb-3">
-      <label>Tests:</label>
-      <select id="testSelect" class="border px-2 py-1 rounded w-64"></select>
-    </div>
-
-    <button id="addTestBtn" class="bg-green-600 text-white px-4 py-1 rounded">➕ Add Test</button>
-
-    <!-- Selected Tests -->
-    <div id="selectedTests" class="mt-4"></div>
-
-    <button id="saveTestsBtn" class="bg-blue-700 text-white px-4 py-2 rounded mt-4">💾 Save Tests</button>
   </div>
 
-  <script src="storage.js"></script>
-  <script src="test-data.js"></script>
-  <script src="reception.js"></script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ریسپشن</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="labSections.js" defer></script>
+  <script src="reception.js" defer></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+  <div class="max-w-6xl mx-auto p-6">
+    <h1 class="text-3xl font-bold text-center mb-6 text-blue-800">👩‍⚕️ مریض کی رجسٹریشن</h1>
+
+    <!-- مریض کا فارم -->
+    <form id="patientForm" class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-white p-4 rounded shadow mb-6">
+      <input type="text" id="patientName" placeholder="نام" required class="border px-3 py-2 rounded" />
+      <input type="text" id="patientCNIC" placeholder="CNIC" required class="border px-3 py-2 rounded" />
+      <input type="text" id="sampleNumber" placeholder="Sample Number" required class="border px-3 py-2 rounded" />
+
+      <!-- لیب سیکشنز -->
+      <div class="md:col-span-3">
+        <label class="font-semibold mb-2 block">🔬 لیب سیکشنز اور ٹیسٹس منتخب کریں:</label>
+        <div id="labSectionContainer" class="space-y-4"></div>
+      </div>
+
+      <button type="submit" class="col-span-1 md:col-span-3 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        💾 رجسٹر کریں
+      </button>
+    </form>
+
+    <!-- مریضوں کی فہرست -->
+    <div class="bg-white rounded shadow p-4">
+      <h2 class="text-xl font-bold mb-4 text-blue-700">📋 رجسٹرڈ مریض</h2>
+      <table class="w-full border-collapse text-sm">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="border px-2 py-1">نام</th>
+            <th class="border px-2 py-1">CNIC</th>
+            <th class="border px-2 py-1">MRN</th>
+            <th class="border px-2 py-1">Sample #</th>
+            <th class="border px-2 py-1">منتخب ٹیسٹ</th>
+          </tr>
+        </thead>
+        <tbody id="patientList" class="text-center"></tbody>
+      </table>
+    </div>
+  </div>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ریسپشن</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="labSections.js" defer></script>
+  <script src="reception.js" defer></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+  <div class="max-w-6xl mx-auto p-6">
+    <h1 class="text-3xl font-bold text-center mb-6 text-blue-800">👩‍⚕️ مریض کی رجسٹریشن</h1>
+
+    <!-- مریض کا فارم -->
+    <form id="patientForm" class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-white p-4 rounded shadow mb-6">
+      <input type="text" id="patientName" placeholder="نام" required class="border px-3 py-2 rounded" />
+      <input type="text" id="patientCNIC" placeholder="CNIC" required class="border px-3 py-2 rounded" />
+      <input type="text" id="sampleNumber" placeholder="Sample Number" required class="border px-3 py-2 rounded" />
+
+      <!-- لیب سیکشنز -->
+      <div class="md:col-span-3">
+        <label class="font-semibold mb-2 block">🔬 لیب سیکشنز اور ٹیسٹس منتخب کریں:</label>
+        <div id="labSectionContainer" class="space-y-4"></div>
+      </div>
+
+      <button type="submit" class="col-span-1 md:col-span-3 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        💾 رجسٹر کریں
+      </button>
+    </form>
+
+    <!-- مریضوں کی فہرست -->
+    <div class="bg-white rounded shadow p-4">
+      <h2 class="text-xl font-bold mb-4 text-blue-700">📋 رجسٹرڈ مریض</h2>
+      <table class="w-full border-collapse text-sm">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="border px-2 py-1">نام</th>
+            <th class="border px-2 py-1">CNIC</th>
+            <th class="border px-2 py-1">MRN</th>
+            <th class="border px-2 py-1">Sample #</th>
+            <th class="border px-2 py-1">منتخب ٹیسٹ</th>
+          </tr>
+        </thead>
+        <tbody id="patientList" class="text-center"></tbody>
+      </table>
+    </div>
+  </div>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ریسپشن</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="labSections.js" defer></script>
+  <script src="reception.js" defer></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+  <div class="max-w-6xl mx-auto p-6">
+    <h1 class="text-3xl font-bold text-center mb-6 text-blue-800">👩‍⚕️ مریض کی رجسٹریشن</h1>
+
+    <!-- مریض کا فارم -->
+    <form id="patientForm" class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-white p-4 rounded shadow mb-6">
+      <input type="text" id="patientName" placeholder="نام" required class="border px-3 py-2 rounded" />
+      <input type="text" id="patientCNIC" placeholder="CNIC" required class="border px-3 py-2 rounded" />
+      <input type="text" id="sampleNumber" placeholder="Sample Number" required class="border px-3 py-2 rounded" />
+
+      <!-- لیب سیکشنز -->
+      <div class="md:col-span-3">
+        <label class="font-semibold mb-2 block">🔬 لیب سیکشنز اور ٹیسٹس منتخب کریں:</label>
+        <div id="labSectionContainer" class="space-y-4"></div>
+      </div>
+
+      <button type="submit" class="col-span-1 md:col-span-3 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        💾 رجسٹر کریں
+      </button>
+    </form>
+
+    <!-- مریضوں کی فہرست -->
+    <div class="bg-white rounded shadow p-4">
+      <h2 class="text-xl font-bold mb-4 text-blue-700">📋 رجسٹرڈ مریض</h2>
+      <table class="w-full border-collapse text-sm">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="border px-2 py-1">نام</th>
+            <th class="border px-2 py-1">CNIC</th>
+            <th class="border px-2 py-1">MRN</th>
+            <th class="border px-2 py-1">Sample #</th>
+            <th class="border px-2 py-1">منتخب ٹیسٹ</th>
+          </tr>
+        </thead>
+        <tbody id="patientList" class="text-center"></tbody>
+      </table>
+    </div>
+  </div>
+
 </body>
 </html>
