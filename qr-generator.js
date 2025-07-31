@@ -1,51 +1,35 @@
-/**
- * Generates a QR Code for patient data
- * @param {string} elementId - The DOM element ID where the QR code should appear
- * @param {object} patientData - Patient object containing data to encode
- * Required fields: name, cnic, mrn, test, date
- */
-function generatePatientQRCode(elementId, patientData) {
-  if (!elementId || !patientData || typeof patientData !== 'object') {
-    console.error("Invalid parameters for generatePatientQRCode");
-    return;
-  }
+// qr-generator.js
+// Purpose: Generate QR Code from MRN or any text and append to given element
 
-  const {
-    name = "N/A",
-    cnic = "N/A",
-    mrn = "N/A",
-    test = "N/A",
-    date = "N/A"
-  } = patientData;
-
-  const qrContent = [
-    "Alpha Med Clinical Laboratory",
-    "",
-    `Patient Name: ${name}`,
-    `CNIC: ${cnic}`,
-    `MRN: ${mrn}`,
-    `Test: ${test}`,
-    `Date: ${date}`,
-    "",
-    `View Online: https://yourdomain.com/report.html?mrn=${encodeURIComponent(mrn)}`
-  ].join('\n');
-
-  const qrContainer = document.getElementById(elementId);
-  if (!qrContainer) {
+function generateQRCode(mrn, elementId = "qrCode") {
+  const container = document.getElementById(elementId);
+  if (!container) {
     console.error(`Element with ID "${elementId}" not found.`);
     return;
   }
 
-  // Clear previous QR if exists
-  qrContainer.innerHTML = "";
+  container.innerHTML = ""; // Clear any previous QR code
 
-  // Generate QR code
-  new QRCode(qrContainer, {
-    text: qrContent,
-    width: 160,
-    height: 160,
-    colorDark: "#000000",
-    colorLight: "#ffffff",
-    correctLevel: QRCode.CorrectLevel.H
+  if (!mrn || mrn.trim() === "") {
+    container.textContent = "Invalid MRN";
+    return;
+  }
+
+  const canvas = document.createElement("canvas");
+
+  QRCode.toCanvas(canvas, mrn, {
+    width: 140,
+    margin: 1,
+    color: {
+      dark: "#000000",  // Black color
+      light: "#FFFFFF"  // White background
+    }
+  }, function (error) {
+    if (error) {
+      console.error("QR Code generation failed:", error);
+      container.textContent = "Error generating QR";
+    } else {
+      container.appendChild(canvas);
+    }
   });
 }
