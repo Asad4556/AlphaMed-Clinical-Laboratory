@@ -1,93 +1,62 @@
-let currentMRN = 1;
-const patients = [];
+document.addEventListener("DOMContentLoaded", () => {
+  loadPatientTable();
 
-function nextStep() {
-  document.getElementById("testSelection").classList.remove("hidden");
-  renderTests();
-}
+  // Search handler
+  document.getElementById("searchInput").addEventListener("input", function () {
+    const query = this.value.toLowerCase();
+    const rows = document.querySelectorAll("#patientTable tbody tr");
 
-function renderTests() {
-  const container = document.getElementById("testList");
-  container.innerHTML = "";
-
-  labDepartments.forEach(dep => {
-    const section = document.createElement("div");
-    section.className = "border p-2 rounded";
-
-    const heading = document.createElement("h4");
-    heading.textContent = dep.name;
-    heading.className = "font-semibold mb-1";
-
-    section.appendChild(heading);
-
-    dep.tests.forEach(test => {
-      const label = document.createElement("label");
-      label.className = "block text-sm";
-
-      const checkbox = document.createElement("input");
-      checkbox.type = "checkbox";
-      checkbox.value = test.name;
-      checkbox.className = "mr-2";
-
-      label.appendChild(checkbox);
-      label.appendChild(document.createTextNode(test.name));
-      section.appendChild(label);
+    rows.forEach((row) => {
+      const text = row.textContent.toLowerCase();
+      row.style.display = text.includes(query) ? "" : "none";
     });
-
-    container.appendChild(section);
   });
-}
+});
 
-function registerPatient() {
-  const name = document.getElementById("patientName").value;
-  const age = document.getElementById("age").value;
-  const gender = document.getElementById("gender").value;
-  const cnic = document.getElementById("cnic").value;
-  const sampleNumber = document.getElementById("sampleNumber").value;
-
-  const tests = Array.from(document.querySelectorAll("#testList input:checked")).map(cb => cb.value);
-
-  const mrn = `MRN-${String(currentMRN).padStart(4, '0')}`;
-  currentMRN++;
-
-  const patient = { mrn, name, age, gender, cnic, sampleNumber, tests };
-  patients.push(patient);
-  localStorage.setItem("patients", JSON.stringify(patients));
-
-  // QR Code
-  const qr = new QRious({
-    element: document.getElementById("qrCode"),
-    value: `MRN: ${mrn}\nName: ${name}\nTests: ${tests.join(', ')}`,
-    size: 150
-  });
-
-  document.getElementById("qrText").innerText = `MRN: ${mrn}\nName: ${name}`;
-  document.getElementById("qrSection").classList.remove("hidden");
-
-  renderPatientTable();
-}
-
-function renderPatientTable() {
-  const tbody = document.getElementById("patientTable");
+// Load patients from localStorage into table
+function loadPatientTable() {
+  const patients = JSON.parse(localStorage.getItem("patients")) || [];
+  const tbody = document.querySelector("#patientTable tbody");
   tbody.innerHTML = "";
 
-  patients.forEach(p => {
+  patients.forEach((patient, index) => {
     const row = document.createElement("tr");
+
     row.innerHTML = `
-      <td class="border p-2">${p.mrn}</td>
-      <td class="border p-2">${p.name}</td>
-      <td class="border p-2">${p.sampleNumber}</td>
-      <td class="border p-2">${p.tests.join(", ")}</td>
+      <td>${index + 1}</td>
+      <td>${patient.mrn}</td>
+      <td>${patient.patientName}</td>
+      <td>${patient.cnic}</td>
+      <td>${patient.phone}</td>
+      <td>${patient.department}</td>
+      <td>${patient.test}</td>
+      <td>${patient.date}</td>
+      <td>
+        <button onclick="printSlip('${patient.mrn}')">🖨️</button>
+        <button onclick="deletePatient(${index})">🗑️</button>
+      </td>
     `;
+
     tbody.appendChild(row);
   });
 }
 
-window.onload = () => {
-  const saved = JSON.parse(localStorage.getItem("patients") || "[]");
-  saved.forEach(p => patients.push(p));
-  if (patients.length > 0) {
-    currentMRN = patients.length + 1;
+// Delete patient by index
+function deletePatient(index) {
+  if (confirm("Are you sure you want to delete this record?")) {
+    let patients = JSON.parse(localStorage.getItem("patients")) || [];
+    patients.splice(index, 1);
+    localStorage.setItem("patients", JSON.stringify(patients));
+    loadPatientTable();
   }
-  renderPatientTable();
-};
+}
+
+// Print registration slip
+function printSlip(mrn) {
+  const patients = JSON.parse(localStorage.getItem("patients")) || [];
+  const patient = patients.find((p) => p.mrn === mrn);
+  if (patient) {
+    localStorage.setItem("lastPatient", JSON.stringify(patient));
+    window.open("registration-slip.html", "_blank");
+  }
+}
