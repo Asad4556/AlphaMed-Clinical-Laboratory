@@ -1,90 +1,147 @@
 <!DOCTYPE html>
-<html lang="ur">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>ٹیکنیشن ڈیش بورڈ</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Technician Dashboard - Alpha-Med Clinical Lab</title>
   <link rel="stylesheet" href="style.css" />
-</head>
-<body class="bg-gray-100 text-gray-800">
-  <div class="max-w-6xl mx-auto p-6">
-    <h1 class="text-2xl font-bold mb-4">🧪 ٹیسٹ رزلٹ داخل کریں</h1>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f8f9fa;
+      padding: 20px;
+    }
 
-    <div id="patientList" class="space-y-4">
-      <!-- مریضوں کی فہرست یہاں آۓ گی -->
-    </div>
+    .dashboard {
+      max-width: 900px;
+      margin: auto;
+      background: #fff;
+      border-radius: 8px;
+      padding: 30px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    select, input, button {
+      width: 100%;
+      padding: 8px 10px;
+      margin-top: 5px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #normalRange {
+      margin-top: 5px;
+      color: #555;
+      font-size: 13px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+    }
+
+    th, td {
+      border: 1px solid #dee2e6;
+      padding: 10px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+
+    #searchInput {
+      margin-bottom: 15px;
+      padding: 8px;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 13px;
+      color: #888;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="dashboard">
+  <h2>👨‍🔬 Technician Dashboard</h2>
+
+  <div class="form-group">
+    <label for="patientSelect">Select Registered Patient:</label>
+    <select id="patientSelect"></select>
   </div>
 
-  <script src="storage.js"></script>
-  <script>
-    function loadPatients() {
-      const listContainer = document.getElementById("patientList");
-      listContainer.innerHTML = "";
+  <div class="form-group">
+    <label for="testName">Test Name:</label>
+    <input type="text" id="testName" placeholder="e.g. Blood Sugar, Hemoglobin" />
+    <div id="normalRange"></div>
+  </div>
 
-      const patients = JSON.parse(localStorage.getItem("registeredPatients") || "[]");
+  <div class="form-group">
+    <label for="testResult">Result:</label>
+    <input type="text" id="testResult" placeholder="Enter result value" />
+  </div>
 
-      if (patients.length === 0) {
-        listContainer.innerHTML = "<p>📭 کوئی مریض رجسٹر نہیں ہے۔</p>";
-        return;
-      }
+  <button onclick="addTestResult()">Add Result</button>
 
-      patients.forEach((patient, index) => {
-        const card = document.createElement("div");
-        card.className = "bg-white p-4 rounded shadow";
+  <input type="text" id="searchInput" onkeyup="filterResults()" placeholder="Search results..." />
 
-        card.innerHTML = `
-          <h2 class="text-lg font-semibold mb-2">${patient.name} (MRN: ${patient.mrn})</h2>
-          <p><strong>CNIC:</strong> ${patient.cnic} | <strong>Sample#:</strong> ${patient.sampleNo}</p>
-          <form data-index="${index}" class="mt-3 space-y-2">
-            ${renderTests(patient.selectedTests)}
-            <button type="submit" class="btn bg-green-600 text-white">💾 محفوظ کریں</button>
-          </form>
-        `;
+  <table id="resultsTable">
+    <thead>
+      <tr>
+        <th>Patient</th>
+        <th>Test</th>
+        <th>Result</th>
+        <th>Normal Range</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Dynamic content -->
+    </tbody>
+  </table>
 
-        card.querySelector("form").addEventListener("submit", function (e) {
-          e.preventDefault();
-          saveResults(this);
-        });
+  <div class="footer">
+    &copy; 2025 Alpha-Med Clinical Lab. All rights reserved.
+  </div>
+</div>
 
-        listContainer.appendChild(card);
-      });
-    }
-
-    function renderTests(tests) {
-      let html = "";
-      tests.forEach((test, i) => {
-        html += `<div class="border p-2 rounded mb-2">
-          <strong>${test.name}</strong>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
-            ${test.parameters.map((param, j) => `
-              <label>
-                ${param.name} (${param.unit}) [${param.range}]:
-                <input type="text" name="result-${i}-${j}" value="${param.result || ''}" class="input w-full" />
-              </label>
-            `).join("")}
-          </div>
-        </div>`;
-      });
-      return html;
-    }
-
-    function saveResults(form) {
-      const index = form.getAttribute("data-index");
-      const patients = JSON.parse(localStorage.getItem("registeredPatients") || "[]");
-      const patient = patients[index];
-
-      patient.selectedTests.forEach((test, i) => {
-        test.parameters.forEach((param, j) => {
-          const result = form.querySelector(`[name="result-${i}-${j}"]`).value;
-          param.result = result;
-        });
-      });
-
-      patients[index] = patient;
-      localStorage.setItem("registeredPatients", JSON.stringify(patients));
-      alert("✅ رزلٹ محفوظ ہو گیا۔");
-    }
-
-    loadPatients();
-  </script>
+<script src="technician.js"></script>
 </body>
 </html>
