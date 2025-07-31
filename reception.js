@@ -1,84 +1,139 @@
-// ✅ Updated reception.js
-import { labDepartments } from './test-data.js';
+// reception.js
+
+// DOM elements
+const searchBtn = document.getElementById("searchBtn");
+const searchInput = document.getElementById("searchInput");
+const patientInfo = document.getElementById("patientInfo");
+const assignSection = document.getElementById("assignSection");
+const pName = document.getElementById("pName");
+const pMRN = document.getElementById("pMRN");
+const pSample = document.getElementById("pSample");
 
 const departmentSelect = document.getElementById("departmentSelect");
 const testSelect = document.getElementById("testSelect");
-const selectedTestsList = document.getElementById("selectedTests");
-const assignForm = document.getElementById("assignTestsForm");
-const mrnInput = document.getElementById("mrnInput");
+const addTestBtn = document.getElementById("addTestBtn");
+const selectedTestsDiv = document.getElementById("selectedTests");
+const saveTestsBtn = document.getElementById("saveTestsBtn");
 
+let currentPatient = null;
 let selectedTests = [];
 
-// Load Departments on Page Load
-function loadDepartments() {
-  departmentSelect.innerHTML = '<option value="">Select Department</option>';
-  labDepartments.forEach((dept, i) => {
-    const option = document.createElement("option");
-    option.value = i;
-    option.textContent = dept.name;
-    departmentSelect.appendChild(option);
+// ✅ Load departments in dropdown
+function populateDepartments() {
+  departmentSelect.innerHTML = "<option value=''>-- Select Department --</option>";
+  labDepartments.forEach(dep => {
+    const opt = document.createElement("option");
+    opt.value = dep.name;
+    opt.textContent = dep.name;
+    departmentSelect.appendChild(opt);
   });
 }
 
-// Load Tests Based on Department
+// ✅ Load tests based on selected department
 departmentSelect.addEventListener("change", function () {
-  const deptIndex = departmentSelect.value;
-  testSelect.innerHTML = '<option value="">Select Test</option>';
+  const selectedDept = this.value;
+  const dept = labDepartments.find(d => d.name === selectedDept);
 
-  if (deptIndex !== "") {
-    labDepartments[deptIndex].tests.forEach(test => {
-      const option = document.createElement("option");
-      option.value = test.name;
-      option.textContent = test.name;
-      testSelect.appendChild(option);
+  testSelect.innerHTML = "<option value=''>-- Select Test --</option>";
+  if (dept) {
+    dept.tests.forEach(test => {
+      const opt = document.createElement("option");
+      opt.value = test.name;
+      opt.textContent = test.name;
+      testSelect.appendChild(opt);
     });
   }
 });
 
-// Add selected test to list
-testSelect.addEventListener("change", function () {
-  const testName = testSelect.value;
-  if (testName && !selectedTests.includes(testName)) {
-    selectedTests.push(testName);
-    const li = document.createElement("li");
-    li.textContent = testName;
-    selectedTestsList.appendChild(li);
+// ✅ Search patient
+searchBtn.addEventListener("click", function () {
+  const query = searchInput.value.trim();
+  const patients = getFromStorage("patients");
+
+  const found = patients.find(p => p.cnic === query || p.mrn === query);
+
+  if (found) {
+    currentPatient = found;
+    showPatientInfo(found);
+    assignSection.classList.remove("hidden");
+    selectedTests = found.tests || [];
+    renderSelectedTests();
+  } else {
+    alert("مریض نہیں ملا!");
   }
 });
 
-// Assign Tests to Patient
-assignForm.addEventListener("submit", function (e) {
-  e.preventDefault();
-  const mrn = mrnInput.value.trim();
-  if (!mrn || selectedTests.length === 0) {
-    alert("MRN aur kam az kam 1 test zaroori hai.");
+// ✅ Show patient info
+function showPatientInfo(patient) {
+  pName.textContent = patient.name;
+  pMRN.textContent = patient.mrn;
+  pSample.textContent = patient.sampleNo;
+  patientInfo.classList.remove("hidden");
+}
+
+// ✅ Add selected test
+addTestBtn.addEventListener("click", function () {
+  const testName = testSelect.value;
+  const department = departmentSelect.value;
+
+  if (!testName || !department) {
+    alert("براہ کرم ڈیپارٹمنٹ اور ٹیسٹ منتخب کریں!");
     return;
   }
 
-  const patients = getFromStorage("patients");
-  const index = patients.findIndex(p => p.mrn === mrn);
-
-  if (index !== -1) {
-    patients[index].tests = selectedTests.map(name => ({ name }));
-    patients[index].status = "pending";
-    saveToStorage("patients", patients);
-    alert("✅ Tests assign ho gaye!");
-    selectedTests = [];
-    selectedTestsList.innerHTML = "";
-    assignForm.reset();
-  } else {
-    alert("Patient MRN nahi mila.");
+  // Avoid duplicate
+  if (selectedTests.some(t => t.name === testName)) {
+    alert("یہ ٹیسٹ پہلے ہی شامل کیا جا چکا ہے۔");
+    return;
   }
+
+  selectedTests.push({ name: testName, department });
+  renderSelectedTests();
 });
 
-// Helper Functions
-function saveToStorage(key, data) {
-  localStorage.setItem(key, JSON.stringify(data));
+// ✅ Render selected tests
+function renderSelectedTests() {
+  selectedTestsDiv.innerHTML = "";
+  selectedTests.forEach((t, index) => {
+    const div = document.createElement("div");
+    div.className = "border-b py-1 flex justify-between";
+    div.innerHTML = `
+      <span>${t.department} - <strong>${t.name}</strong></span>
+      <button onclick="removeTest(${index})" class="text-red-500">❌</button>
+    `;
+    selectedTestsDiv.appendChild(div);
+  });
 }
 
-function getFromStorage(key) {
-  return JSON.parse(localStorage.getItem(key) || "[]");
+// ✅ Remove test
+function removeTest(index) {
+  selectedTests.splice(index, 1);
+  renderSelectedTests();
 }
 
-// Initialize
-loadDepartments();
+// ✅ Save tests to patient
+saveTestsBtn.addEventListener("click", function () {
+  if (!currentPatient) return;
+
+  updateStorage("patients", p => p.mrn === currentPatient.mrn, old => ({
+    ...old,
+    tests: selectedTests,
+    status: "tests-assigned"
+  }));
+
+  alert("✅ ٹیسٹس محفوظ ہو گئے!");
+  resetForm();
+});
+
+// ✅ Reset form
+function resetForm() {
+  currentPatient = null;
+  selectedTests = [];
+  searchInput.value = "";
+  patientInfo.classList.add("hidden");
+  assignSection.classList.add("hidden");
+  selectedTestsDiv.innerHTML = "";
+}
+
+// ✅ Initialize
+populateDepartments();
