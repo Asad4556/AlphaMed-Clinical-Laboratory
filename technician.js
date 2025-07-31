@@ -1,126 +1,118 @@
-// technician.js
-
-// Get HTML elements
-const searchBtn = document.getElementById("searchBtn");
-const searchInput = document.getElementById("searchInput");
-const patientInfo = document.getElementById("patientInfo");
-const resultForm = document.getElementById("resultForm");
-const testFields = document.getElementById("testFields");
-const resultTableBody = document.getElementById("resultTableBody");
-
-let selectedPatient = null;
-
-// Load results on page load
+// Load result status on page load
 document.addEventListener("DOMContentLoaded", () => {
   renderResultStatusTable();
 });
 
-// Search patient
-searchBtn.onclick = () => {
-  const query = searchInput.value.trim().toLowerCase();
+// Search patient by CNIC or MRN
+document.getElementById("searchBtn").addEventListener("click", () => {
+  const query = document.getElementById("searchInput").value.trim();
   const patients = getFromStorage("patients");
 
-  selectedPatient = patients.find(p =>
-    p.cnic.toLowerCase() === query || p.mrn.toLowerCase() === query
+  const found = patients.find(p =>
+    p.cnic === query || p.mrn === query
   );
 
-  if (selectedPatient) {
-    document.getElementById("pName").innerText = selectedPatient.name;
-    document.getElementById("pMRN").innerText = selectedPatient.mrn;
-    document.getElementById("pSample").innerText = selectedPatient.sampleNo;
-
-    renderTestFields(selectedPatient);
-    patientInfo.classList.remove("hidden");
-    resultForm.classList.remove("hidden");
+  if (found) {
+    showPatient(found);
   } else {
-    alert("Patient not found.");
-    patientInfo.classList.add("hidden");
-    resultForm.classList.add("hidden");
+    alert("Patient not found!");
   }
-};
+});
 
-// Render test fields for result entry
-function renderTestFields(patient) {
+// Show patient and their tests
+function showPatient(patient) {
+  document.getElementById("patientInfo").classList.remove("hidden");
+  document.getElementById("resultForm").classList.remove("hidden");
+
+  document.getElementById("pName").textContent = patient.name;
+  document.getElementById("pMRN").textContent = patient.mrn;
+  document.getElementById("pSample").textContent = patient.sampleNo;
+
+  const testFields = document.getElementById("testFields");
   testFields.innerHTML = "";
 
-  const tests = patient.tests || [];
+  // Fetch assigned tests (from reception)
+  const assignedTests = getFromStorage("reception_tests").filter(
+    t => t.mrn === patient.mrn
+  );
 
-  if (tests.length === 0) {
-    testFields.innerHTML = "<p class='text-red-500'>No tests assigned for this patient.</p>";
+  if (assignedTests.length === 0) {
+    testFields.innerHTML = "<p class='text-red-500'>No tests assigned.</p>";
     return;
   }
 
-  tests.forEach(testName => {
-    const div = document.createElement("div");
-    div.innerHTML = `
-      <label class="block font-medium mb-1">${testName}</label>
-      <input type="text" name="${testName}" class="w-full border px-2 py-1 rounded mb-3" placeholder="Enter result" required>
+  assignedTests.forEach(test => {
+    const field = document.createElement("div");
+    field.innerHTML = `
+      <label class="block font-medium">${test.name}</label>
+      <input type="text" name="${test.name}" class="w-full border px-2 py-1 rounded" placeholder="Enter result" required />
     `;
-    testFields.appendChild(div);
+    testFields.appendChild(field);
   });
+
+  // Save test results
+  document.getElementById("resultForm").onsubmit = function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+    const results = [];
+
+    for (let pair of formData.entries()) {
+      results.push({ testName: pair[0], value: pair[1] });
+    }
+
+    const resultData = {
+      mrn: patient.mrn,
+      name: patient.name,
+      sampleNo: patient.sampleNo,
+      results,
+      savedAt: new Date().toLocaleString()
+    };
+
+    // Save to results
+    const allResults = getFromStorage("results");
+    const index = allResults.findIndex(r => r.mrn === patient.mrn);
+    if (index !== -1) {
+      allResults[index] = resultData;
+    } else {
+      allResults.push(resultData);
+    }
+    localStorage.setItem("results", JSON.stringify(allResults));
+
+    alert("✅ Results saved successfully.");
+    e.target.reset();
+    document.getElementById("resultForm").classList.add("hidden");
+    document.getElementById("patientInfo").classList.add("hidden");
+
+    renderResultStatusTable();
+  };
 }
 
-// Submit result and save to localStorage
-resultForm.onsubmit = e => {
-  e.preventDefault();
-
-  const formData = new FormData(resultForm);
-  const results = [];
-
-  for (const [testName, value] of formData.entries()) {
-    results.push({ testName, value });
-  }
-
-  const resultData = {
-    mrn: selectedPatient.mrn,
-    name: selectedPatient.name,
-    sampleNo: selectedPatient.sampleNo,
-    results,
-    savedAt: new Date().toLocaleString()
-  };
-
-  // Save to localStorage
-  const existing = getFromStorage("results");
-  const index = existing.findIndex(r => r.mrn === selectedPatient.mrn);
-  if (index !== -1) {
-    existing[index] = resultData; // update existing
-  } else {
-    existing.push(resultData);
-  }
-  localStorage.setItem("results", JSON.stringify(existing));
-
-  alert("Results saved successfully!");
-  resultForm.reset();
-  resultForm.classList.add("hidden");
-  patientInfo.classList.add("hidden");
-
-  renderResultStatusTable(); // refresh table
-};
-
-// Render result status table
+// Show status table (Pending / Approved)
 function renderResultStatusTable() {
   const patients = getFromStorage("patients");
   const results = getFromStorage("results");
-  resultTableBody.innerHTML = "";
+  const tbody = document.getElementById("resultTableBody");
+  tbody.innerHTML = "";
 
   patients.forEach(p => {
-    const hasResult = results.some(r => r.mrn === p.mrn);
-    const status = hasResult
+    const isDone = results.some(r => r.mrn === p.mrn);
+    const status = isDone
       ? `<span class="text-green-600 font-semibold">✅ Approved</span>`
       : `<span class="text-yellow-600 font-semibold">⏳ Pending</span>`;
 
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
+    const row = document.createElement("tr");
+    row.innerHTML = `
       <td class="p-2 border">${p.mrn}</td>
       <td class="p-2 border">${p.name}</td>
       <td class="p-2 border">${p.sampleNo}</td>
       <td class="p-2 border">${status}</td>
     `;
-    resultTableBody.appendChild(tr);
+    tbody.appendChild(row);
   });
 }
 
-// Helpers
+// Storage helper
 function getFromStorage(key) {
   return JSON.parse(localStorage.getItem(key)) || [];
 }
