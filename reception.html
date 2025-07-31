@@ -28,24 +28,24 @@
     </div>
 
     <div class="mt-4">
-      <label class="block font-semibold mb-1">Select Department:</label>
-      <select id="departmentSelect" class="border p-2 rounded w-full">
-        <option value="">-- Select Department --</option>
+      <label class="block font-semibold mb-1">Select Departments:</label>
+      <select id="departmentSelect" multiple class="border p-2 rounded w-full h-48">
         <option value="Hematology">Hematology</option>
         <option value="Serology">Serology</option>
         <option value="Histopathology">Histopathology</option>
         <option value="Microbiology">Microbiology</option>
         <option value="Biochemistry">Biochemistry</option>
-        <option value="Culture">Culture Tests</option>
+        <option value="Culture Tests">Culture Tests</option>
         <option value="Special Chemistry">Special Chemistry</option>
         <option value="Molecular Biology">Molecular Biology</option>
         <option value="Blood Banking">Blood Banking</option>
       </select>
+      <p class="text-sm text-gray-500 mt-1">Use Ctrl/Command or drag to select multiple</p>
     </div>
 
     <div class="mt-4">
       <label class="block font-semibold mb-1">Select Tests:</label>
-      <div id="testCheckboxes" class="grid grid-cols-2 gap-2"></div>
+      <div id="testCheckboxes" class="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto border p-2 rounded bg-gray-50"></div>
     </div>
 
     <button type="submit" class="mt-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Register Patient</button>
@@ -68,7 +68,48 @@
   </div>
 
   <script>
-    // Populate the auto-generated MRN and SampleNo when form loads
+    const departmentTests = {
+      "Hematology": ["CBC", "Hemoglobin", "WBC Count", "Platelet Count", "ESR", "Reticulocyte Count"],
+      "Serology": ["Widal Test", "CRP", "ASO Titre", "Rheumatoid Factor", "HIV", "HbsAg"],
+      "Histopathology": ["Biopsy", "FNAC", "Pap Smear", "Frozen Section"],
+      "Microbiology": ["Gram Stain", "AFB", "Culture & Sensitivity", "KOH", "Ziehl Neelsen Stain"],
+      "Biochemistry": ["LFT", "RFT", "Glucose", "Uric Acid", "Cholesterol", "Triglycerides", "LDL", "HDL"],
+      "Culture Tests": ["Urine Culture", "Blood Culture", "Sputum Culture", "Stool Culture", "Throat Swab"],
+      "Special Chemistry": ["HbA1c", "TIBC", "Iron Studies", "Vitamin D", "Vitamin B12"],
+      "Molecular Biology": ["PCR", "RT-PCR", "HCV RNA", "HBV DNA", "GeneXpert"],
+      "Blood Banking": ["Blood Grouping", "Cross Match", "Coombs Test", "Antibody Screening"]
+    };
+
+    document.getElementById("departmentSelect").addEventListener("change", function () {
+      const selectedDepartments = Array.from(this.selectedOptions).map(opt => opt.value);
+      const testDiv = document.getElementById("testCheckboxes");
+      testDiv.innerHTML = "";
+
+      selectedDepartments.forEach(dept => {
+        if (departmentTests[dept]) {
+          const groupTitle = document.createElement("div");
+          groupTitle.className = "col-span-2 font-semibold mt-2 text-blue-700";
+          groupTitle.innerText = dept;
+          testDiv.appendChild(groupTitle);
+
+          departmentTests[dept].forEach(test => {
+            const label = document.createElement("label");
+            label.className = "flex items-center space-x-2";
+
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.name = "tests[]";
+            checkbox.value = test;
+
+            label.appendChild(checkbox);
+            label.appendChild(document.createTextNode(test));
+            testDiv.appendChild(label);
+          });
+        }
+      });
+    });
+
+    // Auto MRN / Sample No
     document.addEventListener("DOMContentLoaded", () => {
       const getNext = (key, base) => {
         const last = parseInt(localStorage.getItem(key) || base, 10) + 1;
@@ -77,8 +118,6 @@
       document.getElementById("autoMRN").value = `MRN-${getNext("lastMRN", 1000)}`;
       document.getElementById("autoSampleNo").value = `S-${getNext("lastSample", 5000)}`;
     });
-
-    // Refresh MRN & Sample No after each submit from inside reception.js
   </script>
 </body>
 </html>
