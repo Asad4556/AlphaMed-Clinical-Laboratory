@@ -1,128 +1,149 @@
 <!DOCTYPE html>
-<html lang="ur">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>مریض کا اندراج</title>
+  <title>Register Patient - AlphaMed Lab</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="style.css" />
-  <script src="https://cdn.jsdelivr.net/npm/qrious/dist/qrious.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f7fb;
+      padding: 20px;
+    }
+
+    h2 {
+      color: #013243;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    form {
+      background: #fff;
+      padding: 25px;
+      border-radius: 10px;
+      max-width: 700px;
+      margin: auto;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    label {
+      display: block;
+      margin: 12px 0 6px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 12px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #013243;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 5px;
+      width: 100%;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #014a63;
+    }
+
+    .qr-preview {
+      margin-top: 20px;
+      text-align: center;
+    }
+  </style>
 </head>
-<body class="bg-gray-100 text-gray-800">
-  <div class="max-w-4xl mx-auto p-6">
-    <h1 class="text-2xl font-bold mb-4">📝 مریض کا اندراج</h1>
+<body>
 
-    <div class="bg-white p-4 rounded shadow mb-4">
-      <label>نام:</label>
-      <input type="text" id="patientName" class="input" placeholder="نام درج کریں" />
-      
-      <label class="mt-2 block">CNIC:</label>
-      <input type="text" id="patientCnic" class="input" placeholder="xxxxx-xxxxxxx-x" />
+  <h2>Register Patient - AlphaMed Clinical Lab</h2>
 
-      <label class="mt-2 block">Sample نمبر:</label>
-      <input type="text" id="sampleNo" class="input" placeholder="Sample No" />
+  <form id="registrationForm">
+    <label for="name">Patient Name</label>
+    <input type="text" id="name" required />
 
-      <label class="mt-2 block">ٹیسٹ منتخب کریں:</label>
-      <div id="testSelectionContainer" class="mb-4"></div>
+    <label for="cnic">CNIC</label>
+    <input type="text" id="cnic" maxlength="15" placeholder="xxxxx-xxxxxxx-x" required />
 
-      <button onclick="registerPatient()" class="btn bg-blue-600 hover:bg-blue-700 text-white">✅ رجسٹر کریں</button>
-    </div>
+    <label for="phone">Phone Number</label>
+    <input type="text" id="phone" placeholder="03xxxxxxxxx" required />
 
-    <div id="qrContainer" class="mt-4 hidden">
-      <h2 class="font-semibold mb-2">🔳 QR کوڈ</h2>
-      <canvas id="qr"></canvas>
-    </div>
-  </div>
+    <label for="department">Select Department</label>
+    <select id="department" required>
+      <option value="">-- Select Department --</option>
+      <option>Hematology</option>
+      <option>Serology</option>
+      <option>Histopathology</option>
+      <option>Microbiology</option>
+      <option>Biochemistry</option>
+      <option>Culture Tests</option>
+      <option>Special Chemistry</option>
+      <option>Molecular Biology</option>
+      <option>Blood Banking</option>
+    </select>
 
-  <script src="test-data.js"></script>
+    <label for="test">Select Test</label>
+    <select id="test" required>
+      <option value="">-- Select Test --</option>
+    </select>
+
+    <button type="submit">Register & Generate Slip</button>
+
+    <div class="qr-preview" id="qrCodeContainer"></div>
+  </form>
+
   <script src="storage.js"></script>
+  <script src="test-data.js"></script>
+  <script src="qr-generator.js"></script>
   <script>
-    function generateMRN() {
-      const prefix = "MRN";
-      const id = Date.now().toString().slice(-6);
-      return `${prefix}-${id}`;
-    }
+    // Auto fill test dropdown based on department
+    document.getElementById("department").addEventListener("change", function() {
+      const dept = this.value;
+      const testSelect = document.getElementById("test");
+      testSelect.innerHTML = "<option value=''>-- Select Test --</option>";
 
-    function renderTestSelection() {
-      const container = document.getElementById("testSelectionContainer");
-      labDepartments.forEach((dept, i) => {
-        const section = document.createElement("div");
-        section.className = "mb-2";
-        section.innerHTML = `<strong>${dept.name}</strong>`;
-
-        dept.tests.forEach((test, j) => {
-          const checkbox = document.createElement("input");
-          checkbox.type = "checkbox";
-          checkbox.id = `test-${i}-${j}`;
-          checkbox.value = test.name;
-          checkbox.className = "mr-2";
-
-          const label = document.createElement("label");
-          label.htmlFor = checkbox.id;
-          label.textContent = test.name;
-
-          const div = document.createElement("div");
-          div.appendChild(checkbox);
-          div.appendChild(label);
-
-          section.appendChild(div);
+      if (testData[dept]) {
+        testData[dept].forEach(test => {
+          const opt = document.createElement("option");
+          opt.value = test.name;
+          opt.textContent = test.name;
+          testSelect.appendChild(opt);
         });
-
-        container.appendChild(section);
-      });
-    }
-
-    function registerPatient() {
-      const name = document.getElementById("patientName").value.trim();
-      const cnic = document.getElementById("patientCnic").value.trim();
-      const sampleNo = document.getElementById("sampleNo").value.trim();
-
-      if (!name || !cnic || !sampleNo) {
-        alert("براہ کرم تمام معلومات درج کریں۔");
-        return;
       }
+    });
 
-      const mrn = generateMRN();
-
-      const selectedTests = [];
-
-      labDepartments.forEach((dept) => {
-        dept.tests.forEach((test) => {
-          const id = `test-${labDepartments.indexOf(dept)}-${dept.tests.indexOf(test)}`;
-          const checkbox = document.getElementById(id);
-          if (checkbox && checkbox.checked) {
-            selectedTests.push({ 
-              name: test.name,
-              parameters: test.parameters.map(p => ({ ...p, result: "" }))
-            });
-          }
-        });
-      });
+    // Form submission
+    document.getElementById("registrationForm").addEventListener("submit", function(e) {
+      e.preventDefault();
 
       const patient = {
-        mrn,
-        name,
-        cnic,
-        sampleNo,
-        selectedTests
+        mrn: "MRN-" + Date.now(),
+        name: document.getElementById("name").value,
+        cnic: document.getElementById("cnic").value,
+        phone: document.getElementById("phone").value,
+        department: document.getElementById("department").value,
+        test: document.getElementById("test").value,
+        date: new Date().toLocaleString()
       };
 
-      const patients = JSON.parse(localStorage.getItem("registeredPatients") || "[]");
-      patients.push(patient);
-      localStorage.setItem("registeredPatients", JSON.stringify(patients));
+      savePatientToStorage(patient);
 
-      generateQRCode(mrn);
-      alert("✅ مریض رجسٹر ہو گیا ہے");
-    }
+      // Show QR Code
+      generateQRCode(JSON.stringify(patient), "qrCodeContainer");
 
-    function generateQRCode(mrn) {
-      const qr = new QRious({
-        element: document.getElementById("qr"),
-        value: mrn,
-        size: 200
-      });
-      document.getElementById("qrContainer").classList.remove("hidden");
-    }
-
-    renderTestSelection();
+      // Redirect to slip
+      setTimeout(() => {
+        localStorage.setItem("latestPatient", JSON.stringify(patient));
+        window.location.href = "registration-slip.html";
+      }, 1500);
+    });
   </script>
+
 </body>
 </html>
