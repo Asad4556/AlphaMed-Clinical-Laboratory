@@ -1,60 +1,52 @@
-// technician.js
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Technician Panel</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="p-6 bg-gray-50 text-gray-800">
 
-document.getElementById("searchBtn").addEventListener("click", function () {
-  const query = document.getElementById("searchInput").value.trim();
-  const patients = getFromStorage("patients");
+  <h1 class="text-2xl font-bold mb-4">🧪 Technician Panel</h1>
 
-  const found = patients.find(p =>
-    p.cnic === query || p.mrn === query
-  );
+  <div class="mb-4">
+    <input id="searchInput" type="text" placeholder="Enter CNIC or MRN"
+      class="border px-3 py-2 w-64 rounded" />
+    <button id="searchBtn"
+      class="bg-blue-600 text-white px-4 py-2 rounded ml-2">Search</button>
+  </div>
 
-  if (found) {
-    showPatient(found);
-  } else {
-    alert("Patient not found!");
-  }
-});
+  <!-- Patient Info -->
+  <div id="patientInfo" class="hidden border p-4 rounded bg-white shadow mb-4">
+    <p><strong>Name:</strong> <span id="pName"></span></p>
+    <p><strong>MRN:</strong> <span id="pMRN"></span></p>
+    <p><strong>Sample No:</strong> <span id="pSample"></span></p>
+  </div>
 
-function showPatient(patient) {
-  document.getElementById("patientInfo").classList.remove("hidden");
-  document.getElementById("resultForm").classList.remove("hidden");
+  <!-- Result Form -->
+  <form id="resultForm" class="hidden bg-white p-4 rounded shadow space-y-4">
+    <div id="testFields"></div>
+    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">
+      Save Results
+    </button>
+  </form>
 
-  document.getElementById("pName").textContent = patient.name;
-  document.getElementById("pMRN").textContent = patient.mrn;
-  document.getElementById("pSample").textContent = patient.sampleNo;
+  <!-- Test Status Table -->
+  <h2 class="text-xl font-semibold mt-8 mb-2">📋 Test Status</h2>
+  <table class="w-full text-sm border border-collapse bg-white shadow">
+    <thead class="bg-gray-200">
+      <tr>
+        <th class="border px-2 py-1">MRN</th>
+        <th class="border px-2 py-1">Name</th>
+        <th class="border px-2 py-1">Sample No</th>
+        <th class="border px-2 py-1">Status</th>
+      </tr>
+    </thead>
+    <tbody id="resultTableBody"></tbody>
+  </table>
 
-  // Clear old fields
-  const testFields = document.getElementById("testFields");
-  testFields.innerHTML = "";
-
-  // Show test fields
-  (patient.tests || []).forEach(test => {
-    const field = document.createElement("div");
-    field.innerHTML = `
-      <label class="block font-medium">${test.name}</label>
-      <input type="text" name="${test.name}" class="input-box w-full" placeholder="Enter result" />
-    `;
-    testFields.appendChild(field);
-  });
-
-  // Attach submit handler
-  document.getElementById("resultForm").onsubmit = function (e) {
-    e.preventDefault();
-
-    const formData = new FormData(e.target);
-    const results = {};
-    for (let pair of formData.entries()) {
-      results[pair[0]] = pair[1];
-    }
-
-    // Update patient record
-    updateStorage("patients", p => p.mrn === patient.mrn, old => ({
-      ...old,
-      results,
-      status: "results-added"
-    }));
-
-    alert("✅ Test results saved!");
-    e.target.reset();
-  };
-}
+  <script src="storage.js"></script>
+  <script src="technician.js"></script>
+</body>
+</html>
