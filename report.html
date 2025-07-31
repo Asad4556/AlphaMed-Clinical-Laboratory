@@ -2,653 +2,159 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <title>Lab Report - AlphaMed</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Patient Report - Alpha Med</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
   <style>
-    @media print {
-      .no-print { display: none !important; }
-      body { background: white !important; }
-      .print-border th, .print-border td { border: 1px solid #9ca3af !important; }
-      .print-border { border-collapse: collapse !important; }
-      .page-break { page-break-before: always; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #fff;
+      background-image: url('logo.png');
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 300px;
+      opacity: 0.98;
+    }
+
+    .report {
+      max-width: 800px;
+      margin: auto;
+      padding: 30px;
+      border: 2px solid #013243;
+      border-radius: 12px;
+      background-color: rgba(255, 255, 255, 0.97);
+      position: relative;
+    }
+
+    h2 {
+      text-align: center;
+      color: #013243;
+      margin-bottom: 30px;
+    }
+
+    .info {
+      font-size: 16px;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .label {
+      font-weight: bold;
+      color: #014a63;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    table th, table td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+      font-size: 15px;
+    }
+
+    table th {
+      background-color: #013243;
+      color: white;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 30px;
+      font-weight: bold;
+      font-size: 15px;
+      color: #555;
+    }
+
+    #qrCode {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    button {
+      margin-top: 25px;
+      padding: 10px 20px;
+      background: #013243;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #02516c;
     }
   </style>
 </head>
-<body class="bg-gray-100 text-gray-900 min-h-screen p-4">
+<body>
 
-  <!-- Buttons -->
-  <div class="no-print max-w-6xl mx-auto mb-4 flex flex-wrap gap-2 justify-end">
-    <button onclick="window.print()" class="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">🖨️ Print / Save PDF</button>
-    <button onclick="exportCSV()" class="px-4 py-2 rounded bg-emerald-600 text-white hover:bg-emerald-700">📄 Export CSV</button>
-    <button onclick="shareWhatsApp()" class="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700">🟢 WhatsApp Patient</button>
-    <button onclick="saveDataToStorage(report)" class="px-4 py-2 rounded bg-yellow-600 text-white hover:bg-yellow-700">💾 Save Report</button>
+  <div class="report">
+    <h2>Patient Lab Report</h2>
+
+    <div class="info" id="reportInfo">
+      Loading...
+    </div>
+
+    <table id="testTable">
+      <thead>
+        <tr>
+          <th>Test</th>
+          <th>Result</th>
+          <th>Normal Range</th>
+          <th>Unit</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div id="qrCode"></div>
+
+    <div class="footer">Alpha-Med Clinical Lab</div>
+
+    <button onclick="window.print()">🖨️ Print Report</button>
   </div>
 
-  <!-- Report Container -->
-  <div class="max-w-6xl mx-auto bg-white shadow-md rounded-xl p-6">
-
-    <!-- Header -->
-    <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b pb-4">
-      <div class="flex items-center gap-3">
-        <img src="logo.png" alt="Alpha Med Logo" class="w-16 h-16 object-contain" />
-        <div>
-          <h1 class="text-2xl font-bold text-blue-800 leading-tight">Alpha Med Clinical Laboratory</h1>
-          <p class="text-sm text-gray-600">Advanced Diagnostic Services • Phone: 03xx-xxxxxxx • Email: info@alphamed.com</p>
-          <p class="text-xs text-gray-500">Address: Your clinic address here</p>
-        </div>
-      </div>
-      <div class="text-right">
-        <div id="qrBox" class="inline-block"></div>
-        <div class="text-xs text-gray-500 mt-1">Scan for verification</div>
-      </div>
-    </header>
-
-    <!-- Patient & Sample Info -->
-    <section class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-      <div class="bg-gray-50 rounded-lg p-4">
-        <h2 class="font-semibold text-gray-700 mb-2">Patient Information</h2>
-        <div class="grid grid-cols-2 gap-x-4 gap-y-1">
-          <div class="text-gray-500">Patient Name</div><div id="p_name" class="font-medium">—</div>
-          <div class="text-gray-500">Father/S/O</div><div id="p_father" class="font-medium">—</div>
-          <div class="text-gray-500">Gender</div><div id="p_gender" class="font-medium">—</div>
-          <div class="text-gray-500">Age</div><div id="p_age" class="font-medium">—</div>
-          <div class="text-gray-500">CNIC</div><div id="p_cnic" class="font-medium break-all">—</div>
-          <div class="text-gray-500">Phone</div><div id="p_phone" class="font-medium break-all">—</div>
-        </div>
-      </div>
-
-      <div class="bg-gray-50 rounded-lg p-4">
-        <h2 class="font-semibold text-gray-700 mb-2">Sample / Report</h2>
-        <div class="grid grid-cols-2 gap-x-4 gap-y-1">
-          <div class="text-gray-500">MRN No</div><div id="p_mrn" class="font-medium">—</div>
-          <div class="text-gray-500">Sample No</div><div id="p_sample" class="font-medium">—</div>
-          <div class="text-gray-500">Collected</div><div id="p_collected" class="font-medium">—</div>
-          <div class="text-gray-500">Reported</div><div id="p_reported" class="font-medium">—</div>
-          <div class="text-gray-500">Ref Doctor</div><div id="p_ref" class="font-medium">—</div>
-          <div class="text-gray-500">Departments</div><div id="p_depts" class="font-medium">—</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Tests -->
-    <section id="testsContainer" class="mt-6 space-y-8"></section>
-
-    <!-- Comments -->
-    <section class="mt-4">
-      <h3 class="font-semibold text-gray-700 mb-2">Comments / Notes</h3>
-      <div id="p_comments" class="text-sm bg-gray-50 p-3 rounded-lg min-h-[48px]">—</div>
-    </section>
-
-    <!-- Signatures -->
-    <section class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="text-center">
-        <div class="h-16"></div>
-        <div class="border-t border-gray-400 pt-1 font-medium">Technologist / Verified By</div>
-        <div id="sig_verified" class="text-xs text-gray-500">—</div>
-      </div>
-      <div class="text-center">
-        <div class="h-16"></div>
-        <div class="border-t border-gray-400 pt-1 font-medium">Pathologist / Authorized Signatory</div>
-        <div id="sig_authorized" class="text-xs text-gray-500">—</div>
-      </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="mt-8 text-center text-xs text-gray-500 border-t pt-3">
-      This is a computer-generated report. Results depend on specimen quality and methodology. Please correlate clinically.
-    </footer>
-  </div>
-
+  <script src="qr-generator.js"></script>
   <script>
-    // Utility: get element by ID shortcut
-    const byId = id => document.getElementById(id);
+    const reportData = JSON.parse(localStorage.getItem("currentReport"));
 
-    // Flagging logic for test results outside ref range
-    function flagResult(value, ref) {
-      if (!value || !ref) return '';
-      const num = parseFloat(value);
-      if (isNaN(num)) return '';
-      // Support range "x - y"
-      const parts = ref.split('-').map(s => s.trim());
-      if (parts.length === 2) {
-        const low = parseFloat(parts[0]);
-        const high = parseFloat(parts[1]);
-        if (!isNaN(low) && !isNaN(high)) {
-          if (num < low) return 'L';
-          if (num > high) return 'H';
-          return '';
-        }
-      }
-      // Support operators like <10 or >5
-      const m = ref.match(/^([<>]=?)\s*(\d+(\.\d+)?)$/);
-      if (m) {
-        const op = m[1], val = parseFloat(m[2]);
-        if (op === '<' && num >= val) return 'H';
-        if (op === '<=' && num > val) return 'H';
-        if (op === '>' && num <= val) return 'L';
-        if (op === '>=' && num < val) return 'L';
-      }
-      return '';
-    }
+    const infoDiv = document.getElementById("reportInfo");
+    const tableBody = document.querySelector("#testTable tbody");
 
-    // Render tests
-    function renderTests(tests) {
-      const container = byId('testsContainer');
-      container.innerHTML = '';
-      if (!tests || !tests.length) {
-        container.innerHTML = '<p class="text-gray-500 italic">No tests data available.</p>';
-        return;
-      }
-      tests.forEach(test => {
-        const div = document.createElement('div');
-        div.className = 'bg-gray-50 rounded-lg p-4 print-border';
+    if (reportData) {
+      infoDiv.innerHTML = `
+        <div><span class="label">MRN:</span> ${reportData.mrn}</div>
+        <div><span class="label">Name:</span> ${reportData.name}</div>
+        <div><span class="label">CNIC:</span> ${reportData.cnic}</div>
+        <div><span class="label">Phone:</span> ${reportData.phone}</div>
+        <div><span class="label">Department:</span> ${reportData.department}</div>
+        <div><span class="label">Date:</span> ${reportData.date}</div>
+      `;
 
-        // Test heading
-        const h4 = document.createElement('h4');
-        h4.className = 'font-semibold text-gray-800 mb-2';
-        h4.textContent = (test.department ? test.department + ' - ' : '') + (test.testName || 'Unnamed Test');
-        div.appendChild(h4);
-
-        // Table of parameters
-        const table = document.createElement('table');
-        table.className = 'w-full text-sm';
-        const thead = document.createElement('thead');
-        thead.innerHTML = `
-          <tr class="bg-gray-200 text-gray-700 border-b border-gray-300">
-            <th class="text-left px-2 py-1">Parameter</th>
-            <th class="text-left px-2 py-1">Result</th>
-            <th class="text-left px-2 py-1">Flag</th>
-            <th class="text-left px-2 py-1">Units</th>
-            <th class="text-left px-2 py-1">Reference Range</th>
-          </tr>
+      reportData.tests.forEach(test => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${test.name}</td>
+          <td>${test.result}</td>
+          <td>${test.normalRange}</td>
+          <td>${test.unit}</td>
         `;
-        table.appendChild(thead);
-
-        const tbody = document.createElement('tbody');
-        (test.parameters || []).forEach(param => {
-          const flag = flagResult(param.value, param.ref);
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td class="px-2 py-1">${param.name || ''}</td>
-            <td class="px-2 py-1">${param.value || ''}</td>
-            <td class="px-2 py-1 font-bold ${flag === 'H' ? 'text-red-600' : flag === 'L' ? 'text-blue-600' : ''}">${flag}</td>
-            <td class="px-2 py-1">${param.units || ''}</td>
-            <td class="px-2 py-1">${param.ref || ''}</td>
-          `;
-          tbody.appendChild(tr);
-        });
-        table.appendChild(tbody);
-        div.appendChild(table);
-        container.appendChild(div);
-      });
-    }
-
-    // Populate patient & sample info
-    function renderHeader(report) {
-      const p = report.patient || {};
-      const s = report.sample || {};
-      byId('p_name').textContent = p.name || '—';
-      byId('p_father').textContent = p.father || '—';
-      byId('p_gender').textContent = p.gender || '—';
-      byId('p_age').textContent = p.age || '—';
-      byId('p_cnic').textContent = p.cnic || '—';
-      byId('p_phone').textContent = p.phone || '—';
-
-      byId('p_mrn').textContent = s.mrn || '—';
-      byId('p_sample').textContent = s.sampleNo || '—';
-      byId('p_collected').textContent = s.collectedAt ? new Date(s.collectedAt).toLocaleString() : '—';
-      byId('p_reported').textContent = s.reportedAt ? new Date(s.reportedAt).toLocaleString() : '—';
-      byId('p_ref').textContent = s.refDoctor || '—';
-
-      const depts = report.tests?.map(t => t.department).filter(Boolean);
-      byId('p_depts').textContent = depts ? [...new Set(depts)].join(', ') : '—';
-
-      byId('p_comments').textContent = report.comments || '—';
-
-      byId('sig_verified').textContent = report.verifiedBy || '—';
-      byId('sig_authorized').textContent = report.authorizedBy || '—';
-    }
-
-    // Save data to localStorage
-    function saveDataToStorage(data) {
-      try {
-        localStorage.setItem('currentReport', JSON.stringify(data));
-        alert('Report saved to localStorage.');
-      } catch (err) {
-        alert('Error saving data: ' + err.message);
-      }
-    }
-
-    // Load data from localStorage
-    function loadDataFromStorage() {
-      try {
-        const data = localStorage.getItem('currentReport');
-        return data ? JSON.parse(data) : null;
-      } catch {
-        return null;
-      }
-    }
-
-    // Export CSV of all test parameters
-    function exportCSV() {
-      if (!report || !report.tests) {
-        alert('No report data to export.');
-        return;
-      }
-      const rows = [
-        ['Department', 'Test Name', 'Parameter', 'Result', 'Flag', 'Units', 'Reference Range']
-      ];
-
-      report.tests.forEach(test => {
-        (test.parameters || []).forEach(param => {
-          const flag = flagResult(param.value, param.ref);
-          rows.push([
-            test.department || '',
-            test.testName || '',
-            param.name || '',
-            param.value || '',
-            flag,
-            param.units || '',
-            param.ref || ''
-          ]);
-        });
+        tableBody.appendChild(tr);
       });
 
-      const csvContent = rows.map(r => r.map(v => `"${v}"`).join(',')).join('\n');
-      const blob = new Blob([csvContent], {type: 'text/csv'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'patient_report.csv';
-      a.click();
-      URL.revokeObjectURL(url);
+      generateQRCode(JSON.stringify(reportData), "qrCode");
+    } else {
+      infoDiv.innerHTML = "❌ No report data found.";
     }
-
-    // WhatsApp share
-    function shareWhatsApp() {
-      if (!report || !report.patient || !report.sample) {
-        alert('Report data not loaded.');
-        return;
-      }
-      const p = report.patient;
-      const s = report.sample;
-      const msg = `Patient Report for ${p.name || ''}\nSample No: ${s.sampleNo || ''}\nCollected: ${s.collectedAt ? new Date(s.collectedAt).toLocaleDateString() : ''}\nPlease check your detailed report.`;
-      const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
-      window.open(url, '_blank');
-    }
-
-    // QR code render (uses QRCode lib)
-    function renderQRCode(text) {
-      const qrBox = byId('qrBox');
-      qrBox.innerHTML = '';
-      if (!text) return;
-      QRCode.toCanvas(text, { width: 80 }, function (error, canvas) {
-        if (error) {
-          qrBox.textContent = 'QR Error';
-          return;
-        }
-        qrBox.appendChild(canvas);
-      });
-    }
-
-    // The report object - you should replace this object with your actual data
-    // Example structure:
-    // const report = {
-    //   patient: {...},
-    //   sample: {...},
-    //   comments: "...",
-    //   verifiedBy: "...",
-    //   authorizedBy: "...",
-    //   tests: [...]
-    // };
-
-    // Load on page load
-    let report = loadDataFromStorage();
-
-    if (!report) {
-      alert('No report data found in localStorage. Please set the "report" variable in the script with your data.');
-    }
-
-    // Initial render
-    if (report) {
-      renderHeader(report);
-      renderTests(report.tests);
-      // Generate QR code with some unique report id or link
-      renderQRCode(report.sample?.sampleNo || '');
-    }
-
-    // Expose report globally for ease of editing in dev tools or scripts
-    window.report = report;
-
   </script>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Patient Report - Alpha Med</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-  <style>
-    @media print {
-      .no-print { display: none !important; }
-      body { background: white !important; }
-      .print-border th, .print-border td { border: 1px solid #9ca3af !important; }
-      .print-border { border-collapse: collapse !important; }
-      .page-break { page-break-before: always; }
-    }
-  </style>
-</head>
-<body class="bg-gray-100 text-gray-900 min-h-screen p-4">
 
-  <!-- Buttons -->
-  <div class="no-print max-w-6xl mx-auto mb-4 flex flex-wrap gap-2 justify-end">
-    <button onclick="window.print()" class="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">🖨️ Print / Save PDF</button>
-    <button onclick="exportCSV()" class="px-4 py-2 rounded bg-emerald-600 text-white hover:bg-emerald-700">📄 Export CSV</button>
-    <button onclick="shareWhatsApp()" class="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700">🟢 WhatsApp Patient</button>
-    <button onclick="saveDataToStorage(report)" class="px-4 py-2 rounded bg-yellow-600 text-white hover:bg-yellow-700">💾 Save Report</button>
-  </div>
-
-  <!-- Report Container -->
-  <div class="max-w-6xl mx-auto bg-white shadow-md rounded-xl p-6">
-
-    <!-- Header -->
-    <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b pb-4">
-      <div class="flex items-center gap-3">
-        <img src="logo.png" alt="Alpha Med Logo" class="w-16 h-16 object-contain" />
-        <div>
-          <h1 class="text-2xl font-bold text-blue-800 leading-tight">Alpha Med Clinical Laboratory</h1>
-          <p class="text-sm text-gray-600">Advanced Diagnostic Services • Phone: 03xx-xxxxxxx • Email: info@alphamed.com</p>
-          <p class="text-xs text-gray-500">Address: Your clinic address here</p>
-        </div>
-      </div>
-      <div class="text-right">
-        <div id="qrBox" class="inline-block"></div>
-        <div class="text-xs text-gray-500 mt-1">Scan for verification</div>
-      </div>
-    </header>
-
-    <!-- Patient & Sample Info -->
-    <section class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-      <div class="bg-gray-50 rounded-lg p-4">
-        <h2 class="font-semibold text-gray-700 mb-2">Patient Information</h2>
-        <div class="grid grid-cols-2 gap-x-4 gap-y-1">
-          <div class="text-gray-500">Patient Name</div><div id="p_name" class="font-medium">—</div>
-          <div class="text-gray-500">Father/S/O</div><div id="p_father" class="font-medium">—</div>
-          <div class="text-gray-500">Gender</div><div id="p_gender" class="font-medium">—</div>
-          <div class="text-gray-500">Age</div><div id="p_age" class="font-medium">—</div>
-          <div class="text-gray-500">CNIC</div><div id="p_cnic" class="font-medium break-all">—</div>
-          <div class="text-gray-500">Phone</div><div id="p_phone" class="font-medium break-all">—</div>
-        </div>
-      </div>
-
-      <div class="bg-gray-50 rounded-lg p-4">
-        <h2 class="font-semibold text-gray-700 mb-2">Sample / Report</h2>
-        <div class="grid grid-cols-2 gap-x-4 gap-y-1">
-          <div class="text-gray-500">MRN No</div><div id="p_mrn" class="font-medium">—</div>
-          <div class="text-gray-500">Sample No</div><div id="p_sample" class="font-medium">—</div>
-          <div class="text-gray-500">Collected</div><div id="p_collected" class="font-medium">—</div>
-          <div class="text-gray-500">Reported</div><div id="p_reported" class="font-medium">—</div>
-          <div class="text-gray-500">Ref Doctor</div><div id="p_ref" class="font-medium">—</div>
-          <div class="text-gray-500">Departments</div><div id="p_depts" class="font-medium">—</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Tests -->
-    <section id="testsContainer" class="mt-6 space-y-8"></section>
-
-    <!-- Comments -->
-    <section class="mt-4">
-      <h3 class="font-semibold text-gray-700 mb-2">Comments / Notes</h3>
-      <div id="p_comments" class="text-sm bg-gray-50 p-3 rounded-lg min-h-[48px]">—</div>
-    </section>
-
-    <!-- Signatures -->
-    <section class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="text-center">
-        <div class="h-16"></div>
-        <div class="border-t border-gray-400 pt-1 font-medium">Technologist / Verified By</div>
-        <div id="sig_verified" class="text-xs text-gray-500">—</div>
-      </div>
-      <div class="text-center">
-        <div class="h-16"></div>
-        <div class="border-t border-gray-400 pt-1 font-medium">Pathologist / Authorized Signatory</div>
-        <div id="sig_authorized" class="text-xs text-gray-500">—</div>
-      </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="mt-8 text-center text-xs text-gray-500 border-t pt-3">
-      This is a computer-generated report. Results depend on specimen quality and methodology. Please correlate clinically.
-    </footer>
-  </div>
-
-  <script>
-    // Utility: get element by ID shortcut
-    const byId = id => document.getElementById(id);
-
-    // Flagging logic for test results outside ref range
-    function flagResult(value, ref) {
-      if (!value || !ref) return '';
-      const num = parseFloat(value);
-      if (isNaN(num)) return '';
-      // Support range "x - y"
-      const parts = ref.split('-').map(s => s.trim());
-      if (parts.length === 2) {
-        const low = parseFloat(parts[0]);
-        const high = parseFloat(parts[1]);
-        if (!isNaN(low) && !isNaN(high)) {
-          if (num < low) return 'L';
-          if (num > high) return 'H';
-          return '';
-        }
-      }
-      // Support operators like <10 or >5
-      const m = ref.match(/^([<>]=?)\s*(\d+(\.\d+)?)$/);
-      if (m) {
-        const op = m[1], val = parseFloat(m[2]);
-        if (op === '<' && num >= val) return 'H';
-        if (op === '<=' && num > val) return 'H';
-        if (op === '>' && num <= val) return 'L';
-        if (op === '>=' && num < val) return 'L';
-      }
-      return '';
-    }
-
-    // Render tests
-    function renderTests(tests) {
-      const container = byId('testsContainer');
-      container.innerHTML = '';
-      if (!tests || !tests.length) {
-        container.innerHTML = '<p class="text-gray-500 italic">No tests data available.</p>';
-        return;
-      }
-      tests.forEach(test => {
-        const div = document.createElement('div');
-        div.className = 'bg-gray-50 rounded-lg p-4 print-border';
-
-        // Test heading
-        const h4 = document.createElement('h4');
-        h4.className = 'font-semibold text-gray-800 mb-2';
-        h4.textContent = (test.department ? test.department + ' - ' : '') + (test.testName || 'Unnamed Test');
-        div.appendChild(h4);
-
-        // Table of parameters
-        const table = document.createElement('table');
-        table.className = 'w-full text-sm';
-        const thead = document.createElement('thead');
-        thead.innerHTML = `
-          <tr class="bg-gray-200 text-gray-700 border-b border-gray-300">
-            <th class="text-left px-2 py-1">Parameter</th>
-            <th class="text-left px-2 py-1">Result</th>
-            <th class="text-left px-2 py-1">Flag</th>
-            <th class="text-left px-2 py-1">Units</th>
-            <th class="text-left px-2 py-1">Reference Range</th>
-          </tr>
-        `;
-        table.appendChild(thead);
-
-        const tbody = document.createElement('tbody');
-        (test.parameters || []).forEach(param => {
-          const flag = flagResult(param.value, param.ref);
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td class="px-2 py-1">${param.name || ''}</td>
-            <td class="px-2 py-1">${param.value || ''}</td>
-            <td class="px-2 py-1 font-bold ${flag === 'H' ? 'text-red-600' : flag === 'L' ? 'text-blue-600' : ''}">${flag}</td>
-            <td class="px-2 py-1">${param.units || ''}</td>
-            <td class="px-2 py-1">${param.ref || ''}</td>
-          `;
-          tbody.appendChild(tr);
-        });
-        table.appendChild(tbody);
-        div.appendChild(table);
-        container.appendChild(div);
-      });
-    }
-
-    // Populate patient & sample info
-    function renderHeader(report) {
-      const p = report.patient || {};
-      const s = report.sample || {};
-      byId('p_name').textContent = p.name || '—';
-      byId('p_father').textContent = p.father || '—';
-      byId('p_gender').textContent = p.gender || '—';
-      byId('p_age').textContent = p.age || '—';
-      byId('p_cnic').textContent = p.cnic || '—';
-      byId('p_phone').textContent = p.phone || '—';
-
-      byId('p_mrn').textContent = s.mrn || '—';
-      byId('p_sample').textContent = s.sampleNo || '—';
-      byId('p_collected').textContent = s.collectedAt ? new Date(s.collectedAt).toLocaleString() : '—';
-      byId('p_reported').textContent = s.reportedAt ? new Date(s.reportedAt).toLocaleString() : '—';
-      byId('p_ref').textContent = s.refDoctor || '—';
-
-      const depts = report.tests?.map(t => t.department).filter(Boolean);
-      byId('p_depts').textContent = depts ? [...new Set(depts)].join(', ') : '—';
-
-      byId('p_comments').textContent = report.comments || '—';
-
-      byId('sig_verified').textContent = report.verifiedBy || '—';
-      byId('sig_authorized').textContent = report.authorizedBy || '—';
-    }
-
-    // Save data to localStorage
-    function saveDataToStorage(data) {
-      try {
-        localStorage.setItem('currentReport', JSON.stringify(data));
-        alert('Report saved to localStorage.');
-      } catch (err) {
-        alert('Error saving data: ' + err.message);
-      }
-    }
-
-    // Load data from localStorage
-    function loadDataFromStorage() {
-      try {
-        const data = localStorage.getItem('currentReport');
-        return data ? JSON.parse(data) : null;
-      } catch {
-        return null;
-      }
-    }
-
-    // Export CSV of all test parameters
-    function exportCSV() {
-      if (!report || !report.tests) {
-        alert('No report data to export.');
-        return;
-      }
-      const rows = [
-        ['Department', 'Test Name', 'Parameter', 'Result', 'Flag', 'Units', 'Reference Range']
-      ];
-
-      report.tests.forEach(test => {
-        (test.parameters || []).forEach(param => {
-          const flag = flagResult(param.value, param.ref);
-          rows.push([
-            test.department || '',
-            test.testName || '',
-            param.name || '',
-            param.value || '',
-            flag,
-            param.units || '',
-            param.ref || ''
-          ]);
-        });
-      });
-
-      const csvContent = rows.map(r => r.map(v => `"${v}"`).join(',')).join('\n');
-      const blob = new Blob([csvContent], {type: 'text/csv'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'patient_report.csv';
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    // WhatsApp share
-    function shareWhatsApp() {
-      if (!report || !report.patient || !report.sample) {
-        alert('Report data not loaded.');
-        return;
-      }
-      const p = report.patient;
-      const s = report.sample;
-      const msg = `Patient Report for ${p.name || ''}\nSample No: ${s.sampleNo || ''}\nCollected: ${s.collectedAt ? new Date(s.collectedAt).toLocaleDateString() : ''}\nPlease check your detailed report.`;
-      const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
-      window.open(url, '_blank');
-    }
-
-    // QR code render (uses QRCode lib)
-    function renderQRCode(text) {
-      const qrBox = byId('qrBox');
-      qrBox.innerHTML = '';
-      if (!text) return;
-      QRCode.toCanvas(text, { width: 80 }, function (error, canvas) {
-        if (error) {
-          qrBox.textContent = 'QR Error';
-          return;
-        }
-        qrBox.appendChild(canvas);
-      });
-    }
-
-    // The report object - you should replace this object with your actual data
-    // Example structure:
-    // const report = {
-    //   patient: {...},
-    //   sample: {...},
-    //   comments: "...",
-    //   verifiedBy: "...",
-    //   authorizedBy: "...",
-    //   tests: [...]
-    // };
-
-    // Load on page load
-    let report = loadDataFromStorage();
-
-    if (!report) {
-      alert('No report data found in localStorage. Please set the "report" variable in the script with your data.');
-    }
-
-    // Initial render
-    if (report) {
-      renderHeader(report);
-      renderTests(report.tests);
-      // Generate QR code with some unique report id or link
-      renderQRCode(report.sample?.sampleNo || '');
-    }
-
-    // Expose report globally for ease of editing in dev tools or scripts
-    window.report = report;
-
-  </script>
 </body>
 </html>
