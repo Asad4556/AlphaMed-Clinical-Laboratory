@@ -2,122 +2,156 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Reception - AlphaMed Clinical Lab</title>
-  <link rel="stylesheet" href="style.css"/>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+  <title>Reception - Alpha-Med Lab</title>
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="reception.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f2f2f2;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    .test-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .test-list label {
+      background: #e1f5fe;
+      padding: 6px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .submit-btn {
+      background: #0277bd;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    .submit-btn:hover {
+      background: #01579b;
+    }
+    .search-box {
+      margin: 20px 0;
+    }
+    .search-box input {
+      width: 100%;
+      padding: 10px;
+      font-size: 15px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      padding: 12px;
+      border: 1px solid #ccc;
+    }
+    th {
+      background-color: #e0f7fa;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
-    <h1>🧾 Patient Registration</h1>
+    <h2>Patient Registration - Alpha-Med Lab</h2>
 
-    <form id="registrationForm">
-      <div class="form-row">
-        <label>Patient Name:</label>
-        <input type="text" id="patientName" required />
-      </div>
-
-      <div class="form-row">
-        <label>CNIC:</label>
-        <input type="text" id="cnic" required placeholder="e.g. 35201-1234567-8" />
-      </div>
-
-      <div class="form-row">
-        <label>Phone:</label>
-        <input type="tel" id="phone" required placeholder="03XXXXXXXXX" />
-      </div>
-
-      <div class="form-row">
-        <label>Department:</label>
-        <select id="department" required onchange="updateTests()">
-          <option value="">-- Select Department --</option>
-          <option value="Hematology">Hematology</option>
-          <option value="Serology">Serology</option>
-          <option value="Histopathology">Histopathology</option>
-          <option value="Microbiology">Microbiology</option>
-          <option value="Biochemistry">Biochemistry</option>
-          <option value="Culture Tests">Culture Tests</option>
-          <option value="Special Chemistry">Special Chemistry</option>
-          <option value="Molecular Biology">Molecular Biology</option>
-          <option value="Blood Banking">Blood Banking</option>
-        </select>
-      </div>
-
-      <div class="form-row">
-        <label>Test:</label>
-        <select id="test" required>
-          <option value="">-- Select Test --</option>
-        </select>
-      </div>
-
-      <button type="submit">Register Patient</button>
-    </form>
-
-    <div id="qrContainer" style="margin-top: 20px; text-align:center;">
-      <h3>🔳 QR Code</h3>
-      <div id="qrCode"></div>
+    <div class="form-group">
+      <label>Name</label>
+      <input type="text" id="name" required />
+    </div>
+    <div class="form-group">
+      <label>Gender</label>
+      <select id="gender" required>
+        <option value="">-- Select --</option>
+        <option>Male</option>
+        <option>Female</option>
+        <option>Other</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Age</label>
+      <input type="number" id="age" required />
+    </div>
+    <div class="form-group">
+      <label>Phone</label>
+      <input type="text" id="phone" required />
+    </div>
+    <div class="form-group">
+      <label>Address</label>
+      <input type="text" id="address" />
     </div>
 
-    <div style="margin-top: 20px; text-align:center;">
-      <button onclick="printSlip()">🖨️ Print Registration Slip</button>
+    <div class="form-group">
+      <label>Department</label>
+      <select id="department" onchange="loadTestsByDepartment()" required>
+        <option value="">-- Select Department --</option>
+        <option>Hematology</option>
+        <option>Biochemistry</option>
+        <option>Serology</option>
+        <option>Microbiology</option>
+        <option>Urine</option>
+        <option>Stool</option>
+      </select>
     </div>
+
+    <div class="form-group">
+      <label>Tests</label>
+      <div id="tests" class="test-list"></div>
+    </div>
+
+    <button class="submit-btn" onclick="registerPatient()">Register Patient</button>
+
+    <div class="search-box">
+      <label>🔍 Search Patients</label>
+      <input type="text" id="search" placeholder="Search by name, phone or MRN..." onkeyup="filterPatients()" />
+    </div>
+
+    <table id="patientTable">
+      <thead>
+        <tr>
+          <th>MRN</th>
+          <th>Name</th>
+          <th>Gender</th>
+          <th>Age</th>
+          <th>Phone</th>
+          <th>Dept</th>
+          <th>Tests</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody id="patientList"></tbody>
+    </table>
   </div>
-
-  <script src="labSections.js"></script>
-  <script src="qr-generator.js"></script>
-  <script>
-    // Auto MRN
-    function generateMRN() {
-      const now = new Date();
-      return 'MRN-' + now.getFullYear() + (now.getMonth()+1).toString().padStart(2,'0') + now.getDate().toString().padStart(2,'0') + '-' + Math.floor(Math.random()*1000);
-    }
-
-    // Update Test list based on department
-    function updateTests() {
-      const department = document.getElementById("department").value;
-      const testSelect = document.getElementById("test");
-      testSelect.innerHTML = "<option value=''>-- Select Test --</option>";
-
-      if (labTests[department]) {
-        labTests[department].forEach(test => {
-          const option = document.createElement("option");
-          option.value = test.name;
-          option.text = test.name;
-          testSelect.appendChild(option);
-        });
-      }
-    }
-
-    document.getElementById("registrationForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-
-      const patientName = document.getElementById("patientName").value;
-      const cnic = document.getElementById("cnic").value;
-      const phone = document.getElementById("phone").value;
-      const department = document.getElementById("department").value;
-      const test = document.getElementById("test").value;
-      const mrn = generateMRN();
-
-      const patientData = {
-        mrn, patientName, cnic, phone, department, test,
-        date: new Date().toLocaleDateString()
-      };
-
-      // Save to localStorage
-      let patients = JSON.parse(localStorage.getItem("patients")) || [];
-      patients.push(patientData);
-      localStorage.setItem("patients", JSON.stringify(patients));
-      localStorage.setItem("lastPatient", JSON.stringify(patientData));
-
-      // Generate QR
-      generateQRCode(mrn);
-
-      alert("✅ Patient registered successfully!\nMRN: " + mrn);
-    });
-
-    function printSlip() {
-      window.open("registration-slip.html", "_blank");
-    }
-  </script>
 </body>
 </html>
