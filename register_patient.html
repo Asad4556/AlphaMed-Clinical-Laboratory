@@ -1,148 +1,62 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Register Patient - AlphaMed Lab</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f4f7fb;
-      padding: 20px;
-    }
+Understood. Based on your full file list and the new feature requirements, here is the structured update plan for each file to implement:
 
-    h2 {
-      color: #013243;
-      text-align: center;
-      margin-bottom: 20px;
-    }
+✅ Modern international-style reporting
+✅ Department-wise test loading
+✅ High/Low result indicators (with arrow symbols)
+✅ Proper linking between Reception → Technician → Admin → Report view
 
-    form {
-      background: #fff;
-      padding: 25px;
-      border-radius: 10px;
-      max-width: 700px;
-      margin: auto;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
+---
 
-    label {
-      display: block;
-      margin: 12px 0 6px;
-    }
+### ✅ File Update Plan (in correct order):
 
-    input, select {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 12px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
+#### 1. `test-data.js`
+- ✅ Already done. Contains all departments + 30 tests each with normal ranges.
 
-    button {
-      background-color: #013243;
-      color: white;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 5px;
-      width: 100%;
-      font-size: 16px;
-    }
+#### 2. `register_patient.html`
+- Show department dropdown
+- Auto-load tests after department selection
+- Patient form stores selected department
 
-    button:hover {
-      background-color: #014a63;
-    }
+#### 3. `reception.js`
+- Save patient with department field
+- Automatically redirect to `registration-slip.html` after registration
 
-    .qr-preview {
-      margin-top: 20px;
-      text-align: center;
-    }
-  </style>
-</head>
-<body>
+#### 4. `registration-slip.html`
+- Modern slip view
+- Include all patient + department + empty test list
+- Show date, logo, footer
 
-  <h2>Register Patient - AlphaMed Clinical Lab</h2>
+#### 5. `technician.html`
+- Test input form with department filter
+- High/Low indicators (🔺 / 🔻)
+- Result entry form
 
-  <form id="registrationForm">
-    <label for="name">Patient Name</label>
-    <input type="text" id="name" required />
+#### 6. `technician.js`
+- Match patient with test list by department
+- Add result + compare with normal range
+- Append arrow indicators
 
-    <label for="cnic">CNIC</label>
-    <input type="text" id="cnic" maxlength="15" placeholder="xxxxx-xxxxxxx-x" required />
+#### 7. `report.html` or `view_reports.html`
+- Show patient report (department-wise)
+- Show all entered results
+- Modern layout, print-friendly
+- Arrows for High 🔺 / Low 🔻
 
-    <label for="phone">Phone Number</label>
-    <input type="text" id="phone" placeholder="03xxxxxxxxx" required />
+#### 8. `style.css`
+- Add all modern styles (card layout, tables, indicators, etc.)
 
-    <label for="department">Select Department</label>
-    <select id="department" required>
-      <option value="">-- Select Department --</option>
-      <option>Hematology</option>
-      <option>Serology</option>
-      <option>Histopathology</option>
-      <option>Microbiology</option>
-      <option>Biochemistry</option>
-      <option>Culture Tests</option>
-      <option>Special Chemistry</option>
-      <option>Molecular Biology</option>
-      <option>Blood Banking</option>
-    </select>
+#### 9. `admin.html`, `admin-dashboard.html`, `reception_dashboard.html`, `technician_dashboard.html`
+- Just add "View Reports" link for each user
 
-    <label for="test">Select Test</label>
-    <select id="test" required>
-      <option value="">-- Select Test --</option>
-    </select>
+#### 10. `script.js`
+- Shared functions like `getPatients()`, `compareRange()` etc.
 
-    <button type="submit">Register & Generate Slip</button>
+#### 11. `storage.js`
+- Ensure localStorage saves/reads data properly with department + test + result
 
-    <div class="qr-preview" id="qrCodeContainer"></div>
-  </form>
+#### 12. `slip.html`, `export.html`, `qr-generator.js`
+- (Optional) Style matching if used for print/export
 
-  <!-- Required Scripts -->
-  <script src="test-data.js"></script>
-  <script src="storage.js"></script>
-  <script src="qr-generator.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+---
 
-  <script>
-    // Auto fill test dropdown based on department
-    document.getElementById("department").addEventListener("change", function() {
-      const dept = this.value;
-      const testSelect = document.getElementById("test");
-      testSelect.innerHTML = "<option value=''>-- Select Test --</option>";
-
-      if (testData[dept]) {
-        testData[dept].forEach(test => {
-          const opt = document.createElement("option");
-          opt.value = test.name;
-          opt.textContent = test.name;
-          testSelect.appendChild(opt);
-        });
-      }
-    });
-
-    // Form submission
-    document.getElementById("registrationForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-
-      const patient = {
-        mrn: "MRN-" + Date.now(),
-        name: document.getElementById("name").value,
-        cnic: document.getElementById("cnic").value,
-        phone: document.getElementById("phone").value,
-        department: document.getElementById("department").value,
-        test: document.getElementById("test").value,
-        date: new Date().toLocaleString()
-      };
-
-      savePatientData(patient); // Save to storage
-      localStorage.setItem("latestPatient", JSON.stringify(patient)); // For slip
-      generateQRCode(JSON.stringify(patient), "qrCodeContainer");
-
-      // فوراً slip open کریں
-      window.location.href = "registration-slip.html";
-    });
-  </script>
-
-</body>
-</html>
+If you're ready, I’ll now begin by sending the **updated version of `register_patient.html`** with department and test integration. Shall I begin with that?
