@@ -2,124 +2,140 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>All Patient Reports - Alpha-Med Clinical Lab</title>
-  <link rel="stylesheet" href="style.css">
+  <title>View Reports - Alpha-Med Lab</title>
+  <link rel="stylesheet" href="style.css" />
   <style>
-    .container {
+    body {
+      background-color: #101820;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
       padding: 30px;
     }
-
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      background-color: #1d1f27;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.4);
+    }
     h2 {
       text-align: center;
-      color: #013243;
+      margin-bottom: 30px;
     }
-
-    #searchInput {
+    input {
+      padding: 12px;
       width: 100%;
-      padding: 10px;
+      border: none;
+      border-radius: 8px;
       margin-bottom: 20px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
+      font-size: 16px;
     }
-
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 10px;
     }
-
     th, td {
       padding: 12px;
-      border: 1px solid #ccc;
-      text-align: left;
-    }
-
-    th {
-      background-color: #013243;
-      color: white;
-    }
-
-    tbody tr:nth-child(even) {
-      background-color: #f2f2f2;
-    }
-
-    .no-data {
       text-align: center;
-      color: red;
-      font-weight: bold;
+    }
+    th {
+      background-color: #2a2d3a;
+    }
+    td {
+      background-color: #262a36;
+    }
+    button {
+      background-color: #00aaff;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0077aa;
     }
   </style>
 </head>
-<body>
+<body onload="loadReports()">
   <div class="container">
-    <h2>📄 All Patient Reports</h2>
-
-    <input type="text" id="searchInput" onkeyup="filterReports()" placeholder="🔍 Search by CNIC, Name, Test, Department...">
-
-    <table id="reportsTable">
+    <h2>🔍 Search Patient Reports</h2>
+    <input type="text" id="searchInput" onkeyup="searchReports()" placeholder="Search by MRN, Name or Phone" />
+    <table>
       <thead>
         <tr>
-          <th>Patient Name</th>
-          <th>CNIC</th>
+          <th>MRN</th>
+          <th>Name</th>
           <th>Phone</th>
-          <th>Department</th>
-          <th>Test</th>
-          <th>Result</th>
-          <th>Normal Range</th>
+          <th>Gender</th>
+          <th>Age</th>
           <th>Date</th>
+          <th>Report</th>
         </tr>
       </thead>
-      <tbody id="reportsBody">
-        <!-- Filled by JS -->
+      <tbody id="reportTableBody">
+        <!-- Populated by JS -->
       </tbody>
     </table>
   </div>
 
   <script>
+    let allReports = [];
+
     function loadReports() {
-      const testResults = JSON.parse(localStorage.getItem("testResults")) || [];
-      const patients = JSON.parse(localStorage.getItem("patients")) || [];
+      const saved = JSON.parse(localStorage.getItem("allReports")) || [];
+      allReports = saved;
 
-      const body = document.getElementById("reportsBody");
-      body.innerHTML = "";
+      const tbody = document.getElementById("reportTableBody");
+      tbody.innerHTML = "";
 
-      if (testResults.length === 0 || patients.length === 0) {
-        body.innerHTML = `<tr><td colspan="8" class="no-data">No reports available.</td></tr>`;
-        return;
-      }
+      saved.forEach((r, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${r.mrn}</td>
+          <td>${r.name}</td>
+          <td>${r.phone}</td>
+          <td>${r.gender}</td>
+          <td>${r.age}</td>
+          <td>${new Date(r.timestamp).toLocaleString()}</td>
+          <td><button onclick="viewReport(${index})">View</button></td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
 
-      testResults.forEach(result => {
-        const patient = patients.find(p => p.mrn === result.patientMrn);
-        if (patient) {
-          const row = `
-            <tr>
-              <td>${patient.name}</td>
-              <td>${patient.cnic}</td>
-              <td>${patient.phone}</td>
-              <td>${patient.department}</td>
-              <td>${result.test}</td>
-              <td>${result.result}</td>
-              <td>${result.normalRange || "-"}</td>
-              <td>${patient.date}</td>
-            </tr>
+    function viewReport(index) {
+      const report = allReports[index];
+      localStorage.setItem("latestReport", JSON.stringify(report));
+      window.open("report.html", "_blank");
+    }
+
+    function searchReports() {
+      const filter = document.getElementById("searchInput").value.toLowerCase();
+      const tbody = document.getElementById("reportTableBody");
+      tbody.innerHTML = "";
+
+      allReports
+        .filter(r =>
+          r.mrn.toLowerCase().includes(filter) ||
+          r.name.toLowerCase().includes(filter) ||
+          r.phone.toLowerCase().includes(filter)
+        )
+        .forEach((r, index) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${r.mrn}</td>
+            <td>${r.name}</td>
+            <td>${r.phone}</td>
+            <td>${r.gender}</td>
+            <td>${r.age}</td>
+            <td>${new Date(r.timestamp).toLocaleString()}</td>
+            <td><button onclick="viewReport(${index})">View</button></td>
           `;
-          body.innerHTML += row;
-        }
-      });
+          tbody.appendChild(row);
+        });
     }
-
-    function filterReports() {
-      const input = document.getElementById("searchInput").value.toLowerCase();
-      const rows = document.querySelectorAll("#reportsTable tbody tr");
-
-      rows.forEach(row => {
-        const text = row.innerText.toLowerCase();
-        row.style.display = text.includes(input) ? "" : "none";
-      });
-    }
-
-    window.onload = loadReports;
   </script>
 </body>
 </html>
