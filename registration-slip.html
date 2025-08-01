@@ -5,73 +5,112 @@
   <title>Patient Registration Slip</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f5f7fa;
-      padding: 20px;
+      font-family: 'Inter', sans-serif;
+      background: #f0f2f5;
+      margin: 0;
+      padding: 30px;
     }
 
-    .slip-container {
-      max-width: 600px;
+    .slip-wrapper {
+      max-width: 700px;
       margin: auto;
       background: white;
-      padding: 25px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
     }
 
-    h2 {
+    header {
       text-align: center;
+      border-bottom: 2px solid #013243;
+      padding-bottom: 15px;
       margin-bottom: 20px;
+    }
+
+    header h1 {
       color: #013243;
+      font-size: 28px;
+      margin-bottom: 5px;
     }
 
-    .info {
-      margin-bottom: 15px;
+    header p {
+      margin: 0;
+      color: #555;
+      font-size: 14px;
     }
 
-    .info label {
-      font-weight: bold;
-      display: inline-block;
-      width: 150px;
-    }
-
-    .qr {
-      text-align: center;
-      margin-top: 20px;
-    }
-
-    .print-btn {
-      margin-top: 20px;
-      text-align: center;
-    }
-
-    .print-btn button {
-      background-color: #013243;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 6px;
+    .info-section {
+      line-height: 1.8;
       font-size: 16px;
     }
 
+    .info-section label {
+      font-weight: 600;
+      color: #013243;
+      display: inline-block;
+      width: 160px;
+    }
+
+    .qr-section {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .qr-section canvas {
+      border: 1px solid #ddd;
+      padding: 5px;
+      border-radius: 8px;
+    }
+
+    .print-btn {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .print-btn button {
+      background: #013243;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
     .print-btn button:hover {
-      background-color: #014a63;
+      background: #015f84;
     }
 
     @media print {
       .print-btn {
         display: none;
       }
+
+      body {
+        background: white;
+        padding: 0;
+      }
+
+      .slip-wrapper {
+        box-shadow: none;
+        border: none;
+        padding: 10px;
+      }
     }
   </style>
 </head>
 <body>
 
-  <div class="slip-container" id="slip">
-    <h2>Alpha-Med Clinical Lab</h2>
+  <div class="slip-wrapper">
+    <header>
+      <h1>Alpha-Med Clinical Lab</h1>
+      <p>Patient Registration Slip</p>
+    </header>
 
-    <div class="info" id="slipData">
+    <div class="info-section" id="slipData">
       <p><label>Patient Name:</label> <span id="pName"></span></p>
       <p><label>CNIC:</label> <span id="pCnic"></span></p>
       <p><label>Phone:</label> <span id="pPhone"></span></p>
@@ -81,7 +120,7 @@
       <p><label>MRN:</label> <span id="pMrn"></span></p>
     </div>
 
-    <div class="qr" id="qrCode"></div>
+    <div class="qr-section" id="qrCode"></div>
 
     <div class="print-btn">
       <button onclick="window.print()">🖨️ Print Slip</button>
@@ -101,11 +140,11 @@
       document.getElementById("pDate").textContent = latestPatient.date;
       document.getElementById("pMrn").textContent = latestPatient.mrn;
 
-      // Generate QR
+      // QR Code Generation
       new QRCode(document.getElementById("qrCode"), {
         text: JSON.stringify(latestPatient),
-        width: 120,
-        height: 120
+        width: 130,
+        height: 130
       });
     } else {
       document.getElementById("slipData").innerHTML = "<h3 style='color:red;'>❌ No patient data found.</h3>";
