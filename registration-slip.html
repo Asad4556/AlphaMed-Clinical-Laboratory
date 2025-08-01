@@ -2,152 +2,139 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Patient Registration Slip</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Patient Registration Slip - Alpha-Med Clinical Lab</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="qr-generator.js" defer></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
-
     body {
-      font-family: 'Inter', sans-serif;
-      background: #f0f2f5;
-      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #101820;
+      color: #ffffff;
       padding: 30px;
     }
-
-    .slip-wrapper {
+    .slip-container {
+      background-color: #1d1f27;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
       max-width: 700px;
       margin: auto;
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
     }
-
-    header {
+    h2 {
       text-align: center;
-      border-bottom: 2px solid #013243;
-      padding-bottom: 15px;
+      margin-bottom: 15px;
+    }
+    .info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .info div {
+      margin-bottom: 8px;
+    }
+    .logo-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 20px;
     }
-
-    header h1 {
-      color: #013243;
-      font-size: 28px;
-      margin-bottom: 5px;
+    .qr {
+      text-align: right;
     }
-
-    header p {
-      margin: 0;
-      color: #555;
-      font-size: 14px;
+    .tests {
+      margin-top: 20px;
     }
-
-    .info-section {
-      line-height: 1.8;
-      font-size: 16px;
+    .tests ul {
+      list-style: none;
+      padding-left: 0;
     }
-
-    .info-section label {
-      font-weight: 600;
-      color: #013243;
-      display: inline-block;
-      width: 160px;
-    }
-
-    .qr-section {
-      text-align: center;
-      margin-top: 30px;
-    }
-
-    .qr-section canvas {
-      border: 1px solid #ddd;
-      padding: 5px;
+    .tests li {
+      padding: 5px 10px;
+      background: #292c38;
+      margin: 5px 0;
       border-radius: 8px;
     }
-
     .print-btn {
-      text-align: center;
-      margin-top: 30px;
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
     }
-
-    .print-btn button {
-      background: #013243;
+    button {
+      background: #00aaff;
       color: white;
       padding: 10px 20px;
       border: none;
       font-size: 16px;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
     }
-
-    .print-btn button:hover {
-      background: #015f84;
-    }
-
-    @media print {
-      .print-btn {
-        display: none;
-      }
-
-      body {
-        background: white;
-        padding: 0;
-      }
-
-      .slip-wrapper {
-        box-shadow: none;
-        border: none;
-        padding: 10px;
-      }
+    button:hover {
+      background: #0088cc;
     }
   </style>
 </head>
-<body>
-
-  <div class="slip-wrapper">
-    <header>
-      <h1>Alpha-Med Clinical Lab</h1>
-      <p>Patient Registration Slip</p>
-    </header>
-
-    <div class="info-section" id="slipData">
-      <p><label>Patient Name:</label> <span id="pName"></span></p>
-      <p><label>CNIC:</label> <span id="pCnic"></span></p>
-      <p><label>Phone:</label> <span id="pPhone"></span></p>
-      <p><label>Department:</label> <span id="pDept"></span></p>
-      <p><label>Test:</label> <span id="pTest"></span></p>
-      <p><label>Date:</label> <span id="pDate"></span></p>
-      <p><label>MRN:</label> <span id="pMrn"></span></p>
+<body onload="loadSlip()">
+  <div class="slip-container">
+    <div class="logo-row">
+      <img src="logo.png" alt="Lab Logo" width="100" />
+      <div class="qr" id="qrCode"></div>
     </div>
 
-    <div class="qr-section" id="qrCode"></div>
+    <h2>Patient Registration Slip</h2>
+
+    <div class="info">
+      <div><strong>Name:</strong> <span id="name"></span></div>
+      <div><strong>MRN:</strong> <span id="mrn"></span></div>
+      <div><strong>Gender:</strong> <span id="gender"></span></div>
+      <div><strong>Age:</strong> <span id="age"></span></div>
+      <div><strong>Phone:</strong> <span id="phone"></span></div>
+      <div><strong>Department:</strong> <span id="department"></span></div>
+      <div><strong>Registered:</strong> <span id="time"></span></div>
+    </div>
+
+    <div class="tests">
+      <h3>Selected Tests</h3>
+      <ul id="testList"></ul>
+    </div>
 
     <div class="print-btn">
       <button onclick="window.print()">🖨️ Print Slip</button>
     </div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script>
-    const latestPatient = JSON.parse(localStorage.getItem("latestPatient"));
+    function loadSlip() {
+      const patient = JSON.parse(localStorage.getItem("lastRegisteredPatient"));
+      if (!patient) {
+        document.querySelector(".slip-container").innerHTML = "<h2>❌ No patient data found.</h2>";
+        return;
+      }
 
-    if (latestPatient) {
-      document.getElementById("pName").textContent = latestPatient.name;
-      document.getElementById("pCnic").textContent = latestPatient.cnic;
-      document.getElementById("pPhone").textContent = latestPatient.phone;
-      document.getElementById("pDept").textContent = latestPatient.department;
-      document.getElementById("pTest").textContent = latestPatient.test;
-      document.getElementById("pDate").textContent = latestPatient.date;
-      document.getElementById("pMrn").textContent = latestPatient.mrn;
+      document.getElementById("name").textContent = patient.name;
+      document.getElementById("mrn").textContent = patient.mrn;
+      document.getElementById("gender").textContent = patient.gender;
+      document.getElementById("age").textContent = patient.age;
+      document.getElementById("phone").textContent = patient.phone;
+      document.getElementById("department").textContent = patient.department;
+      document.getElementById("time").textContent = new Date().toLocaleString();
 
-      // QR Code Generation
-      new QRCode(document.getElementById("qrCode"), {
-        text: JSON.stringify(latestPatient),
-        width: 130,
-        height: 130
+      const testList = document.getElementById("testList");
+      testList.innerHTML = "";
+      patient.tests.forEach(test => {
+        const li = document.createElement("li");
+        li.textContent = test;
+        testList.appendChild(li);
       });
-    } else {
-      document.getElementById("slipData").innerHTML = "<h3 style='color:red;'>❌ No patient data found.</h3>";
+
+      // QR Code
+      const qrContainer = document.getElementById("qrCode");
+      qrContainer.innerHTML = "";
+      const qrText = `MRN: ${patient.mrn}, Name: ${patient.name}, Phone: ${patient.phone}`;
+      new QRCode(qrContainer, {
+        text: qrText,
+        width: 100,
+        height: 100
+      });
     }
   </script>
 </body>
