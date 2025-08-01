@@ -2,117 +2,114 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Registration Slip - AlphaMed Lab</title>
+  <title>Patient Registration Slip</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      margin: 0;
+      background-color: #f5f7fa;
       padding: 20px;
-      background-color: #fff;
-      background-image: url('logo.png'); 
-      background-repeat: no-repeat;
-      background-position: center;
-      background-size: 300px;
-      opacity: 0.98;
     }
 
-    .slip {
-      max-width: 700px;
+    .slip-container {
+      max-width: 600px;
       margin: auto;
-      padding: 30px;
-      border: 2px dashed #013243;
+      background: white;
+      padding: 25px;
       border-radius: 10px;
-      background-color: rgba(255, 255, 255, 0.95);
-      position: relative;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
 
     h2 {
       text-align: center;
+      margin-bottom: 20px;
       color: #013243;
-      margin-bottom: 30px;
     }
 
     .info {
-      font-size: 16px;
-      line-height: 1.7;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
     }
 
-    .label {
+    .info label {
       font-weight: bold;
-      color: #014a63;
+      display: inline-block;
+      width: 150px;
     }
 
-    .footer {
-      margin-top: 40px;
+    .qr {
       text-align: center;
-      font-weight: bold;
-      color: #555;
-      font-size: 15px;
+      margin-top: 20px;
     }
 
-    #qrCode {
+    .print-btn {
       margin-top: 20px;
       text-align: center;
     }
 
-    button {
-      margin-top: 30px;
+    .print-btn button {
+      background-color: #013243;
+      color: white;
       padding: 10px 20px;
-      background: #013243;
-      color: #fff;
       border: none;
-      border-radius: 5px;
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
+      border-radius: 6px;
       font-size: 16px;
-      cursor: pointer;
     }
 
-    button:hover {
-      background: #02516c;
+    .print-btn button:hover {
+      background-color: #014a63;
+    }
+
+    @media print {
+      .print-btn {
+        display: none;
+      }
     }
   </style>
 </head>
 <body>
 
-  <div class="slip">
-    <h2>Patient Registration Slip</h2>
+  <div class="slip-container" id="slip">
+    <h2>Alpha-Med Clinical Lab</h2>
 
     <div class="info" id="slipData">
-      Loading...
+      <p><label>Patient Name:</label> <span id="pName"></span></p>
+      <p><label>CNIC:</label> <span id="pCnic"></span></p>
+      <p><label>Phone:</label> <span id="pPhone"></span></p>
+      <p><label>Department:</label> <span id="pDept"></span></p>
+      <p><label>Test:</label> <span id="pTest"></span></p>
+      <p><label>Date:</label> <span id="pDate"></span></p>
+      <p><label>MRN:</label> <span id="pMrn"></span></p>
     </div>
 
-    <div id="qrCode"></div>
+    <div class="qr" id="qrCode"></div>
 
-    <div class="footer">Alpha-Med Clinical Lab</div>
-
-    <button onclick="window.print()">🖨️ Print Slip</button>
+    <div class="print-btn">
+      <button onclick="window.print()">🖨️ Print Slip</button>
+    </div>
   </div>
 
-  <script src="qr-generator.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script>
-    const data = JSON.parse(localStorage.getItem("latestPatient"));
-    const div = document.getElementById("slipData");
+    const latestPatient = JSON.parse(localStorage.getItem("latestPatient"));
 
-    if (data && Object.keys(data).length > 0) {
-      div.innerHTML = `
-        <div><span class="label">Sample #:</span> ${data.sampleNumber || "N/A"}</div>
-        <div><span class="label">MRN:</span> ${data.mrn || "N/A"}</div>
-        <div><span class="label">Name:</span> ${data.name || "N/A"}</div>
-        <div><span class="label">CNIC:</span> ${data.cnic || "N/A"}</div>
-        <div><span class="label">Phone:</span> ${data.phone || "N/A"}</div>
-        <div><span class="label">Department:</span> ${data.department || "N/A"}</div>
-        <div><span class="label">Test(s):</span> ${data.test || "N/A"}</div>
-        <div><span class="label">Date:</span> ${data.date || new Date().toLocaleDateString()}</div>
-      `;
-      generateQRCode(JSON.stringify(data), "qrCode");
+    if (latestPatient) {
+      document.getElementById("pName").textContent = latestPatient.name;
+      document.getElementById("pCnic").textContent = latestPatient.cnic;
+      document.getElementById("pPhone").textContent = latestPatient.phone;
+      document.getElementById("pDept").textContent = latestPatient.department;
+      document.getElementById("pTest").textContent = latestPatient.test;
+      document.getElementById("pDate").textContent = latestPatient.date;
+      document.getElementById("pMrn").textContent = latestPatient.mrn;
+
+      // Generate QR
+      new QRCode(document.getElementById("qrCode"), {
+        text: JSON.stringify(latestPatient),
+        width: 120,
+        height: 120
+      });
     } else {
-      div.innerHTML = "❌ No patient data found.";
+      document.getElementById("slipData").innerHTML = "<h3 style='color:red;'>❌ No patient data found.</h3>";
     }
   </script>
-
 </body>
 </html>
