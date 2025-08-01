@@ -2,139 +2,101 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Patient Registration Slip - Alpha-Med Clinical Lab</title>
+  <title>Registration Slip</title>
   <link rel="stylesheet" href="style.css" />
-  <script src="qr-generator.js" defer></script>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #101820;
-      color: #ffffff;
-      padding: 30px;
+      background: #f3f3f3;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 40px;
     }
     .slip-container {
-      background-color: #1d1f27;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.3);
-      max-width: 700px;
+      max-width: 600px;
       margin: auto;
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
     }
-    h2 {
+    .header {
       text-align: center;
-      margin-bottom: 15px;
+      margin-bottom: 25px;
     }
-    .info {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
+    .header h2 {
+      margin-bottom: 5px;
     }
-    .info div {
-      margin-bottom: 8px;
+    .header img {
+      height: 70px;
     }
-    .logo-row {
+    .info-row {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 12px;
+      font-size: 16px;
+    }
+    .info-row span {
+      font-weight: 600;
     }
     .qr {
-      text-align: right;
+      text-align: center;
+      margin-top: 30px;
     }
-    .tests {
-      margin-top: 20px;
-    }
-    .tests ul {
-      list-style: none;
-      padding-left: 0;
-    }
-    .tests li {
-      padding: 5px 10px;
-      background: #292c38;
-      margin: 5px 0;
-      border-radius: 8px;
-    }
-    .print-btn {
-      margin-top: 20px;
-      display: flex;
-      justify-content: center;
-    }
-    button {
-      background: #00aaff;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      font-size: 16px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #0088cc;
+    @media print {
+      body {
+        background: none;
+        padding: 0;
+      }
+      .slip-container {
+        box-shadow: none;
+        border: 1px solid #ccc;
+      }
+      .no-print {
+        display: none;
+      }
     }
   </style>
 </head>
-<body onload="loadSlip()">
+<body onload="loadSlip(); window.print();">
+
   <div class="slip-container">
-    <div class="logo-row">
-      <img src="logo.png" alt="Lab Logo" width="100" />
-      <div class="qr" id="qrCode"></div>
+    <div class="header">
+      <img src="logo.png" alt="Lab Logo" />
+      <h2>Alpha-Med Diagnostic Lab</h2>
+      <p>Patient Registration Slip</p>
     </div>
 
-    <h2>Patient Registration Slip</h2>
+    <div class="info-row"><span>MRN:</span> <span id="mrn"></span></div>
+    <div class="info-row"><span>Name:</span> <span id="name"></span></div>
+    <div class="info-row"><span>Gender:</span> <span id="gender"></span></div>
+    <div class="info-row"><span>Age:</span> <span id="age"></span></div>
+    <div class="info-row"><span>Phone:</span> <span id="phone"></span></div>
+    <div class="info-row"><span>Address:</span> <span id="address"></span></div>
+    <div class="info-row"><span>Date:</span> <span id="date"></span></div>
 
-    <div class="info">
-      <div><strong>Name:</strong> <span id="name"></span></div>
-      <div><strong>MRN:</strong> <span id="mrn"></span></div>
-      <div><strong>Gender:</strong> <span id="gender"></span></div>
-      <div><strong>Age:</strong> <span id="age"></span></div>
-      <div><strong>Phone:</strong> <span id="phone"></span></div>
-      <div><strong>Department:</strong> <span id="department"></span></div>
-      <div><strong>Registered:</strong> <span id="time"></span></div>
-    </div>
-
-    <div class="tests">
-      <h3>Selected Tests</h3>
-      <ul id="testList"></ul>
-    </div>
-
-    <div class="print-btn">
-      <button onclick="window.print()">🖨️ Print Slip</button>
+    <div class="qr">
+      <img id="qrImage" src="" alt="QR Code" />
     </div>
   </div>
 
   <script>
     function loadSlip() {
-      const patient = JSON.parse(localStorage.getItem("lastRegisteredPatient"));
-      if (!patient) {
-        document.querySelector(".slip-container").innerHTML = "<h2>❌ No patient data found.</h2>";
-        return;
-      }
+      const patient = JSON.parse(localStorage.getItem("latestPatient"));
+      if (!patient) return;
 
-      document.getElementById("name").textContent = patient.name;
       document.getElementById("mrn").textContent = patient.mrn;
+      document.getElementById("name").textContent = patient.name;
       document.getElementById("gender").textContent = patient.gender;
       document.getElementById("age").textContent = patient.age;
       document.getElementById("phone").textContent = patient.phone;
-      document.getElementById("department").textContent = patient.department;
-      document.getElementById("time").textContent = new Date().toLocaleString();
+      document.getElementById("address").textContent = patient.address;
+      document.getElementById("date").textContent = new Date().toLocaleString();
 
-      const testList = document.getElementById("testList");
-      testList.innerHTML = "";
-      patient.tests.forEach(test => {
-        const li = document.createElement("li");
-        li.textContent = test;
-        testList.appendChild(li);
-      });
-
-      // QR Code
-      const qrContainer = document.getElementById("qrCode");
-      qrContainer.innerHTML = "";
-      const qrText = `MRN: ${patient.mrn}, Name: ${patient.name}, Phone: ${patient.phone}`;
-      new QRCode(qrContainer, {
-        text: qrText,
-        width: 100,
-        height: 100
-      });
+      // QR code (optional)
+      if (patient.qrDataURL) {
+        document.getElementById("qrImage").src = patient.qrDataURL;
+      } else {
+        document.getElementById("qrImage").style.display = "none";
+      }
     }
   </script>
 </body>
