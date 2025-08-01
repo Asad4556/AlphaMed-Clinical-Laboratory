@@ -1,119 +1,151 @@
-// Normal ranges for common tests
+// technician.js
+
+// Test name to normal range mapping
 const normalRanges = {
-  "Blood Sugar": "70-110 mg/dL",
-  "Hemoglobin": "13.5-17.5 g/dL",
-  "WBC": "4,500-11,000 /mcL",
-  "Platelets": "150,000-450,000 /mcL",
-  "Cholesterol": "Below 200 mg/dL",
-  "Creatinine": "0.6–1.2 mg/dL",
-  "Uric Acid": "3.4–7.0 mg/dL",
-  "ALT (SGPT)": "7–56 U/L",
-  "AST (SGOT)": "5–40 U/L",
-  "Bilirubin": "0.3–1.2 mg/dL",
-  "TSH": "0.4–4.0 mIU/L",
-  "Vitamin D": "30–100 ng/mL"
+  // Liver Profile
+  "Liver Function Test (LFT)": "Depends on subtests",
+  "SGPT (ALT)": "7 - 56 U/L",
+  "SGOT (AST)": "10 - 40 U/L",
+  "ALP (Alkaline Phosphatase)": "44 - 147 U/L",
+  "Total Bilirubin": "0.1 - 1.2 mg/dL",
+  "Direct Bilirubin": "0.0 - 0.3 mg/dL",
+  "Indirect Bilirubin": "0.2 - 0.9 mg/dL",
+  "Gamma GT (GGT)": "9 - 48 U/L",
+  "Total Protein": "6.0 - 8.3 g/dL",
+  "Albumin": "3.5 - 5.0 g/dL",
+  "Globulin": "2.0 - 3.5 g/dL",
+  "A/G Ratio": "1.2 - 2.2",
+
+  // Kidney Profile
+  "Renal Function Test (RFT)": "Depends on subtests",
+  "Urea": "10 - 50 mg/dL",
+  "Creatinine": "0.7 - 1.3 mg/dL",
+  "BUN": "7 - 20 mg/dL",
+  "Uric Acid": "3.5 - 7.2 mg/dL",
+  "Electrolytes (Na, K, Cl)": "Na: 135-145, K: 3.5-5.0, Cl: 96-106 mEq/L",
+
+  // Electrolytes
+  "Calcium": "8.5 - 10.5 mg/dL",
+  "Phosphorus": "2.5 - 4.5 mg/dL",
+  "Magnesium": "1.7 - 2.2 mg/dL",
+  "Sodium": "135 - 145 mEq/L",
+  "Potassium": "3.5 - 5.0 mEq/L",
+  "Chloride": "96 - 106 mEq/L",
+
+  // Thyroid Profile
+  "TSH": "0.4 - 4.0 mIU/L",
+  "T3": "80 - 200 ng/dL",
+  "T4": "5.0 - 12.0 µg/dL",
+  "FT3": "2.3 - 4.1 pg/mL",
+  "FT4": "0.8 - 1.8 ng/dL",
+
+  // Cardiac Markers
+  "CK-MB": "0 - 5 ng/mL",
+  "Troponin-I": "< 0.04 ng/mL",
+  "Troponin-T": "< 0.01 ng/mL",
+  "LDH": "140 - 280 U/L",
+
+  // CBC / Hematology
+  "Complete Blood Count (CBC)": "Multiple parameters",
+  "Hemoglobin": "13.5 - 17.5 g/dL (M), 12.0 - 15.5 g/dL (F)",
+  "RBC": "4.7–6.1 million/µL (M), 4.2–5.4 (F)",
+  "WBC": "4,000 - 11,000 /µL",
+  "Platelets": "150,000 - 400,000 /µL",
+  "PCV": "38-50%",
+  "MCV": "80 - 100 fL",
+  "MCH": "27 - 33 pg",
+  "MCHC": "32 - 36 g/dL",
+  "ESR": "0 - 22 mm/hr (M), 0 - 29 mm/hr (F)",
+
+  // Lipid Profile
+  "Total Cholesterol": "< 200 mg/dL",
+  "LDL": "< 130 mg/dL",
+  "HDL": "> 40 mg/dL (M), > 50 mg/dL (F)",
+  "Triglycerides": "< 150 mg/dL",
+  "VLDL": "5 - 40 mg/dL",
+
+  // Serology
+  "HCV (Antibody)": "Negative",
+  "HBsAg": "Negative",
+  "HIV": "Negative",
+  "Dengue NS1": "Negative",
+  "Dengue IgM/IgG": "Negative/Positive",
+  "Typhoid (Widal)": "Negative / <1:80",
+  "RA Factor": "< 14 IU/mL",
+  "CRP": "< 3.0 mg/L",
+
+  // Urine & Stool
+  "Urine R/M": "Color: Yellow, pH: 4.6–8.0",
+  "Urine Sugar": "Negative",
+  "Urine Ketone": "Negative",
+  "Urine Protein": "Negative",
+  "Stool R/M": "Normal: Brown, no blood/mucus/parasite",
+  "Stool Occult Blood": "Negative",
+
+  // Misc / Hormones
+  "Vitamin D": "20 - 50 ng/mL",
+  "Vitamin B12": "200 - 900 pg/mL",
+  "FSH": "4.7 - 21.5 mIU/mL",
+  "LH": "5 - 20 mIU/mL",
+  "Prolactin": "5 - 20 ng/mL",
+  "Testosterone": "270 - 1070 ng/dL",
+  "Pregnancy Test (Urine)": "Positive / Negative"
 };
 
-// Load patients into dropdown
-window.onload = function () {
-  loadPatients();
-  loadResults();
-  document.getElementById('testName').addEventListener('input', showNormalRange);
-};
+// Load patient list (simulate)
+const patientSelect = document.getElementById("patientSelect");
+const patients = ["Ali Raza", "Fatima Noor", "Ahmed Khan", "Zainab Bibi"];
+patients.forEach((p) => {
+  const opt = document.createElement("option");
+  opt.value = opt.textContent = p;
+  patientSelect.appendChild(opt);
+});
 
-// Load registered patients from localStorage
-function loadPatients() {
-  const select = document.getElementById('patientSelect');
-  const patients = JSON.parse(localStorage.getItem('patients')) || [];
-
-  select.innerHTML = `<option value="">-- Select Patient --</option>`;
-  patients.forEach((patient) => {
-    const option = document.createElement('option');
-    option.value = patient.mrn;
-    option.textContent = `${patient.name} (MRN: ${patient.mrn})`;
-    select.appendChild(option);
-  });
-}
-
-// Show normal range when typing test
-function showNormalRange() {
-  const test = document.getElementById('testName').value.trim();
-  const range = normalRanges[test] || "N/A";
-  document.getElementById('normalRange').innerText = range !== "N/A"
-    ? `Normal Range: ${range}`
-    : '';
-}
-
-// Add test result
+// Add Test Result to Table
 function addTestResult() {
-  const patientSelect = document.getElementById('patientSelect');
-  const testName = document.getElementById('testName').value.trim();
-  const testResult = document.getElementById('testResult').value.trim();
+  const patient = document.getElementById("patientSelect").value;
+  const test = document.getElementById("testName").value.trim();
+  const result = document.getElementById("testResult").value.trim();
+  const normal = normalRanges[test] || "Manual Input";
 
-  if (!patientSelect.value || !testName || !testResult) {
-    alert('Please fill in all fields.');
+  if (!patient || !test || !result) {
+    alert("Please fill all fields.");
     return;
   }
 
-  const range = normalRanges[testName] || "N/A";
+  const tbody = document.getElementById("resultsTable").querySelector("tbody");
+  const row = tbody.insertRow();
+  row.insertCell().textContent = patient;
+  row.insertCell().textContent = test;
+  row.insertCell().textContent = result;
+  row.insertCell().textContent = normal;
 
-  const resultData = {
-    mrn: patientSelect.value,
-    patientName: patientSelect.options[patientSelect.selectedIndex].text,
-    test: testName,
-    result: testResult,
-    range: range
-  };
+  const actionCell = row.insertCell();
+  const delBtn = document.createElement("button");
+  delBtn.textContent = "🗑️";
+  delBtn.onclick = () => row.remove();
+  actionCell.appendChild(delBtn);
 
-  const results = JSON.parse(localStorage.getItem('testResults')) || [];
-  results.push(resultData);
-  localStorage.setItem('testResults', JSON.stringify(results));
-
-  clearForm();
-  loadResults();
+  document.getElementById("testName").value = "";
+  document.getElementById("testResult").value = "";
+  document.getElementById("normalRange").textContent = "";
 }
 
-// Display results
-function loadResults() {
-  const tbody = document.querySelector("#resultsTable tbody");
-  tbody.innerHTML = "";
-  const results = JSON.parse(localStorage.getItem('testResults')) || [];
+// Auto-show Normal Range
+const testInput = document.getElementById("testName");
+testInput.addEventListener("input", () => {
+  const normal = normalRanges[testInput.value.trim()] || "";
+  document.getElementById("normalRange").textContent = normal;
+});
 
-  results.forEach((res, index) => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${res.patientName}</td>
-      <td>${res.test}</td>
-      <td>${res.result}</td>
-      <td>${res.range}</td>
-      <td><button onclick="deleteResult(${index})">Delete</button></td>
-    `;
-    tbody.appendChild(row);
-  });
-}
-
-// Clear form fields
-function clearForm() {
-  document.getElementById('testName').value = '';
-  document.getElementById('testResult').value = '';
-  document.getElementById('normalRange').innerText = '';
-}
-
-// Delete result
-function deleteResult(index) {
-  const results = JSON.parse(localStorage.getItem('testResults')) || [];
-  results.splice(index, 1);
-  localStorage.setItem('testResults', JSON.stringify(results));
-  loadResults();
-}
-
-// Filter/search results
+// Search Filter
 function filterResults() {
-  const input = document.getElementById("searchInput").value.toLowerCase();
+  const query = document.getElementById("searchInput").value.toLowerCase();
   const rows = document.querySelectorAll("#resultsTable tbody tr");
-
-  rows.forEach(row => {
-    const text = row.innerText.toLowerCase();
-    row.style.display = text.includes(input) ? "" : "none";
+  rows.forEach((row) => {
+    const match = [...row.cells].some((cell) =>
+      cell.textContent.toLowerCase().includes(query)
+    );
+    row.style.display = match ? "" : "none";
   });
 }
