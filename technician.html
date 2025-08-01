@@ -1,68 +1,50 @@
+<!-- Starting from technician.html, integrating all updates including department selection, dynamic test display, and indicator -->
+
+<!-- technician.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Technician Panel - Alpha-Med Clinical Lab</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
+  <script src="test-data.js" defer></script>
   <script src="technician.js" defer></script>
 </head>
 <body>
   <header>🧪 Technician Dashboard - Alpha-Med Clinical Lab</header>
 
   <div class="container">
-    <!-- Section 1: Standard Entry from Reception -->
     <div class="form-section">
-      <h2>Enter Test Result (Reception Registered)</h2>
+      <h2>Enter Test Result</h2>
 
-      <!-- Patient Selector -->
-      <label for="patientSelect">Select Registered Patient:</label>
-      <select id="patientSelect" required>
-        <option value="">-- Select Patient --</option>
-        <!-- Dynamically populated -->
+      <label for="departmentSelect">Select Department:</label>
+      <select id="departmentSelect" onchange="loadDepartmentTests()">
+        <option value="">-- Select Department --</option>
       </select>
 
-      <!-- Test Name -->
-      <label for="testName">Test Name:</label>
-      <input type="text" id="testName" placeholder="e.g. Blood Sugar" required />
+      <label for="patientSelect">Select Registered Patient:</label>
+      <select id="patientSelect">
+        <option value="">-- Select Patient --</option>
+      </select>
 
-      <!-- Result -->
-      <label for="testResult">Result:</label>
-      <input type="text" id="testResult" placeholder="e.g. 90 mg/dL" required />
+      <label for="testName">Select Test:</label>
+      <select id="testName" onchange="showNormalRange()">
+        <option value="">-- Select Test --</option>
+      </select>
 
-      <!-- Normal Range Display -->
-      <p id="normalRange" style="color: #555; margin-bottom: 15px;"></p>
+      <label for="testResult">Enter Result:</label>
+      <input type="text" id="testResult" placeholder="e.g. 90 mg/dL">
+
+      <p id="normalRange" style="color:#555;"></p>
 
       <button onclick="addTestResult()">Add Result</button>
     </div>
 
-    <!-- Section 2: Manual Entry -->
-    <div class="form-section">
-      <h2>Manual Entry (Optional)</h2>
-
-      <label for="manualName">Patient Name:</label>
-      <input type="text" id="manualName" placeholder="e.g. Ali Raza" />
-
-      <label for="manualCNIC">CNIC:</label>
-      <input type="text" id="manualCNIC" placeholder="e.g. 35202-1234567-8" />
-
-      <label for="manualTest">Test Name:</label>
-      <input type="text" id="manualTest" placeholder="e.g. CBC" />
-
-      <label for="manualResult">Result:</label>
-      <input type="text" id="manualResult" placeholder="e.g. 8,000 cells/mcL" />
-
-      <p id="manualRange" style="color: #555;"></p>
-
-      <button onclick="addManualResult()">Add Manual Result</button>
-    </div>
-
-    <!-- Section 3: Search Results -->
     <div class="search-bar">
       <input type="text" id="searchInput" onkeyup="filterResults()" placeholder="Search Results...">
     </div>
 
-    <!-- Section 4: Table of Results -->
     <div class="card">
       <h3>Entered Test Results</h3>
       <table id="resultsTable">
@@ -72,12 +54,11 @@
             <th>Test</th>
             <th>Result</th>
             <th>Normal Range</th>
+            <th>Status</th>
             <th>Action</th>
           </tr>
         </thead>
-        <tbody>
-          <!-- Populated via JS -->
-        </tbody>
+        <tbody></tbody>
       </table>
     </div>
   </div>
