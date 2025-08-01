@@ -97,17 +97,17 @@
     const data = JSON.parse(localStorage.getItem("latestPatient"));
     const div = document.getElementById("slipData");
 
-    if (data) {
+    if (data && Object.keys(data).length > 0) {
       div.innerHTML = `
-        <div><span class="label">MRN:</span> ${data.mrn}</div>
-        <div><span class="label">Name:</span> ${data.name}</div>
-        <div><span class="label">CNIC:</span> ${data.cnic}</div>
-        <div><span class="label">Phone:</span> ${data.phone}</div>
-        <div><span class="label">Department:</span> ${data.department}</div>
-        <div><span class="label">Test:</span> ${data.test}</div>
-        <div><span class="label">Date:</span> ${data.date}</div>
+        <div><span class="label">Sample #:</span> ${data.sampleNumber || "N/A"}</div>
+        <div><span class="label">MRN:</span> ${data.mrn || "N/A"}</div>
+        <div><span class="label">Name:</span> ${data.name || "N/A"}</div>
+        <div><span class="label">CNIC:</span> ${data.cnic || "N/A"}</div>
+        <div><span class="label">Phone:</span> ${data.phone || "N/A"}</div>
+        <div><span class="label">Department:</span> ${data.department || "N/A"}</div>
+        <div><span class="label">Test(s):</span> ${data.test || "N/A"}</div>
+        <div><span class="label">Date:</span> ${data.date || new Date().toLocaleDateString()}</div>
       `;
-
       generateQRCode(JSON.stringify(data), "qrCode");
     } else {
       div.innerHTML = "❌ No patient data found.";
