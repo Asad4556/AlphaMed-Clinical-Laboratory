@@ -10,6 +10,7 @@
       font-family: 'Segoe UI', sans-serif;
       padding: 40px;
     }
+
     .slip-container {
       max-width: 600px;
       margin: auto;
@@ -18,38 +19,49 @@
       padding: 30px;
       box-shadow: 0 0 15px rgba(0,0,0,0.1);
     }
+
     .header {
       text-align: center;
       margin-bottom: 25px;
     }
+
     .header h2 {
       margin-bottom: 5px;
     }
+
     .header img {
       height: 70px;
     }
+
     .info-row {
       display: flex;
+      flex-wrap: wrap; /* ✅ Makes content wrap on small screens */
       justify-content: space-between;
       margin-bottom: 12px;
       font-size: 16px;
+      word-break: break-word;
     }
+
     .info-row span {
       font-weight: 600;
     }
+
     .qr {
       text-align: center;
       margin-top: 30px;
     }
+
     @media print {
       body {
         background: none;
         padding: 0;
       }
+
       .slip-container {
         box-shadow: none;
         border: 1px solid #ccc;
       }
+
       .no-print {
         display: none;
       }
@@ -77,6 +89,10 @@
       <img id="qrImage" src="" alt="QR Code" />
     </div>
   </div>
+
+  <p class="no-print" style="text-align:center; color:#777; font-size:14px; margin-top:20px;">
+    This slip will automatically print. If not, press Ctrl+P or use your browser's print option.
+  </p>
 
   <script>
     function loadSlip() {
