@@ -3,6 +3,7 @@ function savePatientData(patient) {
   const patients = JSON.parse(localStorage.getItem("patients") || "[]");
   patients.push(patient);
   localStorage.setItem("patients", JSON.stringify(patients));
+  localStorage.setItem("latestPatient", JSON.stringify(patient)); // For slip printing
 }
 
 // Get all registered patients
