@@ -1,8 +1,6 @@
-// technician.js
+// technician.js (Updated for Date Default & Mobile Responsiveness)
 
-// Test name to normal range mapping
 const normalRanges = {
-  // Liver Profile
   "Liver Function Test (LFT)": "Depends on subtests",
   "SGPT (ALT)": "7 - 56 U/L",
   "SGOT (AST)": "10 - 40 U/L",
@@ -16,7 +14,6 @@ const normalRanges = {
   "Globulin": "2.0 - 3.5 g/dL",
   "A/G Ratio": "1.2 - 2.2",
 
-  // Kidney Profile
   "Renal Function Test (RFT)": "Depends on subtests",
   "Urea": "10 - 50 mg/dL",
   "Creatinine": "0.7 - 1.3 mg/dL",
@@ -24,7 +21,6 @@ const normalRanges = {
   "Uric Acid": "3.5 - 7.2 mg/dL",
   "Electrolytes (Na, K, Cl)": "Na: 135-145, K: 3.5-5.0, Cl: 96-106 mEq/L",
 
-  // Electrolytes
   "Calcium": "8.5 - 10.5 mg/dL",
   "Phosphorus": "2.5 - 4.5 mg/dL",
   "Magnesium": "1.7 - 2.2 mg/dL",
@@ -32,20 +28,17 @@ const normalRanges = {
   "Potassium": "3.5 - 5.0 mEq/L",
   "Chloride": "96 - 106 mEq/L",
 
-  // Thyroid Profile
   "TSH": "0.4 - 4.0 mIU/L",
   "T3": "80 - 200 ng/dL",
   "T4": "5.0 - 12.0 µg/dL",
   "FT3": "2.3 - 4.1 pg/mL",
   "FT4": "0.8 - 1.8 ng/dL",
 
-  // Cardiac Markers
   "CK-MB": "0 - 5 ng/mL",
   "Troponin-I": "< 0.04 ng/mL",
   "Troponin-T": "< 0.01 ng/mL",
   "LDH": "140 - 280 U/L",
 
-  // CBC / Hematology
   "Complete Blood Count (CBC)": "Multiple parameters",
   "Hemoglobin": "13.5 - 17.5 g/dL (M), 12.0 - 15.5 g/dL (F)",
   "RBC": "4.7–6.1 million/µL (M), 4.2–5.4 (F)",
@@ -57,14 +50,12 @@ const normalRanges = {
   "MCHC": "32 - 36 g/dL",
   "ESR": "0 - 22 mm/hr (M), 0 - 29 mm/hr (F)",
 
-  // Lipid Profile
   "Total Cholesterol": "< 200 mg/dL",
   "LDL": "< 130 mg/dL",
   "HDL": "> 40 mg/dL (M), > 50 mg/dL (F)",
   "Triglycerides": "< 150 mg/dL",
   "VLDL": "5 - 40 mg/dL",
 
-  // Serology
   "HCV (Antibody)": "Negative",
   "HBsAg": "Negative",
   "HIV": "Negative",
@@ -74,7 +65,6 @@ const normalRanges = {
   "RA Factor": "< 14 IU/mL",
   "CRP": "< 3.0 mg/L",
 
-  // Urine & Stool
   "Urine R/M": "Color: Yellow, pH: 4.6–8.0",
   "Urine Sugar": "Negative",
   "Urine Ketone": "Negative",
@@ -82,7 +72,6 @@ const normalRanges = {
   "Stool R/M": "Normal: Brown, no blood/mucus/parasite",
   "Stool Occult Blood": "Negative",
 
-  // Misc / Hormones
   "Vitamin D": "20 - 50 ng/mL",
   "Vitamin B12": "200 - 900 pg/mL",
   "FSH": "4.7 - 21.5 mIU/mL",
@@ -92,7 +81,6 @@ const normalRanges = {
   "Pregnancy Test (Urine)": "Positive / Negative"
 };
 
-// Load patient list (simulate)
 const patientSelect = document.getElementById("patientSelect");
 const patients = ["Ali Raza", "Fatima Noor", "Ahmed Khan", "Zainab Bibi"];
 patients.forEach((p) => {
@@ -101,12 +89,12 @@ patients.forEach((p) => {
   patientSelect.appendChild(opt);
 });
 
-// Add Test Result to Table
 function addTestResult() {
   const patient = document.getElementById("patientSelect").value;
   const test = document.getElementById("testName").value.trim();
   const result = document.getElementById("testResult").value.trim();
   const normal = normalRanges[test] || "Manual Input";
+  const date = new Date().toISOString().split("T")[0];
 
   if (!patient || !test || !result) {
     alert("Please fill all fields.");
@@ -115,6 +103,7 @@ function addTestResult() {
 
   const tbody = document.getElementById("resultsTable").querySelector("tbody");
   const row = tbody.insertRow();
+  row.insertCell().textContent = date;
   row.insertCell().textContent = patient;
   row.insertCell().textContent = test;
   row.insertCell().textContent = result;
@@ -131,14 +120,11 @@ function addTestResult() {
   document.getElementById("normalRange").textContent = "";
 }
 
-// Auto-show Normal Range
-const testInput = document.getElementById("testName");
-testInput.addEventListener("input", () => {
-  const normal = normalRanges[testInput.value.trim()] || "";
-  document.getElementById("normalRange").textContent = normal;
+document.getElementById("testName").addEventListener("input", () => {
+  const input = document.getElementById("testName").value.trim();
+  document.getElementById("normalRange").textContent = normalRanges[input] || "";
 });
 
-// Search Filter
 function filterResults() {
   const query = document.getElementById("searchInput").value.toLowerCase();
   const rows = document.querySelectorAll("#resultsTable tbody tr");
