@@ -2,111 +2,124 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>View Reports - Alpha-Med Clinical Lab</title>
-  <link rel="stylesheet" href="style.css" />
-  <script src="storage.js" defer></script>
-  <script src="script.js" defer></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>All Patient Reports - Alpha-Med Clinical Lab</title>
+  <link rel="stylesheet" href="style.css">
   <style>
-    .report-card {
-      border: 1px solid #ddd;
-      padding: 15px;
-      margin-bottom: 10px;
-      border-radius: 8px;
-      background-color: #fff;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    .container {
+      padding: 30px;
     }
-    .watermark {
-      position: fixed;
-      top: 45%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 40px;
-      color: rgba(0,0,0,0.05);
-      z-index: 0;
-      pointer-events: none;
-    }
-    .report-footer {
+
+    h2 {
       text-align: center;
-      font-size: 12px;
-      margin-top: 40px;
-      color: gray;
+      color: #013243;
     }
-    @media print {
-      .search-section, .print-button {
-        display: none;
-      }
-      .watermark {
-        display: block;
-      }
+
+    #searchInput {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      padding: 12px;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+
+    th {
+      background-color: #013243;
+      color: white;
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    .no-data {
+      text-align: center;
+      color: red;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>Patient Lab Reports</h2>
+    <h2>📄 All Patient Reports</h2>
 
-    <div class="search-section">
-      <input type="text" id="searchInput" placeholder="Search by MRN, CNIC or Name" oninput="filterReports()" />
-      <select id="deptFilter" onchange="filterReports()">
-        <option value="">All Departments</option>
-        <option value="Hematology">Hematology</option>
-        <option value="Serology">Serology</option>
-        <option value="Histopathology">Histopathology</option>
-        <option value="Microbiology">Microbiology</option>
-        <option value="Biochemistry">Biochemistry</option>
-        <option value="Culture Tests">Culture Tests</option>
-        <option value="Special Chemistry">Special Chemistry</option>
-        <option value="Molecular Biology">Molecular Biology</option>
-        <option value="Blood Banking">Blood Banking</option>
-      </select>
-      <button class="print-button" onclick="window.print()">🖨️ Print</button>
-    </div>
+    <input type="text" id="searchInput" onkeyup="filterReports()" placeholder="🔍 Search by CNIC, Name, Test, Department...">
 
-    <div id="reportList"></div>
-
-    <div class="watermark">Alpha-Med Clinical Lab</div>
-    <div class="report-footer">© Alpha-Med Clinical Lab – This report is system generated</div>
+    <table id="reportsTable">
+      <thead>
+        <tr>
+          <th>Patient Name</th>
+          <th>CNIC</th>
+          <th>Phone</th>
+          <th>Department</th>
+          <th>Test</th>
+          <th>Result</th>
+          <th>Normal Range</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody id="reportsBody">
+        <!-- Filled by JS -->
+      </tbody>
+    </table>
   </div>
 
   <script>
-    function filterReports() {
-      const search = document.getElementById('searchInput').value.toLowerCase();
-      const dept = document.getElementById('deptFilter').value;
-      const reports = JSON.parse(localStorage.getItem('testResults') || '[]');
-      const container = document.getElementById('reportList');
-      container.innerHTML = '';
+    function loadReports() {
+      const testResults = JSON.parse(localStorage.getItem("testResults")) || [];
+      const patients = JSON.parse(localStorage.getItem("patients")) || [];
 
-      const filtered = reports.filter(r =>
-        (!dept || r.department === dept) &&
-        (r.mrn.toLowerCase().includes(search) || 
-         r.cnic.toLowerCase().includes(search) ||
-         r.name.toLowerCase().includes(search))
-      );
+      const body = document.getElementById("reportsBody");
+      body.innerHTML = "";
 
-      if (filtered.length === 0) {
-        container.innerHTML = "<p>No reports found.</p>";
+      if (testResults.length === 0 || patients.length === 0) {
+        body.innerHTML = `<tr><td colspan="8" class="no-data">No reports available.</td></tr>`;
         return;
       }
 
-      filtered.forEach(r => {
-        const card = document.createElement('div');
-        card.className = 'report-card';
-        card.innerHTML = `
-          <strong>MRN:</strong> ${r.mrn}<br>
-          <strong>Name:</strong> ${r.name}<br>
-          <strong>CNIC:</strong> ${r.cnic}<br>
-          <strong>Department:</strong> ${r.department}<br>
-          <strong>Tests:</strong><br>
-          <ul>
-            ${r.tests.map(t => `<li>${t.name}: ${t.result} ${t.unit || ''}</li>`).join('')}
-          </ul>
-          <small><em>Date: ${r.date || new Date().toLocaleDateString()}</em></small>
-        `;
-        container.appendChild(card);
+      testResults.forEach(result => {
+        const patient = patients.find(p => p.mrn === result.patientMrn);
+        if (patient) {
+          const row = `
+            <tr>
+              <td>${patient.name}</td>
+              <td>${patient.cnic}</td>
+              <td>${patient.phone}</td>
+              <td>${patient.department}</td>
+              <td>${result.test}</td>
+              <td>${result.result}</td>
+              <td>${result.normalRange || "-"}</td>
+              <td>${patient.date}</td>
+            </tr>
+          `;
+          body.innerHTML += row;
+        }
       });
     }
 
-    window.onload = filterReports;
+    function filterReports() {
+      const input = document.getElementById("searchInput").value.toLowerCase();
+      const rows = document.querySelectorAll("#reportsTable tbody tr");
+
+      rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(input) ? "" : "none";
+      });
+    }
+
+    window.onload = loadReports;
   </script>
 </body>
 </html>
