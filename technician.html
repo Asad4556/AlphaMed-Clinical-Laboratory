@@ -11,14 +11,15 @@
   <header>🧪 Technician Dashboard - Alpha-Med Clinical Lab</header>
 
   <div class="container">
+    <!-- Section 1: Standard Entry from Reception -->
     <div class="form-section">
-      <h2>Enter Test Result</h2>
+      <h2>Enter Test Result (Reception Registered)</h2>
 
       <!-- Patient Selector -->
       <label for="patientSelect">Select Registered Patient:</label>
       <select id="patientSelect" required>
         <option value="">-- Select Patient --</option>
-        <!-- Populated dynamically from registered patients -->
+        <!-- Dynamically populated -->
       </select>
 
       <!-- Test Name -->
@@ -29,19 +30,39 @@
       <label for="testResult">Result:</label>
       <input type="text" id="testResult" placeholder="e.g. 90 mg/dL" required />
 
-      <!-- Normal Range (auto display) -->
+      <!-- Normal Range Display -->
       <p id="normalRange" style="color: #555; margin-bottom: 15px;"></p>
 
-      <!-- Add Result Button -->
       <button onclick="addTestResult()">Add Result</button>
     </div>
 
-    <!-- Search Bar -->
+    <!-- Section 2: Manual Entry -->
+    <div class="form-section">
+      <h2>Manual Entry (Optional)</h2>
+
+      <label for="manualName">Patient Name:</label>
+      <input type="text" id="manualName" placeholder="e.g. Ali Raza" />
+
+      <label for="manualCNIC">CNIC:</label>
+      <input type="text" id="manualCNIC" placeholder="e.g. 35202-1234567-8" />
+
+      <label for="manualTest">Test Name:</label>
+      <input type="text" id="manualTest" placeholder="e.g. CBC" />
+
+      <label for="manualResult">Result:</label>
+      <input type="text" id="manualResult" placeholder="e.g. 8,000 cells/mcL" />
+
+      <p id="manualRange" style="color: #555;"></p>
+
+      <button onclick="addManualResult()">Add Manual Result</button>
+    </div>
+
+    <!-- Section 3: Search Results -->
     <div class="search-bar">
       <input type="text" id="searchInput" onkeyup="filterResults()" placeholder="Search Results...">
     </div>
 
-    <!-- Table of Added Results -->
+    <!-- Section 4: Table of Results -->
     <div class="card">
       <h3>Entered Test Results</h3>
       <table id="resultsTable">
@@ -55,7 +76,7 @@
           </tr>
         </thead>
         <tbody>
-          <!-- Filled by JS -->
+          <!-- Populated via JS -->
         </tbody>
       </table>
     </div>
