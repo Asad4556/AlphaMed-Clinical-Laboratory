@@ -139,9 +139,8 @@
       localStorage.setItem("latestPatient", JSON.stringify(patient)); // For slip
       generateQRCode(JSON.stringify(patient), "qrCodeContainer");
 
-      setTimeout(() => {
-        window.location.href = "registration-slip.html";
-      }, 1500);
+      // فوراً slip open کریں
+      window.location.href = "registration-slip.html";
     });
   </script>
 
