@@ -98,9 +98,12 @@
     <div class="qr-preview" id="qrCodeContainer"></div>
   </form>
 
-  <script src="storage.js"></script>
+  <!-- Required Scripts -->
   <script src="test-data.js"></script>
+  <script src="storage.js"></script>
   <script src="qr-generator.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
   <script>
     // Auto fill test dropdown based on department
     document.getElementById("department").addEventListener("change", function() {
@@ -132,14 +135,11 @@
         date: new Date().toLocaleString()
       };
 
-      savePatientToStorage(patient);
-
-      // Show QR Code
+      savePatientData(patient); // Save to storage
+      localStorage.setItem("latestPatient", JSON.stringify(patient)); // For slip
       generateQRCode(JSON.stringify(patient), "qrCodeContainer");
 
-      // Redirect to slip
       setTimeout(() => {
-        localStorage.setItem("latestPatient", JSON.stringify(patient));
         window.location.href = "registration-slip.html";
       }, 1500);
     });
