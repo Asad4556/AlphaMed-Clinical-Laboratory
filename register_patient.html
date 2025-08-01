@@ -1,62 +1,178 @@
-Understood. Based on your full file list and the new feature requirements, here is the structured update plan for each file to implement:
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register Patient - Alpha-Med Clinical Lab</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="labSections.js" defer></script>
+  <script src="storage.js" defer></script>
+</head>
+<body>
+  <header>🏥 Patient Registration - Alpha-Med Clinical Lab</header>
 
-✅ Modern international-style reporting
-✅ Department-wise test loading
-✅ High/Low result indicators (with arrow symbols)
-✅ Proper linking between Reception → Technician → Admin → Report view
+  <div class="container">
+    <form id="patientForm">
+      <label for="name">Patient Name:</label>
+      <input type="text" id="name" required />
 
----
+      <label for="cnic">CNIC:</label>
+      <input type="text" id="cnic" required />
 
-### ✅ File Update Plan (in correct order):
+      <label for="phone">Phone Number:</label>
+      <input type="text" id="phone" required />
 
-#### 1. `test-data.js`
-- ✅ Already done. Contains all departments + 30 tests each with normal ranges.
+      <label for="department">Department:</label>
+      <select id="department" required>
+        <option value="">-- Select Department --</option>
+      </select>
 
-#### 2. `register_patient.html`
-- Show department dropdown
-- Auto-load tests after department selection
-- Patient form stores selected department
+      <label for="test">Test:</label>
+      <select id="test" required>
+        <option value="">-- Select Test --</option>
+      </select>
 
-#### 3. `reception.js`
-- Save patient with department field
-- Automatically redirect to `registration-slip.html` after registration
+      <label for="date">Date:</label>
+      <input type="date" id="date" required />
 
-#### 4. `registration-slip.html`
-- Modern slip view
-- Include all patient + department + empty test list
-- Show date, logo, footer
+      <button type="submit">Register Patient</button>
+    </form>
+  </div>
 
-#### 5. `technician.html`
-- Test input form with department filter
-- High/Low indicators (🔺 / 🔻)
-- Result entry form
+  <footer>&copy; 2025 Alpha-Med Clinical Lab</footer>
 
-#### 6. `technician.js`
-- Match patient with test list by department
-- Add result + compare with normal range
-- Append arrow indicators
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const deptSelect = document.getElementById("department");
+      const testSelect = document.getElementById("test");
 
-#### 7. `report.html` or `view_reports.html`
-- Show patient report (department-wise)
-- Show all entered results
-- Modern layout, print-friendly
-- Arrows for High 🔺 / Low 🔻
+      Object.keys(labTests).forEach(dept => {
+        const option = document.createElement("option");
+        option.value = dept;
+        option.textContent = dept;
+        deptSelect.appendChild(option);
+      });
 
-#### 8. `style.css`
-- Add all modern styles (card layout, tables, indicators, etc.)
+      deptSelect.addEventListener("change", () => {
+        testSelect.innerHTML = '<option value="">-- Select Test --</option>';
+        const selectedDept = deptSelect.value;
+        if (labTests[selectedDept]) {
+          labTests[selectedDept].forEach(test => {
+            const option = document.createElement("option");
+            option.value = test.name;
+            option.textContent = test.name;
+            testSelect.appendChild(option);
+          });
+        }
+      });
 
-#### 9. `admin.html`, `admin-dashboard.html`, `reception_dashboard.html`, `technician_dashboard.html`
-- Just add "View Reports" link for each user
+      document.getElementById("patientForm").addEventListener("submit", e => {
+        e.preventDefault();
+        const patient = {
+          name: document.getElementById("name").value,
+          cnic: document.getElementById("cnic").value,
+          phone: document.getElementById("phone").value,
+          department: deptSelect.value,
+          test: testSelect.value,
+          date: document.getElementById("date").value,
+          mrn: `MRN-${Date.now()}`
+        };
 
-#### 10. `script.js`
-- Shared functions like `getPatients()`, `compareRange()` etc.
+        savePatient(patient);
+        localStorage.setItem("latestPatient", JSON.stringify(patient));
+        alert("✅ Patient Registered Successfully");
+        location.href = "registration-slip.html";
+      });
+    });
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register Patient - Alpha-Med Clinical Lab</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="labSections.js" defer></script>
+  <script src="storage.js" defer></script>
+</head>
+<body>
+  <header>🏥 Patient Registration - Alpha-Med Clinical Lab</header>
 
-#### 11. `storage.js`
-- Ensure localStorage saves/reads data properly with department + test + result
+  <div class="container">
+    <form id="patientForm">
+      <label for="name">Patient Name:</label>
+      <input type="text" id="name" required />
 
-#### 12. `slip.html`, `export.html`, `qr-generator.js`
-- (Optional) Style matching if used for print/export
+      <label for="cnic">CNIC:</label>
+      <input type="text" id="cnic" required />
 
----
+      <label for="phone">Phone Number:</label>
+      <input type="text" id="phone" required />
 
-If you're ready, I’ll now begin by sending the **updated version of `register_patient.html`** with department and test integration. Shall I begin with that?
+      <label for="department">Department:</label>
+      <select id="department" required>
+        <option value="">-- Select Department --</option>
+      </select>
+
+      <label for="test">Test:</label>
+      <select id="test" required>
+        <option value="">-- Select Test --</option>
+      </select>
+
+      <label for="date">Date:</label>
+      <input type="date" id="date" required />
+
+      <button type="submit">Register Patient</button>
+    </form>
+  </div>
+
+  <footer>&copy; 2025 Alpha-Med Clinical Lab</footer>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const deptSelect = document.getElementById("department");
+      const testSelect = document.getElementById("test");
+
+      Object.keys(labTests).forEach(dept => {
+        const option = document.createElement("option");
+        option.value = dept;
+        option.textContent = dept;
+        deptSelect.appendChild(option);
+      });
+
+      deptSelect.addEventListener("change", () => {
+        testSelect.innerHTML = '<option value="">-- Select Test --</option>';
+        const selectedDept = deptSelect.value;
+        if (labTests[selectedDept]) {
+          labTests[selectedDept].forEach(test => {
+            const option = document.createElement("option");
+            option.value = test.name;
+            option.textContent = test.name;
+            testSelect.appendChild(option);
+          });
+        }
+      });
+
+      document.getElementById("patientForm").addEventListener("submit", e => {
+        e.preventDefault();
+        const patient = {
+          name: document.getElementById("name").value,
+          cnic: document.getElementById("cnic").value,
+          phone: document.getElementById("phone").value,
+          department: deptSelect.value,
+          test: testSelect.value,
+          date: document.getElementById("date").value,
+          mrn: `MRN-${Date.now()}`
+        };
+
+        savePatient(patient);
+        localStorage.setItem("latestPatient", JSON.stringify(patient));
+        alert("✅ Patient Registered Successfully");
+        location.href = "registration-slip.html";
+      });
+    });
+  </script>
+</body>
+</html>
