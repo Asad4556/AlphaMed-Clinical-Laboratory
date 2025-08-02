@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AMCL Lab Login</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-box">
+      <h2>Admin Login</h2>
+      <form action="admin_dashboard.html" method="POST" onsubmit="return validateLogin()">
+        <label for="cnic">CNIC:</label>
+        <input type="text" id="cnic" name="cnic" placeholder="e.g. 34501-8971113-7" required />
+        
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" placeholder="Enter password" required />
+        
+        <button type="submit">Login</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function validateLogin() {
+      const cnic = document.getElementById("cnic").value;
+      const password = document.getElementById("password").value;
+      
+      if (cnic === "34501-8971113-7" && password === "Asad@2723") {
+        return true;
+      } else {
+        alert("Invalid CNIC or Password.");
+        return false;
+      }
+    }
+  </script>
+</body>
+</html>
