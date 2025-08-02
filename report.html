@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Lab Report - Alpha-Med Clinical Lab</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="qr-generator.js" defer></script>
+  <style>
+    body {
+      background-color: #101820;
+      color: #ffffff;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 30px;
+    }
+    .report-container {
+      max-width: 900px;
+      margin: auto;
+      background: #1d1f27;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+    .logo-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    h2 {
+      text-align: center;
+      margin: 20px 0;
+    }
+    .info {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    .info div {
+      background: #2a2d3a;
+      padding: 10px;
+      border-radius: 8px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+    }
+    table th, table td {
+      padding: 10px;
+      text-align: center;
+    }
+    table th {
+      background: #33374a;
+    }
+    table td {
+      background: #262a36;
+      border-bottom: 1px solid #444;
+    }
+    .high {
+      color: red;
+    }
+    .low {
+      color: #ffcc00;
+    }
+    .normal {
+      color: lightgreen;
+    }
+    .print-btn {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+    }
+    button {
+      background: #00aaff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0088cc;
+    }
+  </style>
+</head>
+<body onload="loadReport()">
+  <div class="report-container">
+    <div class="logo-row">
+      <img src="logo.png" width="100" />
+      <div id="qrCode"></div>
+    </div>
+
+    <h2>Final Test Report</h2>
+
+    <div class="info">
+      <div><strong>Patient Name:</strong> <span id="name"></span></div>
+      <div><strong>MRN:</strong> <span id="mrn"></span></div>
+      <div><strong>Gender:</strong> <span id="gender"></span></div>
+      <div><strong>Age:</strong> <span id="age"></span></div>
+      <div><strong>Phone:</strong> <span id="phone"></span></div>
+      <div><strong>Date:</strong> <span id="date"></span></div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Test Name</th>
+          <th>Result</th>
+          <th>Unit</th>
+          <th>Normal Range</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="reportBody"></tbody>
+    </table>
+
+    <div class="print-btn">
+      <button onclick="window.print()">🖨️ Print Report</button>
+    </div>
+  </div>
+
+  <script>
+    function loadReport() {
+      const report = JSON.parse(localStorage.getItem("latestReport"));
+      if (!report) {
+        document.body.innerHTML = "<h2 style='color:white;text-align:center;'>No report data found.</h2>";
+        return;
+      }
+
+      document.getElementById("name").textContent = report.name;
+      document.getElementById("mrn").textContent = report.mrn;
+      document.getElementById("gender").textContent = report.gender;
+      document.getElementById("age").textContent = report.age;
+      document.getElementById("phone").textContent = report.phone;
+      document.getElementById("date").textContent = new Date().toLocaleString();
+
+      const tbody = document.getElementById("reportBody");
+      tbody.innerHTML = "";
+
+      report.results.forEach(test => {
+        const row = document.createElement("tr");
+
+        const result = parseFloat(test.result);
+        const low = parseFloat(test.rangeLow);
+        const high = parseFloat(test.rangeHigh);
+
+        let status = "Normal";
+        let className = "normal";
+        let arrow = "→";
+
+        if (result < low) {
+          status = "Low ↓";
+          className = "low";
+        } else if (result > high) {
+          status = "High ↑";
+          className = "high";
+        }
+
+        row.innerHTML = `
+          <td>${test.testName}</td>
+          <td>${test.result}</td>
+          <td>${test.unit}</td>
+          <td>${test.rangeLow} - ${test.rangeHigh}</td>
+          <td class="${className}">${status}</td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      // Generate QR Code
+      const qr = document.getElementById("qrCode");
+      qr.innerHTML = "";
+      const qrText = `MRN: ${report.mrn}, Name: ${report.name}, Phone: ${report.phone}`;
+      new QRCode(qr, {
+        text: qrText,
+        width: 100,
+        height: 100
+      });
+    }
+  </script>
+</body>
+</html>
