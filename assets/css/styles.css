@@ -1,0 +1,11 @@
+body{font-family:Arial,Helvetica,sans-serif;background:#f5f7fa;color:#333}
+header{display:flex;align-items:center;gap:20px;padding:10px;background:#fff;border-bottom:1px solid #eee}
+header img{height:50px}
+main{padding:20px}
+.login-box{width:320px;margin:60px auto;padding:20px;background:#fff;border-radius:6px;box-shadow:0 2px 6px rgba(0,0,0,0.06)}
+input,select,button{display:block;width:100%;padding:8px;margin:6px 0;border:1px solid #ddd;border-radius:4px}
+button{background:#0b6dfd;color:#fff;border:none}
+.error{color:red}
+table{border-collapse:collapse;width:100%}
+table td, table th{border:1px solid #ddd;padding:8px}
+.job-card{border:1px solid #ddd;padding:10px;margin-bottom:12px;background:#fff}
