@@ -1,23 +1,16 @@
-// Store registered patient data (with duplicate check)
+// ✅ Save registered patient with duplicate CNIC check
 function savePatient(patient) {
   const patients = JSON.parse(localStorage.getItem("patients") || "[]");
 
-  // Check for duplicate based on CNIC + Test + Date
-  const isDuplicate = patients.some(p => 
-    p.cnic === patient.cnic && 
-    p.test === patient.test && 
-    p.date === patient.date
-  );
-
-  if (isDuplicate) {
-    alert("⚠️ This patient with same CNIC, test, and date is already registered.");
-    return false; // Prevent saving
+  // Duplicate CNIC check
+  const exists = patients.some(p => p.cnic === patient.cnic);
+  if (exists) {
+    return false; // Already exists, don't save
   }
 
   patients.push(patient);
   localStorage.setItem("patients", JSON.stringify(patients));
-  localStorage.setItem("latestPatient", JSON.stringify(patient)); // For slip printing
-  return true;
+  return true; // Saved successfully
 }
 
 // Get all registered patients
@@ -84,5 +77,6 @@ function getTechnicianDataForRegisteredPatients() {
       filtered[cnic] = allTechData[cnic];
     }
   }
+
   return filtered;
 }
