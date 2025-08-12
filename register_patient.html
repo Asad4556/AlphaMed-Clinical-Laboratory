@@ -54,7 +54,7 @@
         deptSelect.appendChild(option);
       });
 
-      // Populate tests on department change
+      // Populate tests when department changes
       deptSelect.addEventListener("change", () => {
         testSelect.innerHTML = '<option value="">-- Select Test --</option>';
         const selectedDept = deptSelect.value;
@@ -71,7 +71,6 @@
       // Handle form submit
       document.getElementById("patientForm").addEventListener("submit", e => {
         e.preventDefault();
-
         const patient = {
           name: document.getElementById("name").value.trim(),
           cnic: document.getElementById("cnic").value.trim(),
@@ -82,16 +81,13 @@
           mrn: `MRN-${Date.now()}`
         };
 
-        // Check for duplicates by CNIC
-        const patients = JSON.parse(localStorage.getItem("patients") || "[]");
-        if (patients.some(p => p.cnic === patient.cnic && p.test === patient.test && p.date === patient.date)) {
-          alert("⚠️ This patient with same CNIC, test, and date is already registered.");
+        const saved = savePatient(patient); // yeh function storage.js me hona chahiye
+        if (!saved) {
+          alert("⚠️ This CNIC is already registered.");
           return;
         }
 
-        savePatient(patient);
         localStorage.setItem("latestPatient", JSON.stringify(patient));
-
         alert("✅ Patient Registered Successfully");
         location.href = "registration-slip.html";
       });
