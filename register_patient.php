@@ -1,43 +1,47 @@
 <?php
-// =============================
-//  CONFIGURATION
-// =============================
-require 'vendor/autoload.php'; // QR Code & Barcode libraries
-include 'db_connect.php';
+// Database connection
+$conn = new mysqli("localhost", "root", "", "lab_system");
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
 
-// =============================
-//  AUTO MRN GENERATE
-// =============================
-$mrn = "MRN" . str_pad(rand(1, 999999), 6, '0', STR_PAD_LEFT);
+// Auto-generate MRN (Medical Record Number)
+function generateMRN($conn) {
+    $result = $conn->query("SELECT MAX(id) AS max_id FROM patients");
+    $row = $result->fetch_assoc();
+    $next_id = $row['max_id'] + 1;
+    return "MRN" . str_pad($next_id, 6, "0", STR_PAD_LEFT);
+}
 
-// =============================
-//  HANDLE FORM SUBMIT
-// =============================
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $name       = $_POST['name'];
-    $dob        = $_POST['dob'];
-    $gender     = $_POST['gender'];
-    $phone      = $_POST['phone'];
-    $cnic       = $_POST['cnic'];
-    $address    = $_POST['address'];
-    $mrn        = $_POST['mrn'];
+// Auto-generate Sample Number
+function generateSampleNo($conn) {
+    $result = $conn->query("SELECT MAX(id) AS max_id FROM patients");
+    $row = $result->fetch_assoc();
+    $next_id = $row['max_id'] + 1;
+    return "SMP" . str_pad($next_id, 6, "0", STR_PAD_LEFT);
+}
 
-    // Save Patient Data
-    $stmt = $conn->prepare("INSERT INTO patients (mrn, name, dob, gender, phone, cnic, address) VALUES (?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssssss", $mrn, $name, $dob, $gender, $phone, $cnic, $address);
-    $stmt->execute();
+// Save patient data
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $mrn = generateMRN($conn);
+    $sample_no = generateSampleNo($conn);
+    $name = $_POST['name'];
+    $age = $_POST['age'];
+    $gender = $_POST['gender'];
+    $cnic = $_POST['cnic'];
+    $contact = $_POST['contact'];
+    $address = $_POST['address'];
+    $department = $_POST['department'];
 
-    // Generate QR Code
-    $qrCodePath = "qrcodes/{$mrn}.png";
-    $qr = new Endroid\QrCode\QrCode($mrn);
-    $qr->writeFile($qrCodePath);
+    $stmt = $conn->prepare("INSERT INTO patients (mrn, sample_no, name, age, gender, cnic, contact, address, department) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssssssss", $mrn, $sample_no, $name, $age, $gender, $cnic, $contact, $address, $department);
 
-    // Generate Barcode
-    $barcodePath = "barcodes/{$mrn}.png";
-    $barcode = new Picqer\Barcode\BarcodeGeneratorPNG();
-    file_put_contents($barcodePath, $barcode->getBarcode($mrn, $barcode::TYPE_CODE_128));
-
-    echo "<script>alert('Patient Registered Successfully!');</script>";
+    if ($stmt->execute()) {
+        header("Location: register_patient.php?success=1&mrn=$mrn&sample_no=$sample_no");
+        exit;
+    } else {
+        echo "Error: " . $stmt->error;
+    }
 }
 ?>
 
@@ -48,46 +52,61 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header>
-    <img src="logo.png" class="logo" alt="Lab Logo">
-    <h1>Register New Patient</h1>
-    <a href="dashboard.php" class="logout-btn">Back</a>
-</header>
+<h2>Register New Patient</h2>
 
-<div class="dashboard-container">
-    <form method="POST">
-        <label>MRN (Auto)</label>
-        <input type="text" name="mrn" value="<?php echo $mrn; ?>" readonly>
-
-        <label>Full Name</label>
-        <input type="text" name="name" required>
-
-        <label>Date of Birth</label>
-        <input type="date" name="dob" required>
-
-        <label>Gender</label>
-        <select name="gender" required>
-            <option value="">Select</option>
-            <option>Male</option>
-            <option>Female</option>
-            <option>Other</option>
-        </select>
-
-        <label>Phone Number</label>
-        <input type="text" name="phone" required>
-
-        <label>CNIC</label>
-        <input type="text" name="cnic" required>
-
-        <label>Address</label>
-        <textarea name="address" required></textarea>
-
-        <button type="submit">Register Patient</button>
-    </form>
+<?php if (isset($_GET['success'])): ?>
+<div class="success-message">
+    ✅ Patient registered successfully!  
+    MRN: <strong><?php echo $_GET['mrn']; ?></strong>  
+    Sample No: <strong><?php echo $_GET['sample_no']; ?></strong>
 </div>
+<?php endif; ?>
 
-<footer>
-    <p>© <?php echo date("Y"); ?> Your Lab Name - All Rights Reserved</p>
-</footer>
+<form method="POST">
+    <label>Full Name:</label>
+    <input type="text" name="name" required>
+
+    <label>Age:</label>
+    <input type="number" name="age" required>
+
+    <label>Gender:</label>
+    <select name="gender" required>
+        <option value="">Select</option>
+        <option>Male</option>
+        <option>Female</option>
+        <option>Other</option>
+    </select>
+
+    <label>CNIC:</label>
+    <input type="text" name="cnic" required placeholder="xxxxx-xxxxxxx-x">
+
+    <label>Contact:</label>
+    <input type="text" name="contact" required>
+
+    <label>Address:</label>
+    <textarea name="address" required></textarea>
+
+    <label>Department:</label>
+    <select name="department" required>
+        <option value="">Select Department</option>
+        <option>Hematology</option>
+        <option>Biochemistry</option>
+        <option>Microbiology</option>
+        <option>Histopathology</option>
+        <option>Molecular Biology</option>
+        <option>Immunology</option>
+        <option>Serology</option>
+        <option>Virology</option>
+        <option>Parasitology</option>
+        <option>Clinical Pathology</option>
+        <option>Blood Bank</option>
+        <option>Endocrinology</option>
+        <option>Toxicology</option>
+        <option>Radiology</option>
+        <option>Other</option>
+    </select>
+
+    <button type="submit">Register Patient</button>
+</form>
 </body>
 </html>
