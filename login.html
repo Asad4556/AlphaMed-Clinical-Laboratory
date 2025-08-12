@@ -1,53 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login - Alpha-Med Clinical Lab</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="icon" type="image/png" href="logo.png" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlphaMed Laboratory - Login</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background: url('logo.png') no-repeat center;
+            background-size: 300px;
+            background-position: center 10%;
+            opacity: 0.95;
+        }
+        .login-container {
+            max-width: 400px;
+            margin: 120px auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+        .password-wrapper {
+            position: relative;
+        }
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 10px;
+            cursor: pointer;
+            color: var(--accent);
+        }
+    </style>
 </head>
-<body class="login-body">
+<body>
 
-  <div class="login-container">
-    <div class="logo-side">
-      <img src="logo.png" alt="Lab Logo" class="logo-img" />
-    </div>
+<header>AlphaMed Laboratory - Secure Login</header>
 
-    <div class="login-form">
-      <h2>Login</h2>
+<div class="login-container">
+    <h2>Login</h2>
+    <form method="POST" action="login_process.php">
+        <label for="role">Select Role</label>
+        <select name="role" id="role" required>
+            <option value="">-- Select Role --</option>
+            <option value="admin">Admin</option>
+            <option value="reception">Reception</option>
+            <option value="technician">Technician</option>
+        </select>
 
-      <form id="loginForm">
-        <label for="cnic">CNIC:</label>
-        <input type="text" id="cnic" name="cnic" placeholder="e.g. 34501-1234567-1" required />
+        <label for="username">Username / CNIC</label>
+        <input type="text" name="username" id="username" placeholder="Enter CNIC or Username" required>
 
-        <label for="password">Password:</label>
+        <label for="password">Password</label>
         <div class="password-wrapper">
-          <input type="password" id="password" name="password" placeholder="Enter Password" required />
-          <button type="button" id="togglePassword" title="Show/Hide Password">👁️</button>
+            <input type="password" name="password" id="password" placeholder="Enter Password" required>
+            <span class="toggle-password" onclick="togglePassword()">👁</span>
         </div>
 
-        <button type="submit" class="btn-login">Login</button>
-        <p id="error" class="error-msg"></p>
-      </form>
+        <button type="submit" class="btn" style="width:100%;">Login</button>
+    </form>
+</div>
 
-      <div class="extra-options">
-        <a href="change_password.html">Change Password</a> |
-        <a href="create_account.html">Create Account</a>
-      </div>
-    </div>
+<script>
+    function togglePassword() {
+        let passField = document.getElementById('password');
+        if (passField.type === 'password') {
+            passField.type = 'text';
+        } else {
+            passField.type = 'password';
+        }
+    }
+</script>
 
-    <div class="logo-side">
-      <img src="logo.png" alt="Pakistan Logo" class="logo-img" />
-    </div>
-  </div>
-
-  <!-- Footer Chat Buttons -->
-  <div class="chat-buttons">
-    <a href="https://wa.me/923398067880" target="_blank" class="whatsapp-btn">WhatsApp</a>
-    <a href="#" class="livechat-btn">Live Chat</a>
-  </div>
-
-  <script src="script.js"></script>
 </body>
 </html>
