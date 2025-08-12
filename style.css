@@ -1,161 +1,166 @@
-/* ================================
-   GLOBAL STYLES
-=================================== */
+/* General Reset */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
+
+/* Body */
 body {
-    background: #1a1a1a;
-    color: #f0f0f0;
-    min-height: 100vh;
+  background-color: #f2f4f7;
+  color: #1a1a1a;
+  line-height: 1.6;
+  padding: 20px;
 }
 
-/* ================================
-   HEADER
-=================================== */
+/* Container */
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 20px;
+  background: white;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+}
+
+/* Header */
 header {
-    background: #222;
-    padding: 15px 25px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-header img.logo {
-    height: 50px;
-}
-header h1 {
-    font-size: 22px;
-}
-header a.logout-btn {
-    background: #ff4b4b;
-    padding: 8px 12px;
-    border-radius: 5px;
-    color: #fff;
-    text-decoration: none;
-}
-header a.logout-btn:hover {
-    background: #ff2f2f;
+  background-color: #003366;
+  color: white;
+  padding: 15px 20px;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  border-radius: 8px;
+  margin-bottom: 20px;
 }
 
-/* ================================
-   DASHBOARD
-=================================== */
-.dashboard-container {
-    padding: 20px;
-}
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px;
-}
-.dashboard-card {
-    background: #333;
-    color: #fff;
-    padding: 25px;
-    border-radius: 10px;
-    text-align: center;
-    text-decoration: none;
-    transition: transform 0.2s ease, background 0.3s;
-}
-.dashboard-card i {
-    font-size: 50px;
-    margin-bottom: 10px;
-}
-.dashboard-card:hover {
-    transform: translateY(-5px);
-    background: #444;
+/* Buttons */
+button, .btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-weight: 500;
 }
 
-/* ================================
-   FORMS
-=================================== */
-form {
-    background: #2a2a2a;
-    padding: 20px;
-    border-radius: 8px;
-    max-width: 600px;
-    margin: 20px auto;
-}
-form label {
-    display: block;
-    margin: 10px 0 5px;
-}
-form input, form select, form textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #444;
-    border-radius: 5px;
-    background: #1a1a1a;
-    color: #fff;
-}
-form button {
-    margin-top: 15px;
-    padding: 10px 15px;
-    border: none;
-    background: #007bff;
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
-}
-form button:hover {
-    background: #0056b3;
+button:hover, .btn:hover {
+  background-color: #0056b3;
 }
 
-/* ================================
-   TABLES
-=================================== */
+/* Inputs */
+input, select, textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+/* Tables */
 table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-    background: #222;
-    color: #fff;
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
 }
+
+table thead {
+  background-color: #003366;
+  color: white;
+}
+
 table th, table td {
-    border: 1px solid #444;
-    padding: 10px;
-    text-align: left;
-}
-table th {
-    background: #333;
-}
-table tr:hover {
-    background: #2d2d2d;
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
 }
 
-/* ================================
-   FOOTER
-=================================== */
+table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+/* Form Sections */
+.form-section {
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+/* Dashboard Card */
+.card {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+/* QR Code */
+.qr-box {
+  text-align: center;
+  margin: 20px 0;
+}
+
+/* Footer */
 footer {
-    background: #111;
-    color: #bbb;
-    text-align: center;
-    padding: 10px;
+  text-align: center;
+  font-size: 0.85rem;
+  padding-top: 10px;
+  color: #666;
 }
 
-/* ================================
-   PRINT & WATERMARK
-=================================== */
-@media print {
-    body {
-        background: white;
-        color: black;
-    }
-    .watermark {
-        position: fixed;
-        top: 35%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        opacity: 0.1;
-        font-size: 100px;
-        color: #000;
-        z-index: -1;
-        text-align: center;
-    }
-    header, footer, .logout-btn {
-        display: none;
-    }
+/* Search Bar */
+.search-bar {
+  margin-bottom: 20px;
+}
+
+.search-bar input {
+  padding: 8px 12px;
+  border-radius: 6px;
+  width: 100%;
+  max-width: 300px;
+  border: 1px solid #ccc;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 10px;
+  }
+
+  table thead {
+    display: none;
+  }
+
+  table, table tbody, table tr, table td {
+    display: block;
+    width: 100%;
+  }
+
+  table tr {
+    margin-bottom: 15px;
+  }
+
+  table td {
+    text-align: right;
+    padding-left: 50%;
+    position: relative;
+  }
+
+  table td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 15px;
+    width: 50%;
+    padding-right: 10px;
+    font-weight: bold;
+    text-align: left;
+  }
 }
