@@ -3,46 +3,118 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Patient Report - AlphaMed Clinical Laboratory</title>
+  <title>Patient Report - AlphaMed Clinical Lab</title>
   <link rel="stylesheet" href="style.css">
-  <script src="reports.js" defer></script>
 </head>
 <body>
   <header>
-    <div class="logo">
-      <img src="logo.png" alt="AlphaMed Logo">
-      <h1>Patient Report</h1>
-    </div>
+    <h1>🧾 Patient Report</h1>
     <nav>
-      <ul>
-        <li><a href="patient_dashboard.html">Dashboard</a></li>
-        <li><a href="patient_report.html" class="active">My Reports</a></li>
-        <li><a href="index.html">Logout</a></li>
-      </ul>
+      <a href="admin_dashboard.html">Dashboard</a> |
+      <a href="view_reports.html">View Reports</a> |
+      <a href="report.html">Generate Report</a> |
+      <a href="#" id="logoutBtn">Logout</a>
     </nav>
   </header>
 
   <main>
     <section>
-      <h2>Your Test Reports</h2>
-      <table id="patientReportTable">
+      <h2>Generate Patient Report</h2>
+      <form id="reportForm">
+        <label for="cnic">Enter Patient CNIC:</label>
+        <input type="text" id="cnic" placeholder="Enter CNIC" required>
+        <button type="submit">Generate</button>
+      </form>
+    </section>
+
+    <section id="reportOutput" class="hidden">
+      <h2>Report Details</h2>
+      <div id="patientInfo"></div>
+      <h3>Test Results</h3>
+      <table border="1" id="testResultsTable">
         <thead>
           <tr>
-            <th>Test Name</th>
+            <th>Test</th>
             <th>Result</th>
-            <th>Remarks</th>
             <th>Date</th>
           </tr>
         </thead>
-        <tbody id="patientReports">
-          <!-- Patient's reports will load here -->
-        </tbody>
+        <tbody></tbody>
       </table>
+      <button id="downloadReport">Download Report (PDF)</button>
     </section>
   </main>
 
-  <footer>
-    <p>&copy; 2025 AlphaMed Clinical Laboratory. All rights reserved.</p>
-  </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    const { jsPDF } = window.jspdf;
+
+    document.getElementById("reportForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      let cnic = document.getElementById("cnic").value.trim();
+      let patients = JSON.parse(localStorage.getItem("patients")) || [];
+      let testResults = JSON.parse(localStorage.getItem("testResults")) || [];
+
+      let patient = patients.find(p => p.cnic === cnic);
+
+      if (!patient) {
+        alert("No patient found with this CNIC!");
+        return;
+      }
+
+      document.getElementById("reportOutput").classList.remove("hidden");
+
+      document.getElementById("patientInfo").innerHTML = `
+        <p><strong>Name:</strong> ${patient.name}</p>
+        <p><strong>CNIC:</strong> ${patient.cnic}</p>
+        <p><strong>Phone:</strong> ${patient.phone}</p>
+        <p><strong>Department:</strong> ${patient.department}</p>
+        <p><strong>Test:</strong> ${patient.test}</p>
+      `;
+
+      let tbody = document.querySelector("#testResultsTable tbody");
+      tbody.innerHTML = "";
+
+      let patientResults = testResults.filter(r => r.cnic === cnic);
+
+      if (patientResults.length === 0) {
+        tbody.innerHTML = "<tr><td colspan='3'>No test results found</td></tr>";
+      } else {
+        patientResults.forEach(r => {
+          let row = `<tr><td>${r.test}</td><td>${r.result}</td><td>${r.date}</td></tr>`;
+          tbody.innerHTML += row;
+        });
+      }
+    });
+
+    document.getElementById("downloadReport").addEventListener("click", () => {
+      let doc = new jsPDF();
+      doc.text("AlphaMed Clinical Lab - Patient Report", 20, 20);
+
+      let patientInfo = document.getElementById("patientInfo").innerText;
+      doc.text(patientInfo, 20, 40);
+
+      let rows = [];
+      document.querySelectorAll("#testResultsTable tbody tr").forEach(tr => {
+        let cols = tr.querySelectorAll("td");
+        if (cols.length > 0) {
+          rows.push([cols[0].innerText, cols[1].innerText, cols[2].innerText]);
+        }
+      });
+
+      if (rows.length > 0) {
+        doc.text("Test Results:", 20, 80);
+        let y = 90;
+        rows.forEach(row => {
+          doc.text(`${row[0]}: ${row[1]} (${row[2]})`, 20, y);
+          y += 10;
+        });
+      }
+
+      doc.save("Patient_Report.pdf");
+    });
+  </script>
+  <script src="script.js"></script>
 </body>
 </html>
