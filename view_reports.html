@@ -2,87 +2,61 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>View Reports - AlphaMed Clinical Lab</title>
+  <title>View Reports - Lab System</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
-    <h1>📑 View All Reports</h1>
+    <h2>View Reports</h2>
     <nav>
-      <a href="admin_dashboard.html">Dashboard</a> |
-      <a href="view_reports.html">View Reports</a> |
-      <a href="report.html">Generate Report</a> |
-      <a href="#" id="logoutBtn">Logout</a>
+      <a href="dashboard.html">Home</a>
+      <a href="logout.html">Logout</a>
     </nav>
   </header>
 
   <main>
     <section>
-      <h2>All Test Reports</h2>
-      <table border="1" id="reportsTable">
+      <h3>Patient Reports</h3>
+      <table id="reportsTable">
         <thead>
           <tr>
-            <th>Patient Name</th>
-            <th>CNIC</th>
-            <th>Phone</th>
-            <th>Department</th>
-            <th>Test</th>
+            <th>Patient ID</th>
+            <th>Test Name</th>
             <th>Result</th>
+            <th>Remarks</th>
             <th>Date</th>
           </tr>
         </thead>
-        <tbody></tbody>
+        <tbody>
+          <!-- Reports will be loaded here -->
+        </tbody>
       </table>
     </section>
   </main>
 
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      let patients = JSON.parse(localStorage.getItem("patients")) || [];
-      let testResults = JSON.parse(localStorage.getItem("testResults")) || [];
+    document.addEventListener("DOMContentLoaded", () => {
+      let reports = JSON.parse(localStorage.getItem("testResults")) || [];
+      const tbody = document.querySelector("#reportsTable tbody");
 
-      let tbody = document.querySelector("#reportsTable tbody");
-      tbody.innerHTML = "";
-
-      if (patients.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='7'>No reports found</td></tr>";
+      if (reports.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5">No reports available.</td></tr>`;
         return;
       }
 
-      patients.forEach(patient => {
-        let patientResults = testResults.filter(r => r.cnic === patient.cnic);
-
-        if (patientResults.length === 0) {
-          tbody.innerHTML += `
-            <tr>
-              <td>${patient.name}</td>
-              <td>${patient.cnic}</td>
-              <td>${patient.phone}</td>
-              <td>${patient.department}</td>
-              <td>${patient.test}</td>
-              <td>Pending</td>
-              <td>-</td>
-            </tr>
-          `;
-        } else {
-          patientResults.forEach(r => {
-            tbody.innerHTML += `
-              <tr>
-                <td>${patient.name}</td>
-                <td>${patient.cnic}</td>
-                <td>${patient.phone}</td>
-                <td>${patient.department}</td>
-                <td>${r.test}</td>
-                <td>${r.result}</td>
-                <td>${r.date}</td>
-              </tr>
-            `;
-          });
-        }
+      reports.forEach(r => {
+        let row = `
+          <tr>
+            <td>${r.patientId}</td>
+            <td>${r.testName}</td>
+            <td>${r.result}</td>
+            <td>${r.remarks || "-"}</td>
+            <td>${r.date}</td>
+          </tr>
+        `;
+        tbody.innerHTML += row;
       });
     });
   </script>
-  <script src="script.js"></script>
 </body>
 </html>
