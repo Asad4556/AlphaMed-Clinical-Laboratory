@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AlphaMed Clinical Laboratory</title>
+  <title>Login - AlphaMed Clinical Laboratory</title>
   <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
 </head>
 <body>
   <header>
@@ -15,10 +16,25 @@
   </header>
 
   <main>
-    <section class="welcome">
-      <h2>Welcome to AlphaMed Clinical Laboratory</h2>
-      <p>Your trusted partner in diagnostics and healthcare.</p>
-      <a href="login.html" class="btn">Login</a>
+    <section class="login-box">
+      <h2>Login</h2>
+      <form id="loginForm">
+        <label for="username">Username</label>
+        <input type="text" id="username" required>
+        
+        <label for="password">Password</label>
+        <input type="password" id="password" required>
+        
+        <label for="role">Role</label>
+        <select id="role" required>
+          <option value="">-- Select Role --</option>
+          <option value="admin">Admin</option>
+          <option value="reception">Reception</option>
+          <option value="technician">Technician</option>
+        </select>
+
+        <button type="submit" class="btn">Login</button>
+      </form>
     </section>
   </main>
 
