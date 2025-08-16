@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient Dashboard - AlphaMed Clinical Laboratory</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="patient.js" defer></script>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <img src="logo.png" alt="AlphaMed Logo">
+      <h1>Patient Dashboard</h1>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="patient_dashboard.html" class="active">Dashboard</a></li>
+        <li><a href="patient_report.html">My Reports</a></li>
+        <li><a href="index.html">Logout</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section>
+      <h2>Welcome, <span id="patientName">Patient</span></h2>
+      <p>Your registered details and reports are available here.</p>
+    </section>
+
+    <section>
+      <h2>My Information</h2>
+      <div class="patient-info">
+        <p><strong>Patient ID:</strong> <span id="patientId"></span></p>
+        <p><strong>Name:</strong> <span id="patientFullName"></span></p>
+        <p><strong>Gender:</strong> <span id="patientGender"></span></p>
+        <p><strong>Age:</strong> <span id="patientAge"></span></p>
+        <p><strong>Phone:</strong> <span id="patientPhone"></span></p>
+        <p><strong>Address:</strong> <span id="patientAddress"></span></p>
+        <p><strong>Department:</strong> <span id="patientDepartment"></span></p>
+        <p><strong>Tests:</strong> <span id="patientTests"></span></p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 AlphaMed Clinical Laboratory. All rights reserved.</p>
+  </footer>
+</body>
+</html>
