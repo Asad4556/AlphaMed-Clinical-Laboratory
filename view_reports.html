@@ -1,141 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>View Reports - Alpha-Med Lab</title>
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    body {
-      background-color: #101820;
-      color: white;
-      font-family: 'Segoe UI', sans-serif;
-      padding: 30px;
-    }
-    .container {
-      max-width: 1000px;
-      margin: auto;
-      background-color: #1d1f27;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.4);
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    input {
-      padding: 12px;
-      width: 100%;
-      border: none;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      font-size: 16px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    th, td {
-      padding: 12px;
-      text-align: center;
-    }
-    th {
-      background-color: #2a2d3a;
-    }
-    td {
-      background-color: #262a36;
-    }
-    button {
-      background-color: #00aaff;
-      color: white;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #0077aa;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Reports - AlphaMed Clinical Laboratory</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="technician.js" defer></script>
 </head>
-<body onload="loadReports()">
-  <div class="container">
-    <h2>🔍 Search Patient Reports</h2>
-    <input type="text" id="searchInput" onkeyup="searchReports()" placeholder="Search by MRN, Name or Phone" />
-    <table>
-      <thead>
-        <tr>
-          <th>MRN</th>
-          <th>Name</th>
-          <th>Phone</th>
-          <th>Gender</th>
-          <th>Age</th>
-          <th>Date</th>
-          <th>Report</th>
-        </tr>
-      </thead>
-      <tbody id="reportTableBody">
-        <!-- Populated by JS -->
-      </tbody>
-    </table>
-  </div>
+<body>
+  <header>
+    <div class="logo">
+      <img src="logo.png" alt="AlphaMed Logo">
+      <h1>View Reports</h1>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="technician.html">Dashboard</a></li>
+        <li><a href="add_test_result.html">Add Test Result</a></li>
+        <li><a href="view_reports.html" class="active">View Reports</a></li>
+        <li><a href="index.html">Logout</a></li>
+      </ul>
+    </nav>
+  </header>
 
-  <script>
-    let allReports = [];
+  <main>
+    <section>
+      <h2>All Test Reports</h2>
+      <input type="text" id="searchReports" placeholder="Search by Patient ID or Test Name" onkeyup="filterReports()">
+      <table id="reportsTable">
+        <thead>
+          <tr>
+            <th>Patient ID</th>
+            <th>Test Name</th>
+            <th>Result</th>
+            <th>Remarks</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody id="reportsList">
+          <!-- Reports will load here -->
+        </tbody>
+      </table>
+    </section>
+  </main>
 
-    function loadReports() {
-      const saved = JSON.parse(localStorage.getItem("allReports")) || [];
-      allReports = saved;
-
-      const tbody = document.getElementById("reportTableBody");
-      tbody.innerHTML = "";
-
-      saved.forEach((r, index) => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${r.mrn}</td>
-          <td>${r.name}</td>
-          <td>${r.phone}</td>
-          <td>${r.gender}</td>
-          <td>${r.age}</td>
-          <td>${new Date(r.timestamp).toLocaleString()}</td>
-          <td><button onclick="viewReport(${index})">View</button></td>
-        `;
-        tbody.appendChild(row);
-      });
-    }
-
-    function viewReport(index) {
-      const report = allReports[index];
-      localStorage.setItem("latestReport", JSON.stringify(report));
-      window.open("report.html", "_blank");
-    }
-
-    function searchReports() {
-      const filter = document.getElementById("searchInput").value.toLowerCase();
-      const tbody = document.getElementById("reportTableBody");
-      tbody.innerHTML = "";
-
-      allReports
-        .filter(r =>
-          r.mrn.toLowerCase().includes(filter) ||
-          r.name.toLowerCase().includes(filter) ||
-          r.phone.toLowerCase().includes(filter)
-        )
-        .forEach((r, index) => {
-          const row = document.createElement("tr");
-          row.innerHTML = `
-            <td>${r.mrn}</td>
-            <td>${r.name}</td>
-            <td>${r.phone}</td>
-            <td>${r.gender}</td>
-            <td>${r.age}</td>
-            <td>${new Date(r.timestamp).toLocaleString()}</td>
-            <td><button onclick="viewReport(${index})">View</button></td>
-          `;
-          tbody.appendChild(row);
-        });
-    }
-  </script>
+  <footer>
+    <p>&copy; 2025 AlphaMed Clinical Laboratory. All rights reserved.</p>
+  </footer>
 </body>
 </html>
