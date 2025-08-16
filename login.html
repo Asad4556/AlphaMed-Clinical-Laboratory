@@ -1,126 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>MHS Login</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #121212;
-      color: #fff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
-    .login-container {
-      background: #1e1e1e;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0px 0px 12px rgba(0,0,0,0.6);
-      width: 350px;
-      text-align: center;
-    }
-    h2 {
-      margin-bottom: 20px;
-      color: #00bcd4;
-    }
-    input, select, button {
-      width: 100%;
-      padding: 10px;
-      margin: 8px 0;
-      border-radius: 6px;
-      border: none;
-      outline: none;
-    }
-    input {
-      background: #2b2b2b;
-      color: #fff;
-    }
-    select {
-      background: #2b2b2b;
-      color: #fff;
-    }
-    button {
-      background: #00bcd4;
-      color: #fff;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    button:hover {
-      background: #0097a7;
-    }
-    .show-password {
-      position: absolute;
-      right: 15px;
-      top: 38px;
-      cursor: pointer;
-      color: #00bcd4;
-      font-size: 13px;
-    }
-    .input-group {
-      position: relative;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - Alpha-Med Clinical Lab</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/png" href="logo.png" />
 </head>
-<body>
+<body class="login-body">
+
   <div class="login-container">
-    <h2>MHS Login</h2>
-
-    <label for="role">Login as:</label>
-    <select id="role">
-      <option value="superadmin">Super Admin</option>
-      <option value="section">Section Head</option>
-      <option value="worker">Worker</option>
-    </select>
-
-    <div class="input-group">
-      <input type="text" id="cnic" placeholder="Enter CNIC">
-    </div>
-    <div class="input-group">
-      <input type="password" id="password" placeholder="Enter Password">
-      <span class="show-password" onclick="togglePassword()">Show</span>
+    <div class="logo-side">
+      <img src="logo.png" alt="Lab Logo" class="logo-img" />
     </div>
 
-    <button onclick="login()">Login</button>
-    <button onclick="createAccount()">Create Account (Worker)</button>
+    <div class="login-form">
+      <h2>Login</h2>
+
+      <form id="loginForm">
+        <label for="cnic">CNIC:</label>
+        <input type="text" id="cnic" name="cnic" placeholder="e.g. 34501-1234567-1" required />
+
+        <label for="password">Password:</label>
+        <div class="password-wrapper">
+          <input type="password" id="password" name="password" placeholder="Enter Password" required />
+          <button type="button" id="togglePassword" title="Show/Hide Password">👁️</button>
+        </div>
+
+        <button type="submit" class="btn-login">Login</button>
+        <p id="error" class="error-msg"></p>
+      </form>
+
+      <div class="extra-options">
+        <a href="change_password.html">Change Password</a> |
+        <a href="create_account.html">Create Account</a>
+      </div>
+    </div>
+
+    <div class="logo-side">
+      <img src="logo.png" alt="Pakistan Logo" class="logo-img" />
+    </div>
   </div>
 
-  <script>
-    function togglePassword() {
-      const passField = document.getElementById("password");
-      passField.type = passField.type === "password" ? "text" : "password";
-    }
+  <!-- Footer Chat Buttons -->
+  <div class="chat-buttons">
+    <a href="https://wa.me/923398067880" target="_blank" class="whatsapp-btn">WhatsApp</a>
+    <a href="#" class="livechat-btn">Live Chat</a>
+  </div>
 
-    function login() {
-      const role = document.getElementById("role").value;
-      const cnic = document.getElementById("cnic").value.trim();
-      const password = document.getElementById("password").value.trim();
-
-      if (role === "Superadmin") {
-        if (cnic === "34501-8971113-7" && password === "Asad@2723") {
-          alert("Super Admin Login Successful!");
-          window.location.href = "super_admin_dashboard.html";
-        } else {
-          alert("Invalid Super Admin CNIC or Password.");
-        }
-      } else if (role === "section") {
-        alert("Section Head login module baad me database se link hoga.");
-      } else if (role === "worker") {
-        alert("Worker login HR records ke sath connected hoga.");
-      }
-    }
-
-    function createAccount() {
-      const role = document.getElementById("role").value;
-      if (role !== "worker") {
-        alert("Account creation only for Worker.");
-        return;
-      }
-      window.location.href = "create_account.html";
-    }
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>

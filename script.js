@@ -1,74 +1,90 @@
-// script.js - General app functionality (login, registration, etc.)
-
-document.addEventListener("DOMContentLoaded", () => {
-  const loginForm = document.getElementById("loginForm");
-  const registerForm = document.getElementById("registerForm");
-
-  // 🔹 Login System
-  if (loginForm) {
-    loginForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-
-      const username = document.getElementById("username").value.trim();
-      const password = document.getElementById("password").value.trim();
-      const role = document.getElementById("role").value;
-
-      const users = JSON.parse(localStorage.getItem("users")) || [];
-
-      const foundUser = users.find(
-        (u) => u.username === username && u.password === password && u.role === role
-      );
-
-      if (foundUser) {
-        localStorage.setItem("loggedInUser", JSON.stringify(foundUser));
-
-        if (role === "admin") {
-          window.location.href = "admin_dashboard.html";
-        } else if (role === "reception") {
-          window.location.href = "reception_dashboard.html";
-        } else if (role === "technician") {
-          window.location.href = "technician_dashboard.html";
-        } else if (role === "patient") {
-          window.location.href = "patient_dashboard.html";
-        }
-      } else {
-        alert("Invalid credentials. Please try again.");
-      }
-    });
+// Toggle password visibility
+function togglePassword(id) {
+  const passwordField = document.getElementById(id);
+  if (passwordField.type === "password") {
+    passwordField.type = "text";
+  } else {
+    passwordField.type = "password";
   }
+}
 
-  // 🔹 Registration System
-  if (registerForm) {
-    registerForm.addEventListener("submit", (e) => {
-      e.preventDefault();
+// Validate CNIC format
+function validateCNIC(cnic) {
+  const cnicRegex = /^\d{5}-\d{7}-\d{1}$/;
+  return cnicRegex.test(cnic);
+}
 
-      const newUser = {
-        username: document.getElementById("reg_username").value.trim(),
-        password: document.getElementById("reg_password").value.trim(),
-        role: document.getElementById("reg_role").value,
-      };
+// Show alert
+function showAlert(message, type = "info") {
+  const color = {
+    success: "#28a745",
+    error: "#dc3545",
+    info: "#007bff"
+  }[type];
 
-      let users = JSON.parse(localStorage.getItem("users")) || [];
+  const alert = document.createElement("div");
+  alert.style.background = color;
+  alert.style.color = "#fff";
+  alert.style.padding = "10px";
+  alert.style.margin = "15px auto";
+  alert.style.width = "90%";
+  alert.style.borderRadius = "6px";
+  alert.style.textAlign = "center";
+  alert.innerText = message;
 
-      if (users.some((u) => u.username === newUser.username)) {
-        alert("Username already exists!");
-        return;
-      }
+  document.body.prepend(alert);
 
-      users.push(newUser);
-      localStorage.setItem("users", JSON.stringify(users));
+  setTimeout(() => alert.remove(), 3000);
+}
 
-      alert("Registration successful! You can now log in.");
-      window.location.href = "login.html";
-    });
+// Logout function
+function logout() {
+  localStorage.removeItem("loggedInUser");
+  window.location.href = "login.html";
+}
+
+// Load user from storage
+function loadUserInfo() {
+  const user = JSON.parse(localStorage.getItem("loggedInUser"));
+  if (!user) {
+    window.location.href = "login.html";
+    return;
   }
-
-  // 🔹 Logout function
-  const logoutBtn = document.getElementById("logoutBtn");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", () => {
-      localStorage.removeItem("loggedInUser");
-      window.location.href = "index.html";
-    });
+  const userInfoDiv = document.getElementById("userInfo");
+  if (userInfoDiv) {
+    userInfoDiv.innerHTML = `
+      <strong>${user.role}</strong> - ${user.name}<br>
+      <small>${user.cnic}</small>
+    `;
   }
-});
+}
+
+// Confirm before delete
+function confirmDelete(callback) {
+  if (confirm("Are you sure you want to delete this record?")) {
+    callback();
+  }
+}
+
+// Generate unique ID (for MRN or test entry)
+function generateID(prefix = "ID") {
+  return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+}
+
+// Search filter for any table
+function setupSearch(inputId, tableId) {
+  const input = document.getElementById(inputId);
+  const table = document.getElementById(tableId);
+  if (!input || !table) return;
+
+  input.addEventListener("keyup", function () {
+    const filter = input.value.toLowerCase();
+    const rows = table.getElementsByTagName("tr");
+
+    Array.from(rows).forEach((row, i) => {
+      if (i === 0) return; // skip table header
+      const text = row.textContent.toLowerCase();
+      row.style.display = text.includes(filter) ? "" : "none";
+    });
+  });
+}
