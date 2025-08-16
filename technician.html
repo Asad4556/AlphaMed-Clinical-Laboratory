@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Technician Dashboard - AlphaMed Clinical Laboratory</title>
+  <title>Technician - AlphaMed Clinical Laboratory</title>
   <link rel="stylesheet" href="style.css">
   <script src="technician.js" defer></script>
 </head>
@@ -11,33 +11,48 @@
   <header>
     <div class="logo">
       <img src="logo.png" alt="AlphaMed Logo">
-      <h1>Technician Dashboard</h1>
+      <h1>Technician Panel</h1>
     </div>
     <nav>
       <ul>
-        <li><a href="technician.html" class="active">Dashboard</a></li>
-        <li><a href="add_test_result.html">Add Test Result</a></li>
-        <li><a href="view_reports.html">View Reports</a></li>
+        <li><a href="technician_dashboard.html">Dashboard</a></li>
+        <li><a href="technician.html" class="active">Add Results</a></li>
         <li><a href="index.html">Logout</a></li>
       </ul>
     </nav>
   </header>
 
   <main>
-    <section class="dashboard">
-      <h2>Welcome, Technician</h2>
-      <div class="cards">
-        <div class="card">
-          <h3>Add Test Result</h3>
-          <p>Upload and update patient test results.</p>
-          <a href="add_test_result.html" class="btn">Add Result</a>
-        </div>
-        <div class="card">
-          <h3>Reports</h3>
-          <p>View, manage, and print patient lab reports.</p>
-          <a href="view_reports.html" class="btn">View Reports</a>
-        </div>
-      </div>
+    <section>
+      <h2>Enter Test Results</h2>
+      <form id="resultForm">
+        <label for="patientId">Patient ID:</label>
+        <input type="text" id="patientId" name="patientId" required>
+
+        <label for="testName">Test Name:</label>
+        <select id="testName" name="testName" required>
+          <option value="">-- Select Test --</option>
+          <option value="Blood Test">Blood Test</option>
+          <option value="Urine Test">Urine Test</option>
+          <option value="X-Ray">X-Ray</option>
+          <option value="MRI">MRI</option>
+          <option value="CT Scan">CT Scan</option>
+          <option value="ECG">ECG</option>
+          <option value="Covid-19 PCR">Covid-19 PCR</option>
+          <option value="Liver Function Test">Liver Function Test</option>
+          <option value="Kidney Function Test">Kidney Function Test</option>
+          <option value="Thyroid Test">Thyroid Test</option>
+          <option value="Complete Blood Count">Complete Blood Count</option>
+        </select>
+
+        <label for="result">Result:</label>
+        <input type="text" id="result" name="result" required>
+
+        <label for="remarks">Remarks:</label>
+        <input type="text" id="remarks" name="remarks">
+
+        <button type="submit">Save Result</button>
+      </form>
     </section>
   </main>
 
