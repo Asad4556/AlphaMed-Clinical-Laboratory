@@ -1,122 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Add Test Result - AlphaMed Clinical Lab</title>
-  <link rel="stylesheet" href="style.css" />
-  <script defer src="technician.js"></script>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f5f7fa;
-      padding: 20px;
-    }
-    h2 {
-      color: #333;
-      text-align: center;
-    }
-    .search-box {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    input[type="text"] {
-      width: 300px;
-      padding: 10px;
-      border: 1px solid #aaa;
-      border-radius: 5px;
-    }
-    .result-form {
-      max-width: 700px;
-      margin: auto;
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    .result-form label {
-      display: block;
-      margin: 10px 0 5px;
-    }
-    .result-form input, .result-form select, .result-form textarea {
-      width: 100%;
-      padding: 8px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-    }
-    button {
-      background-color: #007bff;
-      color: white;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 6px;
-      margin-top: 20px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-    .patient-list {
-      margin-top: 30px;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Test Result - AlphaMed Clinical Laboratory</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="technician.js" defer></script>
 </head>
 <body>
-  <h2>Add Test Result - AlphaMed Clinical Lab</h2>
+  <header>
+    <div class="logo">
+      <img src="logo.png" alt="AlphaMed Logo">
+      <h1>Add Test Result</h1>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="technician.html">Dashboard</a></li>
+        <li><a href="add_test_result.html" class="active">Add Test Result</a></li>
+        <li><a href="view_reports.html">View Reports</a></li>
+        <li><a href="index.html">Logout</a></li>
+      </ul>
+    </nav>
+  </header>
 
-  <div class="search-box">
-    <input type="text" id="searchMRN" placeholder="Enter MRN to search patient..." onkeyup="searchPatient()" />
-  </div>
+  <main>
+    <section class="form-section">
+      <h2>Enter Test Result</h2>
+      <form id="testResultForm">
+        <label for="patientId">Patient ID:</label>
+        <input type="text" id="patientId" required>
 
-  <div id="patientInfo" class="result-form" style="display:none;">
-    <h3>Patient Details</h3>
-    <p><strong>Name:</strong> <span id="patientName"></span></p>
-    <p><strong>MRN:</strong> <span id="patientMRN"></span></p>
-    <p><strong>Department:</strong> <span id="patientDept"></span></p>
+        <label for="testName">Test Name:</label>
+        <input type="text" id="testName" required>
 
-    <h4>Enter Test Result</h4>
-    <label for="testName">Test Name</label>
-    <input type="text" id="testName" required />
+        <label for="result">Result:</label>
+        <textarea id="result" required></textarea>
 
-    <label for="result">Result</label>
-    <textarea id="result" rows="4" placeholder="Enter result details..." required></textarea>
+        <label for="remarks">Remarks:</label>
+        <textarea id="remarks"></textarea>
 
-    <button onclick="saveTestResult()">Save Result</button>
-  </div>
+        <button type="submit" class="btn">Save Result</button>
+      </form>
+    </section>
+  </main>
 
-  <script>
-    function searchPatient() {
-      const mrn = document.getElementById("searchMRN").value.trim();
-      const storedPatients = JSON.parse(localStorage.getItem("patients")) || [];
-      const patient = storedPatients.find(p => p.mrn === mrn);
-      
-      if (patient) {
-        document.getElementById("patientName").innerText = patient.name;
-        document.getElementById("patientMRN").innerText = patient.mrn;
-        document.getElementById("patientDept").innerText = patient.department;
-        document.getElementById("patientInfo").style.display = "block";
-      } else {
-        document.getElementById("patientInfo").style.display = "none";
-      }
-    }
-
-    function saveTestResult() {
-      const mrn = document.getElementById("patientMRN").innerText;
-      const testName = document.getElementById("testName").value.trim();
-      const result = document.getElementById("result").value.trim();
-      if (!testName || !result) {
-        alert("Please enter all fields.");
-        return;
-      }
-
-      const storedResults = JSON.parse(localStorage.getItem("results") || "[]");
-      storedResults.push({ mrn, testName, result, date: new Date().toLocaleString() });
-      localStorage.setItem("results", JSON.stringify(storedResults));
-
-      alert("Result saved successfully!");
-      document.getElementById("testName").value = "";
-      document.getElementById("result").value = "";
-    }
-  </script>
+  <footer>
+    <p>&copy; 2025 AlphaMed Clinical Laboratory. All rights reserved.</p>
+  </footer>
 </body>
 </html>
