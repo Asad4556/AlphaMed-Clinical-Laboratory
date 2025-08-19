@@ -2,105 +2,124 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Manage Users</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Users - AlphaMed</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <div class="header">
-    <h2>Admin - Manage Users</h2>
-    <button onclick="logout()">Logout</button>
-  </div>
+<body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col">
 
-  <div class="container">
-    <h3>Add New User</h3>
-    <input type="text" id="new-username" placeholder="Username">
-    <input type="password" id="new-password" placeholder="Password">
-    <select id="new-role">
-      <option value="user">Reception</option>
-      <option value="admin">Admin</option>
-    </select>
-    <button onclick="addUser()">Add User</button>
+  <!-- Header -->
+  <header class="bg-gray-800 shadow-lg py-4 px-6 flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-blue-400">👥 Manage Users</h1>
+    <a href="index.html" class="text-red-400 hover:text-red-300 font-semibold">Back to Dashboard</a>
+  </header>
 
-    <h3>Existing Users</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Username</th>
-          <th>Role</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody id="user-table-body"></tbody>
-    </table>
-  </div>
+  <!-- Main Content -->
+  <main class="flex-1 p-6">
 
+    <!-- Search & Add -->
+    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+      <input type="text" id="searchInput" placeholder="Search users..." 
+             class="p-2 rounded-md bg-gray-800 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full md:w-1/3">
+      <button onclick="addUser()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition">
+        + Add New User
+      </button>
+    </div>
+
+    <!-- Users Table -->
+    <div class="overflow-x-auto rounded-lg shadow-md">
+      <table class="min-w-full bg-gray-800" id="usersTable">
+        <thead class="bg-gray-700 text-gray-400">
+          <tr>
+            <th class="py-3 px-4 text-left">ID</th>
+            <th class="py-3 px-4 text-left">Name</th>
+            <th class="py-3 px-4 text-left">Email</th>
+            <th class="py-3 px-4 text-left">Role</th>
+            <th class="py-3 px-4 text-left">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-700" id="tableBody">
+          <tr class="hover:bg-gray-700 transition">
+            <td class="py-3 px-4">1</td>
+            <td class="py-3 px-4">Ali Ahmad</td>
+            <td class="py-3 px-4">ali@example.com</td>
+            <td class="py-3 px-4">Admin</td>
+            <td class="py-3 px-4 flex gap-2">
+              <button onclick="editUser(this)" class="bg-green-500 hover:bg-green-600 px-3 py-1 rounded-md">Edit</button>
+              <button onclick="deleteUser(this)" class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded-md">Delete</button>
+            </td>
+          </tr>
+          <tr class="hover:bg-gray-700 transition">
+            <td class="py-3 px-4">2</td>
+            <td class="py-3 px-4">Sara Khan</td>
+            <td class="py-3 px-4">sara@example.com</td>
+            <td class="py-3 px-4">Lab Technician</td>
+            <td class="py-3 px-4 flex gap-2">
+              <button onclick="editUser(this)" class="bg-green-500 hover:bg-green-600 px-3 py-1 rounded-md">Edit</button>
+              <button onclick="deleteUser(this)" class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded-md">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- JavaScript for demo functionality -->
   <script>
-    // Default users
-    const defaultUsers = [
-      { username: "admin", password: "admin123", role: "admin" },
-      { username: "reception", password: "user123", role: "user" }
-    ];
-
-    // Initialize users in localStorage if empty
-    if (!localStorage.getItem("users")) {
-      localStorage.setItem("users", JSON.stringify(defaultUsers));
-    }
-
-    function loadUsers() {
-      let users = JSON.parse(localStorage.getItem("users")) || [];
-      const tableBody = document.getElementById("user-table-body");
-      tableBody.innerHTML = "";
-
-      users.forEach((user, index) => {
-        let row = `<tr>
-          <td>${user.username}</td>
-          <td>${user.role}</td>
-          <td>
-            <button onclick="deleteUser(${index})">Delete</button>
-          </td>
-        </tr>`;
-        tableBody.innerHTML += row;
+    // Search filter
+    document.getElementById('searchInput').addEventListener('keyup', function() {
+      const query = this.value.toLowerCase();
+      const rows = document.querySelectorAll('#tableBody tr');
+      rows.forEach(row => {
+        const name = row.cells[1].textContent.toLowerCase();
+        const email = row.cells[2].textContent.toLowerCase();
+        row.style.display = (name.includes(query) || email.includes(query)) ? '' : 'none';
       });
+    });
+
+    // Delete user
+    function deleteUser(button) {
+      if(confirm("Are you sure you want to delete this user?")) {
+        button.closest('tr').remove();
+      }
     }
 
+    // Edit user (demo)
+    function editUser(button) {
+      const row = button.closest('tr');
+      const name = row.cells[1].textContent;
+      const email = row.cells[2].textContent;
+      const role = row.cells[3].textContent;
+      const newName = prompt("Edit Name:", name);
+      const newEmail = prompt("Edit Email:", email);
+      const newRole = prompt("Edit Role:", role);
+      if(newName) row.cells[1].textContent = newName;
+      if(newEmail) row.cells[2].textContent = newEmail;
+      if(newRole) row.cells[3].textContent = newRole;
+    }
+
+    // Add user (demo)
     function addUser() {
-      const username = document.getElementById("new-username").value.trim();
-      const password = document.getElementById("new-password").value.trim();
-      const role = document.getElementById("new-role").value;
-
-      if (username === "" || password === "") {
-        alert("Please enter username and password");
-        return;
+      const name = prompt("Enter Name:");
+      const email = prompt("Enter Email:");
+      const role = prompt("Enter Role:");
+      if(name && email && role) {
+        const table = document.getElementById('tableBody');
+        const id = table.rows.length + 1;
+        const row = table.insertRow();
+        row.className = "hover:bg-gray-700 transition";
+        row.innerHTML = `
+          <td class="py-3 px-4">${id}</td>
+          <td class="py-3 px-4">${name}</td>
+          <td class="py-3 px-4">${email}</td>
+          <td class="py-3 px-4">${role}</td>
+          <td class="py-3 px-4 flex gap-2">
+            <button onclick="editUser(this)" class="bg-green-500 hover:bg-green-600 px-3 py-1 rounded-md">Edit</button>
+            <button onclick="deleteUser(this)" class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded-md">Delete</button>
+          </td>
+        `;
       }
-
-      let users = JSON.parse(localStorage.getItem("users")) || [];
-
-      if (users.some(u => u.username === username)) {
-        alert("Username already exists!");
-        return;
-      }
-
-      users.push({ username, password, role });
-      localStorage.setItem("users", JSON.stringify(users));
-
-      document.getElementById("new-username").value = "";
-      document.getElementById("new-password").value = "";
-      loadUsers();
     }
-
-    function deleteUser(index) {
-      let users = JSON.parse(localStorage.getItem("users")) || [];
-      users.splice(index, 1);
-      localStorage.setItem("users", JSON.stringify(users));
-      loadUsers();
-    }
-
-    function logout() {
-      localStorage.removeItem("loggedInUser");
-      window.location.href = "login.html";
-    }
-
-    document.addEventListener("DOMContentLoaded", loadUsers);
   </script>
 </body>
 </html>
