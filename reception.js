@@ -7,7 +7,7 @@ function loadTestsByDepartment() {
   if (department && testData[department]) {
     testData[department].forEach(test => {
       const label = document.createElement("label");
-      label.innerHTML = `<input type="checkbox" value="${test.name}"> ${test.name}`;
+      label.innerHTML = `<input type="checkbox" value="${test}"> ${test}`;
       testsContainer.appendChild(label);
     });
   }
