@@ -2,72 +2,105 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manage Users - AlphaMed Lab</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    .container {
-      margin: 20px auto;
-      width: 90%;
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0px 2px 10px rgba(0,0,0,0.2);
-    }
-    h2 {
-      margin-bottom: 15px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    th, td {
-      padding: 10px;
-      border: 1px solid #ddd;
-      text-align: center;
-    }
-    th {
-      background: #007bff;
-      color: white;
-    }
-    button {
-      padding: 5px 10px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .edit-btn {
-      background: #28a745;
-      color: white;
-    }
-    .delete-btn {
-      background: #dc3545;
-      color: white;
-    }
-  </style>
+  <title>Manage Users</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="navbar">
-    <h2>Manage Users</h2>
-    <button onclick="window.location.href='admin-dashboard.html'">Back</button>
+  <div class="header">
+    <h2>Admin - Manage Users</h2>
+    <button onclick="logout()">Logout</button>
   </div>
 
   <div class="container">
-    <h2>User List</h2>
+    <h3>Add New User</h3>
+    <input type="text" id="new-username" placeholder="Username">
+    <input type="password" id="new-password" placeholder="Password">
+    <select id="new-role">
+      <option value="user">Reception</option>
+      <option value="admin">Admin</option>
+    </select>
+    <button onclick="addUser()">Add User</button>
+
+    <h3>Existing Users</h3>
     <table>
       <thead>
         <tr>
           <th>Username</th>
           <th>Role</th>
-          <th>Actions</th>
+          <th>Action</th>
         </tr>
       </thead>
-      <tbody id="manageUserList">
-        <!-- Users will load here -->
-      </tbody>
+      <tbody id="user-table-body"></tbody>
     </table>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    // Default users
+    const defaultUsers = [
+      { username: "admin", password: "admin123", role: "admin" },
+      { username: "reception", password: "user123", role: "user" }
+    ];
+
+    // Initialize users in localStorage if empty
+    if (!localStorage.getItem("users")) {
+      localStorage.setItem("users", JSON.stringify(defaultUsers));
+    }
+
+    function loadUsers() {
+      let users = JSON.parse(localStorage.getItem("users")) || [];
+      const tableBody = document.getElementById("user-table-body");
+      tableBody.innerHTML = "";
+
+      users.forEach((user, index) => {
+        let row = `<tr>
+          <td>${user.username}</td>
+          <td>${user.role}</td>
+          <td>
+            <button onclick="deleteUser(${index})">Delete</button>
+          </td>
+        </tr>`;
+        tableBody.innerHTML += row;
+      });
+    }
+
+    function addUser() {
+      const username = document.getElementById("new-username").value.trim();
+      const password = document.getElementById("new-password").value.trim();
+      const role = document.getElementById("new-role").value;
+
+      if (username === "" || password === "") {
+        alert("Please enter username and password");
+        return;
+      }
+
+      let users = JSON.parse(localStorage.getItem("users")) || [];
+
+      if (users.some(u => u.username === username)) {
+        alert("Username already exists!");
+        return;
+      }
+
+      users.push({ username, password, role });
+      localStorage.setItem("users", JSON.stringify(users));
+
+      document.getElementById("new-username").value = "";
+      document.getElementById("new-password").value = "";
+      loadUsers();
+    }
+
+    function deleteUser(index) {
+      let users = JSON.parse(localStorage.getItem("users")) || [];
+      users.splice(index, 1);
+      localStorage.setItem("users", JSON.stringify(users));
+      loadUsers();
+    }
+
+    function logout() {
+      localStorage.removeItem("loggedInUser");
+      window.location.href = "login.html";
+    }
+
+    document.addEventListener("DOMContentLoaded", loadUsers);
+  </script>
 </body>
 </html>
