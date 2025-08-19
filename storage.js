@@ -1,82 +1,40 @@
-// ✅ Save registered patient with duplicate CNIC check
-function savePatient(patient) {
-  const patients = JSON.parse(localStorage.getItem("patients") || "[]");
+// storage.js
 
-  // Duplicate CNIC check
+// Patients list localStorage me save/retrieve karne ke liye helper functions
+
+function getPatients() {
+  const patients = localStorage.getItem("patients");
+  return patients ? JSON.parse(patients) : [];
+}
+
+function savePatients(patients) {
+  localStorage.setItem("patients", JSON.stringify(patients));
+}
+
+// Patient ko save karna (CNIC duplication check ke sath)
+function savePatient(patient) {
+  let patients = getPatients();
+
+  // CNIC duplicate check
   const exists = patients.some(p => p.cnic === patient.cnic);
   if (exists) {
-    return false; // Already exists, don't save
+    return false; // agar duplicate hai to save mat karo
   }
 
+  // patient ko add karo
   patients.push(patient);
-  localStorage.setItem("patients", JSON.stringify(patients));
-  return true; // Saved successfully
+  savePatients(patients);
+  return true;
 }
 
-// Get all registered patients
-function getAllPatients() {
-  return JSON.parse(localStorage.getItem("patients") || "[]");
+// Patient ko MRN se find karna
+function getPatientByMRN(mrn) {
+  const patients = getPatients();
+  return patients.find(p => p.mrn === mrn);
 }
 
-// Store test result for a patient
-function saveTestResult(cnic, testResult) {
-  const results = JSON.parse(localStorage.getItem("testResults") || "{}");
-  results[cnic] = testResult;
-  localStorage.setItem("testResults", JSON.stringify(results));
-}
-
-// Get test result by CNIC
-function getTestResult(cnic) {
-  const results = JSON.parse(localStorage.getItem("testResults") || "{}");
-  return results[cnic] || null;
-}
-
-// Store receptionist info
-function saveReceptionist(name) {
-  localStorage.setItem("receptionist", name);
-}
-
-// Get receptionist info
-function getReceptionist() {
-  return localStorage.getItem("receptionist") || "Unknown";
-}
-
-// Store user account data
-function saveUser(user) {
-  const users = JSON.parse(localStorage.getItem("users") || "[]");
-  users.push(user);
-  localStorage.setItem("users", JSON.stringify(users));
-}
-
-// Validate login
-function validateLogin(cnic, password) {
-  const users = JSON.parse(localStorage.getItem("users") || "[]");
-  return users.find(u => u.cnic === cnic && u.password === password);
-}
-
-// Store technician test input
-function storeTechnicianData(cnic, testData) {
-  const technicianRecords = JSON.parse(localStorage.getItem("technicianData") || "{}");
-  technicianRecords[cnic] = testData;
-  localStorage.setItem("technicianData", JSON.stringify(technicianRecords));
-}
-
-// Get all technician test inputs
-function getAllTechnicianData() {
-  return JSON.parse(localStorage.getItem("technicianData") || "{}");
-}
-
-// Filter technician test data based on registered CNICs
-function getTechnicianDataForRegisteredPatients() {
-  const registered = getAllPatients().map(p => p.cnic);
-  const allTechData = getAllTechnicianData();
-  const filtered = {};
-
-  for (let cnic of registered) {
-    if (allTechData[cnic]) {
-      filtered[cnic] = allTechData[cnic];
-    }
-  }
-
-  return filtered;
+// Patient ko CNIC se find karna
+function getPatientByCNIC(cnic) {
+  const patients = getPatients();
+  return patients.find(p => p.cnic === cnic);
 }
