@@ -3,66 +3,87 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registration Slip - AlphaMed Lab</title>
+  <title>Patient Registration Slip - AlphaMed Lab</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    .slip-container {
+    .slip {
+      width: 70%;
+      margin: 20px auto;
       background: white;
       padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0px 2px 10px rgba(0,0,0,0.2);
-      width: 400px;
-      margin: auto;
+      border: 1px dashed #333;
+      border-radius: 8px;
       position: relative;
+    }
+    .slip h2 {
+      text-align: center;
+      margin-bottom: 15px;
     }
     .watermark {
       position: absolute;
-      top: 50%;
+      top: 40%;
       left: 50%;
-      opacity: 0.1;
       transform: translate(-50%, -50%);
-      z-index: 0;
+      opacity: 0.1;
+      font-size: 60px;
+      font-weight: bold;
+      color: #333;
+      pointer-events: none;
     }
-    .slip-content {
-      position: relative;
-      z-index: 1;
-      text-align: left;
+    .slip table {
+      width: 100%;
+      margin-top: 10px;
+      border-collapse: collapse;
+    }
+    .slip td {
+      padding: 6px;
+      border: 1px solid #ddd;
     }
     .print-btn {
       margin-top: 20px;
-      padding: 10px;
+      text-align: center;
+    }
+    .print-btn button {
+      padding: 10px 20px;
+      font-size: 16px;
       background: #007bff;
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
       cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <div class="navbar">
-    <h2>Registration Slip</h2>
-    <button onclick="window.location.href='register_patient.html'">Back</button>
-  </div>
-
-  <div class="slip-container" id="slipArea">
-    <div class="watermark">
-      <img src="logo.png" alt="Lab Logo" width="150">
+  <div class="slip">
+    <div class="watermark">AlphaMed Lab</div>
+    <h2>Patient Registration Slip</h2>
+    <table>
+      <tr>
+        <td><b>MRN:</b></td>
+        <td id="slipMRN"></td>
+      </tr>
+      <tr>
+        <td><b>Name:</b></td>
+        <td id="slipName"></td>
+      </tr>
+      <tr>
+        <td><b>Age:</b></td>
+        <td id="slipAge"></td>
+      </tr>
+      <tr>
+        <td><b>Gender:</b></td>
+        <td id="slipGender"></td>
+      </tr>
+      <tr>
+        <td><b>Date:</b></td>
+        <td id="slipDate"></td>
+      </tr>
+    </table>
+    <div class="print-btn">
+      <button onclick="window.print()">Print Slip</button>
     </div>
-    <div class="slip-content">
-      <h3>AlphaMed Lab</h3>
-      <p><b>Patient Name:</b> <span id="sName"></span></p>
-      <p><b>Age:</b> <span id="sAge"></span></p>
-      <p><b>Gender:</b> <span id="sGender"></span></p>
-      <p><b>Contact:</b> <span id="sContact"></span></p>
-      <p><b>MRN:</b> <span id="sMRN"></span></p>
-      <p><b>Date:</b> <span id="sDate"></span></p>
-    </div>
   </div>
-
-  <center>
-    <button class="print-btn" onclick="window.print()">Print Slip</button>
-  </center>
 
   <script src="script.js"></script>
 </body>
