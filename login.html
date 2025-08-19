@@ -2,31 +2,28 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lab Login</title>
   <link rel="stylesheet" href="styles.css">
-  <script src="script.js"></script>
 </head>
-<body class="login-page">
-
+<body>
   <div class="login-container">
-    <h2>Lab Management Login</h2>
-    <div id="login-error" class="error"></div>
-
-    <div class="input-group">
-      <label>Username</label>
-      <input type="text" id="username" placeholder="Enter Username">
+    <div class="logo">
+      <img src="logo.png" alt="Lab Logo">
     </div>
-
-    <div class="input-group">
-      <label>Password</label>
-      <div class="password-box">
-        <input type="password" id="password" placeholder="Enter Password">
-        <span class="toggle-pass" onclick="togglePassword()">👁</span>
-      </div>
+    <h2>Admin Login</h2>
+    
+    <input type="text" id="cnic" placeholder="Enter CNIC">
+    
+    <div class="password-container">
+      <input type="password" id="password" placeholder="Enter Password">
+      <span id="toggle-password">👁️</span>
     </div>
-
-    <button onclick="loginUser()">Login</button>
+    
+    <button onclick="login()">Login</button>
+    <p id="error" class="error"></p>
   </div>
 
+  <script src="script.js"></script>
 </body>
 </html>
