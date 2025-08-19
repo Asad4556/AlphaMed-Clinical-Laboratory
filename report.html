@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient Report - AlphaMed Lab</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .report-container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 2px 10px rgba(0,0,0,0.2);
+      position: relative;
+    }
+    .watermark {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      opacity: 0.1;
+      transform: translate(-50%, -50%);
+      font-size: 80px;
+      font-weight: bold;
+      color: #999;
+      z-index: 0;
+      text-align: center;
+    }
+    .report-content {
+      position: relative;
+      z-index: 1;
+    }
+    .print-btn {
+      margin-top: 20px;
+      padding: 10px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <h2>Patient Report</h2>
+    <button onclick="window.location.href='dashboard.html'">Back</button>
+  </div>
+
+  <div class="container report-container" id="reportArea">
+    <div class="watermark">
+      <img src="logo.png" alt="Lab Logo" width="200"><br>
+      AlphaMed Lab
+    </div>
+    <div class="report-content">
+      <h3>Patient Information</h3>
+      <p><b>Name:</b> <span id="rName"></span></p>
+      <p><b>Age:</b> <span id="rAge"></span></p>
+      <p><b>Gender:</b> <span id="rGender"></span></p>
+      <p><b>Contact:</b> <span id="rContact"></span></p>
+      <p><b>MRN:</b> <span id="rMRN"></span></p>
+
+      <h3>Test Results</h3>
+      <table border="1" width="100%">
+        <thead>
+          <tr>
+            <th>Department</th>
+            <th>Test</th>
+            <th>Result</th>
+            <th>Normal Range</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody id="reportTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <center>
+    <button class="print-btn" onclick="window.print()">Print Report</button>
+  </center>
+
+  <script src="script.js"></script>
+</body>
+</html>
