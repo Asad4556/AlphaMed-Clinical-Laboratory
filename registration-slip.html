@@ -2,63 +2,63 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Patient Registration Slip</title>
+  <title>Registration Slip</title>
   <link rel="stylesheet" href="styles.css">
+  <style>
+    .slip {
+      background: white;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      width: 500px;
+      margin: auto;
+      margin-top: 50px;
+    }
+    .slip h2 {
+      text-align: center;
+      color: #003366;
+      margin-bottom: 20px;
+    }
+    .slip p {
+      margin: 5px 0;
+      font-size: 16px;
+    }
+    .print-btn {
+      display: block;
+      margin: 20px auto;
+    }
+  </style>
 </head>
 <body>
-  <div class="header">
+  <div class="slip" id="slip-container">
     <h2>Patient Registration Slip</h2>
-    <button onclick="logout()">Logout</button>
+    <p><b>Patient ID:</b> <span id="s-id"></span></p>
+    <p><b>Name:</b> <span id="s-name"></span></p>
+    <p><b>Age:</b> <span id="s-age"></span></p>
+    <p><b>Gender:</b> <span id="s-gender"></span></p>
+    <p><b>Contact:</b> <span id="s-contact"></span></p>
+    <p><b>Doctor:</b> <span id="s-doctor"></span></p>
+    <p><b>Date:</b> <span id="s-date"></span></p>
   </div>
 
-  <div class="container">
-    <div class="card" id="slip">
-      <h3>AlphaMed Diagnostic Lab</h3>
-      <hr>
-      <p><b>Patient ID:</b> <span id="pid"></span></p>
-      <p><b>Name:</b> <span id="pname"></span></p>
-      <p><b>Age:</b> <span id="page"></span></p>
-      <p><b>Gender:</b> <span id="pgender"></span></p>
-      <p><b>Contact:</b> <span id="pcontact"></span></p>
-      <p><b>Date:</b> <span id="pdate"></span></p>
-    </div>
-
-    <button class="print-btn" onclick="window.print()">Print Slip</button>
-    <button onclick="window.location.href='reception_dashboard.html'">Back to Dashboard</button>
-  </div>
+  <button class="print-btn" onclick="window.print()">Print Slip</button>
 
   <script>
-    function logout() {
-      localStorage.removeItem("loggedInUser");
-      window.location.href = "login.html";
-    }
-
-    // Fetch patient by ID from localStorage
-    const urlParams = new URLSearchParams(window.location.search);
-    const id = urlParams.get("id");
-
-    let patients = JSON.parse(localStorage.getItem("patients")) || [];
-    let patient = patients.find(p => p.id == id);
-
-    if (patient) {
-      document.getElementById("pid").textContent = patient.id;
-      document.getElementById("pname").textContent = patient.name;
-      document.getElementById("page").textContent = patient.age;
-      document.getElementById("pgender").textContent = patient.gender;
-      document.getElementById("pcontact").textContent = patient.contact;
-      document.getElementById("pdate").textContent = patient.date;
-    } else {
-      alert("Patient not found!");
-      window.location.href = "register_patient.html";
-    }
-
-    // ✅ Access control
     document.addEventListener("DOMContentLoaded", () => {
-      let user = JSON.parse(localStorage.getItem("loggedInUser"));
-      if (!user || user.role !== "reception") {
-        alert("Access denied!");
-        window.location.href = "login.html";
+      let slipData = JSON.parse(localStorage.getItem("slipData"));
+      if (!slipData) {
+        alert("No slip data found!");
+        window.location.href = "reception.html";
+        return;
       }
+
+      document.getElementById("s-id").textContent = slipData.id;
+      document.getElementById("s-name").textContent = slipData.name;
+      document.getElementById("s-age").textContent = slipData.age;
+      document.getElementById("s-gender").textContent = slipData.gender;
+      document.getElementById("s-contact").textContent = slipData.contact;
+      document.getElementById("s-doctor").textContent = slipData.doctor;
+      document.getElementById("s-date").textContent = slipData.date;
     });
   </script>
 </body>
