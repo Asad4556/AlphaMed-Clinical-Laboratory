@@ -12,7 +12,7 @@
     }
 
     .slip-container {
-      max-width: 600px;
+      max-width: 650px;
       margin: auto;
       background: white;
       border-radius: 12px;
@@ -35,11 +35,9 @@
 
     .info-row {
       display: flex;
-      flex-wrap: wrap; /* ✅ Makes content wrap on small screens */
       justify-content: space-between;
       margin-bottom: 12px;
       font-size: 16px;
-      word-break: break-word;
     }
 
     .info-row span {
@@ -79,10 +77,13 @@
 
     <div class="info-row"><span>MRN:</span> <span id="mrn"></span></div>
     <div class="info-row"><span>Name:</span> <span id="name"></span></div>
+    <div class="info-row"><span>CNIC:</span> <span id="cnic"></span></div>
     <div class="info-row"><span>Gender:</span> <span id="gender"></span></div>
     <div class="info-row"><span>Age:</span> <span id="age"></span></div>
     <div class="info-row"><span>Phone:</span> <span id="phone"></span></div>
     <div class="info-row"><span>Address:</span> <span id="address"></span></div>
+    <div class="info-row"><span>Department:</span> <span id="department"></span></div>
+    <div class="info-row"><span>Test:</span> <span id="test"></span></div>
     <div class="info-row"><span>Date:</span> <span id="date"></span></div>
 
     <div class="qr">
@@ -101,11 +102,14 @@
 
       document.getElementById("mrn").textContent = patient.mrn;
       document.getElementById("name").textContent = patient.name;
-      document.getElementById("gender").textContent = patient.gender;
-      document.getElementById("age").textContent = patient.age;
+      document.getElementById("cnic").textContent = patient.cnic;
+      document.getElementById("gender").textContent = patient.gender || "-";
+      document.getElementById("age").textContent = patient.age || "-";
       document.getElementById("phone").textContent = patient.phone;
-      document.getElementById("address").textContent = patient.address;
-      document.getElementById("date").textContent = new Date().toLocaleString();
+      document.getElementById("address").textContent = patient.address || "-";
+      document.getElementById("department").textContent = patient.department;
+      document.getElementById("test").textContent = patient.test;
+      document.getElementById("date").textContent = patient.date || new Date().toLocaleString();
 
       // QR code (optional)
       if (patient.qrDataURL) {
