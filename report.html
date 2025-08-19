@@ -2,107 +2,92 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Patient Report</title>
+  <title>Lab Test Report</title>
   <link rel="stylesheet" href="styles.css">
+  <style>
+    .report {
+      background: white;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      width: 700px;
+      margin: auto;
+      margin-top: 30px;
+    }
+    .report h2 {
+      text-align: center;
+      color: #003366;
+      margin-bottom: 20px;
+    }
+    .report p {
+      margin: 5px 0;
+      font-size: 16px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+    th, td {
+      padding: 10px;
+      text-align: center;
+    }
+    .print-btn {
+      display: block;
+      margin: 20px auto;
+    }
+  </style>
 </head>
 <body>
-  <div class="header">
-    <h2>Patient Report</h2>
-    <button onclick="logout()">Logout</button>
+  <div class="report" id="report-container">
+    <h2>Laboratory Test Report</h2>
+    <p><b>Patient ID:</b> <span id="r-id"></span></p>
+    <p><b>Name:</b> <span id="r-name"></span></p>
+    <p><b>Age:</b> <span id="r-age"></span></p>
+    <p><b>Gender:</b> <span id="r-gender"></span></p>
+    <p><b>Doctor:</b> <span id="r-doctor"></span></p>
+    <p><b>Date:</b> <span id="r-date"></span></p>
+
+    <h3>Test Results</h3>
+    <table id="test-results">
+      <thead>
+        <tr>
+          <th>Test</th>
+          <th>Result</th>
+          <th>Normal Range</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
   </div>
 
-  <div class="container">
-    <div class="card">
-      <h3>Search Patient Report</h3>
-      <label>Enter Patient ID:</label>
-      <input type="text" id="search-id" placeholder="Enter Patient ID">
-      <button onclick="loadReport()">Search</button>
-    </div>
-
-    <div id="report-container" class="card" style="display:none;">
-      <h3>Patient Information</h3>
-      <p><b>ID:</b> <span id="p-id"></span></p>
-      <p><b>Name:</b> <span id="p-name"></span></p>
-      <p><b>Age:</b> <span id="p-age"></span></p>
-      <p><b>Gender:</b> <span id="p-gender"></span></p>
-      <p><b>Contact:</b> <span id="p-contact"></span></p>
-      <p><b>Doctor:</b> <span id="p-doctor"></span></p>
-
-      <h3>Test Results</h3>
-      <table id="results-table">
-        <thead>
-          <tr>
-            <th>Department</th>
-            <th>Test</th>
-            <th>Result</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-
-      <button class="print-btn" onclick="window.print()">Print Report</button>
-    </div>
-  </div>
+  <button class="print-btn" onclick="window.print()">Print Report</button>
 
   <script>
-    function logout() {
-      localStorage.removeItem("loggedInUser");
-      window.location.href = "login.html";
-    }
-
-    function loadReport() {
-      let pid = document.getElementById("search-id").value.trim();
-      if (!pid) {
-        alert("Please enter Patient ID");
-        return;
-      }
-
-      let patients = JSON.parse(localStorage.getItem("patients")) || [];
-      let patient = patients.find(p => p.id == pid);
-
-      if (!patient) {
-        alert("Patient not found!");
-        return;
-      }
-
-      document.getElementById("report-container").style.display = "block";
-
-      document.getElementById("p-id").textContent = patient.id;
-      document.getElementById("p-name").textContent = patient.name;
-      document.getElementById("p-age").textContent = patient.age;
-      document.getElementById("p-gender").textContent = patient.gender;
-      document.getElementById("p-contact").textContent = patient.contact;
-      document.getElementById("p-doctor").textContent = patient.doctor;
-
-      let tbody = document.querySelector("#results-table tbody");
-      tbody.innerHTML = "";
-
-      if (patient.results && patient.results.length > 0) {
-        patient.results.forEach(r => {
-          let tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td>${r.department}</td>
-            <td>${r.test}</td>
-            <td>${r.result}</td>
-            <td>${r.date}</td>
-          `;
-          tbody.appendChild(tr);
-        });
-      } else {
-        let tr = document.createElement("tr");
-        tr.innerHTML = `<td colspan="4">No results available</td>`;
-        tbody.appendChild(tr);
-      }
-    }
-
     document.addEventListener("DOMContentLoaded", () => {
-      // ✅ Access control (doctor + patient dono dekh sakte hain)
-      let user = JSON.parse(localStorage.getItem("loggedInUser"));
-      if (!user || (user.role !== "doctor" && user.role !== "patient")) {
-        alert("Access denied!");
-        window.location.href = "login.html";
+      let reportData = JSON.parse(localStorage.getItem("reportData"));
+      if (!reportData) {
+        alert("No report data found!");
+        window.location.href = "reception_dashboard.html";
+        return;
       }
+
+      document.getElementById("r-id").textContent = reportData.id;
+      document.getElementById("r-name").textContent = reportData.name;
+      document.getElementById("r-age").textContent = reportData.age;
+      document.getElementById("r-gender").textContent = reportData.gender;
+      document.getElementById("r-doctor").textContent = reportData.doctor;
+      document.getElementById("r-date").textContent = reportData.date;
+
+      let tbody = document.querySelector("#test-results tbody");
+      reportData.tests.forEach(t => {
+        let row = document.createElement("tr");
+        row.innerHTML = `<td>${t.name}</td><td>${t.result}</td><td>${t.range}</td>`;
+        tbody.appendChild(row);
+      });
     });
   </script>
 </body>
