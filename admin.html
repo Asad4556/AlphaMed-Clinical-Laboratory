@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - AlphaMed Lab</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="navbar">
+    <h2>Admin Dashboard - AlphaMed Lab</h2>
+    <button onclick="window.location.href='index.html'">Logout</button>
+  </div>
+
+  <div class="container">
+    <!-- User Management -->
+    <section>
+      <h3>Create New User</h3>
+      <input type="text" id="new-username" placeholder="Enter Username" required>
+      <input type="password" id="new-password" placeholder="Enter Password" required>
+      <button onclick="registerUser()">Create User</button>
+    </section>
+
+    <!-- Users List -->
+    <section>
+      <h3>Registered Users</h3>
+      <table border="1" width="100%">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Username</th>
+            <th>Password</th>
+          </tr>
+        </thead>
+        <tbody id="users-list">
+          <!-- Populated by script.js -->
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Department & Tests Management -->
+    <section>
+      <h3>Manage Departments & Tests</h3>
+      <input type="text" id="dept-name" placeholder="Department Name">
+      <button onclick="addDepartment()">Add Department</button>
+
+      <br><br>
+      <select id="dept-select"></select>
+      <input type="text" id="test-name" placeholder="Test Name">
+      <button onclick="addTest()">Add Test</button>
+
+      <h4>Departments & Tests</h4>
+      <div id="dept-list"></div>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+  <script src="labSections.js"></script>
+</body>
+</html>
