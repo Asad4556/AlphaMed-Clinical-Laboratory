@@ -1,104 +1,36 @@
-/*******************************
- * User Management & Login
- *******************************/
-
-// LocalStorage mein users ko save karna
-let users = JSON.parse(localStorage.getItem("users")) || [];
-
-// Default admin user (agar koi na ho)
-if (users.length === 0) {
-  users.push({ username: "admin", password: "admin123", role: "admin" });
-  localStorage.setItem("users", JSON.stringify(users));
-}
-
-// Register New User
-function registerUser(username, password, role = "user") {
-  if (!username || !password) {
-    alert("Please enter username and password!");
-    return false;
-  }
-
-  let exists = users.find(u => u.username === username);
-  if (exists) {
-    alert("User already exists!");
-    return false;
-  }
-
-  users.push({ username, password, role });
-  localStorage.setItem("users", JSON.stringify(users));
-  alert("User created successfully!");
-  return true;
-}
+// Fixed Admin Credentials
+const adminCredentials = {
+  cnic: "34501-8971113-7",
+  password: "Asad@2723"
+};
 
 // Login Function
-function loginUser() {
-  const username = document.getElementById("username").value.trim();
+function login() {
+  const cnic = document.getElementById("cnic").value.trim();
   const password = document.getElementById("password").value.trim();
-  const errorDiv = document.getElementById("login-error");
+  const error = document.getElementById("error");
 
-  if (!username || !password) {
-    errorDiv.textContent = "Please enter username and password";
-    return;
+  if (cnic === adminCredentials.cnic && password === adminCredentials.password) {
+    // Save session info
+    localStorage.setItem("loggedInUser", "admin");
+    window.location.href = "admin-dashboard.html";
+  } else {
+    error.textContent = "Invalid CNIC or Password!";
   }
+}
 
-  let user = users.find(u => u.username === username && u.password === password);
+// Password Show/Hide
+document.addEventListener("DOMContentLoaded", () => {
+  const toggle = document.getElementById("toggle-password");
+  const passwordField = document.getElementById("password");
 
-  if (user) {
-    // Save logged in user
-    localStorage.setItem("currentUser", JSON.stringify(user));
-
-    // Redirect based on role
-    if (user.role === "admin") {
-      window.location.href = "admin-dashboard.html";
+  toggle.addEventListener("click", () => {
+    if (passwordField.type === "password") {
+      passwordField.type = "text";
+      toggle.textContent = "🙈";
     } else {
-      window.location.href = "reception_dashboard.html";
+      passwordField.type = "password";
+      toggle.textContent = "👁️";
     }
-  } else {
-    errorDiv.textContent = "Invalid username or password!";
-  }
-}
-
-// Logout
-function logoutUser() {
-  localStorage.removeItem("currentUser");
-  window.location.href = "login.html";
-}
-
-/*******************************
- * Password Toggle
- *******************************/
-function togglePassword() {
-  let pass = document.getElementById("password");
-  if (pass.type === "password") {
-    pass.type = "text";
-  } else {
-    pass.type = "password";
-  }
-}
-
-/*******************************
- * Session Check (Auth Guard)
- *******************************/
-function checkAuth(requiredRole = null) {
-  let user = JSON.parse(localStorage.getItem("currentUser"));
-  if (!user) {
-    window.location.href = "login.html";
-    return;
-  }
-
-  if (requiredRole && user.role !== requiredRole) {
-    alert("Access Denied!");
-    window.location.href = "login.html";
-  }
-}
-
-/*******************************
- * Utility: Show current user
- *******************************/
-function showCurrentUser() {
-  let user = JSON.parse(localStorage.getItem("currentUser"));
-  if (user) {
-    let el = document.getElementById("current-user");
-    if (el) el.textContent = `Logged in as: ${user.username} (${user.role})`;
-  }
-}
+  });
+});
