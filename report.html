@@ -7,77 +7,106 @@
   <link rel="stylesheet" href="style.css">
   <style>
     .report-container {
+      width: 80%;
+      margin: 20px auto;
       background: white;
       padding: 20px;
       border-radius: 10px;
-      box-shadow: 0px 2px 10px rgba(0,0,0,0.2);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
       position: relative;
     }
     .watermark {
       position: absolute;
-      top: 40%;
+      top: 45%;
       left: 50%;
-      opacity: 0.1;
       transform: translate(-50%, -50%);
-      font-size: 80px;
+      opacity: 0.1;
+      font-size: 70px;
       font-weight: bold;
-      color: #999;
-      z-index: 0;
+      color: #333;
+      pointer-events: none;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
       text-align: center;
     }
-    .report-content {
-      position: relative;
-      z-index: 1;
+    th {
+      background: #007bff;
+      color: white;
     }
     .print-btn {
       margin-top: 20px;
-      padding: 10px;
+      text-align: center;
+    }
+    .print-btn button {
+      padding: 10px 20px;
+      font-size: 16px;
       background: #007bff;
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
       cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <div class="navbar">
+  <div class="report-container">
+    <div class="watermark">AlphaMed Lab</div>
     <h2>Patient Report</h2>
-    <button onclick="window.location.href='dashboard.html'">Back</button>
-  </div>
 
-  <div class="container report-container" id="reportArea">
-    <div class="watermark">
-      <img src="logo.png" alt="Lab Logo" width="200"><br>
-      AlphaMed Lab
+    <table>
+      <tr>
+        <td><b>MRN:</b></td>
+        <td id="reportMRN"></td>
+      </tr>
+      <tr>
+        <td><b>Name:</b></td>
+        <td id="reportName"></td>
+      </tr>
+      <tr>
+        <td><b>Age:</b></td>
+        <td id="reportAge"></td>
+      </tr>
+      <tr>
+        <td><b>Gender:</b></td>
+        <td id="reportGender"></td>
+      </tr>
+      <tr>
+        <td><b>Date:</b></td>
+        <td id="reportDate"></td>
+      </tr>
+    </table>
+
+    <h3 style="margin-top:20px;">Test Results</h3>
+    <table id="reportTests">
+      <thead>
+        <tr>
+          <th>Department</th>
+          <th>Test</th>
+          <th>Result</th>
+          <th>Normal Range</th>
+          <th>Remarks</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Filled from script.js -->
+      </tbody>
+    </table>
+
+    <div class="print-btn">
+      <button onclick="window.print()">Print Report</button>
     </div>
-    <div class="report-content">
-      <h3>Patient Information</h3>
-      <p><b>Name:</b> <span id="rName"></span></p>
-      <p><b>Age:</b> <span id="rAge"></span></p>
-      <p><b>Gender:</b> <span id="rGender"></span></p>
-      <p><b>Contact:</b> <span id="rContact"></span></p>
-      <p><b>MRN:</b> <span id="rMRN"></span></p>
-
-      <h3>Test Results</h3>
-      <table border="1" width="100%">
-        <thead>
-          <tr>
-            <th>Department</th>
-            <th>Test</th>
-            <th>Result</th>
-            <th>Normal Range</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-        <tbody id="reportTable"></tbody>
-      </table>
-    </div>
   </div>
-
-  <center>
-    <button class="print-btn" onclick="window.print()">Print Report</button>
-  </center>
 
   <script src="script.js"></script>
 </body>
