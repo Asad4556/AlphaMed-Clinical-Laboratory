@@ -2,89 +2,64 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Patient Registration Slip - AlphaMed Lab</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    .slip {
-      width: 70%;
-      margin: 20px auto;
-      background: white;
-      padding: 20px;
-      border: 1px dashed #333;
-      border-radius: 8px;
-      position: relative;
-    }
-    .slip h2 {
-      text-align: center;
-      margin-bottom: 15px;
-    }
-    .watermark {
-      position: absolute;
-      top: 40%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      opacity: 0.1;
-      font-size: 60px;
-      font-weight: bold;
-      color: #333;
-      pointer-events: none;
-    }
-    .slip table {
-      width: 100%;
-      margin-top: 10px;
-      border-collapse: collapse;
-    }
-    .slip td {
-      padding: 6px;
-      border: 1px solid #ddd;
-    }
-    .print-btn {
-      margin-top: 20px;
-      text-align: center;
-    }
-    .print-btn button {
-      padding: 10px 20px;
-      font-size: 16px;
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-  </style>
+  <title>Patient Registration Slip</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="slip">
-    <div class="watermark">AlphaMed Lab</div>
+  <div class="header">
     <h2>Patient Registration Slip</h2>
-    <table>
-      <tr>
-        <td><b>MRN:</b></td>
-        <td id="slipMRN"></td>
-      </tr>
-      <tr>
-        <td><b>Name:</b></td>
-        <td id="slipName"></td>
-      </tr>
-      <tr>
-        <td><b>Age:</b></td>
-        <td id="slipAge"></td>
-      </tr>
-      <tr>
-        <td><b>Gender:</b></td>
-        <td id="slipGender"></td>
-      </tr>
-      <tr>
-        <td><b>Date:</b></td>
-        <td id="slipDate"></td>
-      </tr>
-    </table>
-    <div class="print-btn">
-      <button onclick="window.print()">Print Slip</button>
-    </div>
+    <button onclick="logout()">Logout</button>
   </div>
 
-  <script src="script.js"></script>
+  <div class="container">
+    <div class="card" id="slip">
+      <h3>AlphaMed Diagnostic Lab</h3>
+      <hr>
+      <p><b>Patient ID:</b> <span id="pid"></span></p>
+      <p><b>Name:</b> <span id="pname"></span></p>
+      <p><b>Age:</b> <span id="page"></span></p>
+      <p><b>Gender:</b> <span id="pgender"></span></p>
+      <p><b>Contact:</b> <span id="pcontact"></span></p>
+      <p><b>Date:</b> <span id="pdate"></span></p>
+    </div>
+
+    <button class="print-btn" onclick="window.print()">Print Slip</button>
+    <button onclick="window.location.href='reception_dashboard.html'">Back to Dashboard</button>
+  </div>
+
+  <script>
+    function logout() {
+      localStorage.removeItem("loggedInUser");
+      window.location.href = "login.html";
+    }
+
+    // Fetch patient by ID from localStorage
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get("id");
+
+    let patients = JSON.parse(localStorage.getItem("patients")) || [];
+    let patient = patients.find(p => p.id == id);
+
+    if (patient) {
+      document.getElementById("pid").textContent = patient.id;
+      document.getElementById("pname").textContent = patient.name;
+      document.getElementById("page").textContent = patient.age;
+      document.getElementById("pgender").textContent = patient.gender;
+      document.getElementById("pcontact").textContent = patient.contact;
+      document.getElementById("pdate").textContent = patient.date;
+    } else {
+      alert("Patient not found!");
+      window.location.href = "register_patient.html";
+    }
+
+    // ✅ Access control
+    document.addEventListener("DOMContentLoaded", () => {
+      let user = JSON.parse(localStorage.getItem("loggedInUser"));
+      if (!user || user.role !== "reception") {
+        alert("Access denied!");
+        window.location.href = "login.html";
+      }
+    });
+  </script>
 </body>
 </html>
