@@ -6,22 +6,28 @@
   <title>Lab Login</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-  <div class="login-container">
-    <div class="logo">
-      <img src="logo.png" alt="Lab Logo">
+<body class="dark-mode">
+  <div class="login-wrapper">
+    <div class="login-box">
+      <div class="logo">
+        <img src="logo.png" alt="Lab Logo">
+      </div>
+      <h2>Admin Login</h2>
+      
+      <div class="input-group">
+        <label for="cnic">CNIC</label>
+        <input type="text" id="cnic" placeholder="34501-8971113-7">
+      </div>
+
+      <div class="input-group password-container">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter Password">
+        <span id="toggle-password">👁️</span>
+      </div>
+
+      <button onclick="login()" class="login-btn">Login</button>
+      <p id="error" class="error"></p>
     </div>
-    <h2>Admin Login</h2>
-    
-    <input type="text" id="cnic" placeholder="Enter CNIC">
-    
-    <div class="password-container">
-      <input type="password" id="password" placeholder="Enter Password">
-      <span id="toggle-password">👁️</span>
-    </div>
-    
-    <button onclick="login()">Login</button>
-    <p id="error" class="error"></p>
   </div>
 
   <script src="script.js"></script>
