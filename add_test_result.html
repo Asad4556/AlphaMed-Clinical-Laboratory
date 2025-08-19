@@ -2,116 +2,68 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Add Test Result</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Test Results - AlphaMed Lab</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <div class="header">
-    <h2>Add Test Result</h2>
-    <button onclick="logout()">Logout</button>
-  </div>
+<body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col">
 
-  <div class="container">
-    <div class="card">
-      <h3>Enter Test Result</h3>
-      <label>Patient ID:</label>
-      <input type="text" id="patient-id" placeholder="Enter Patient ID">
+  <!-- Navbar -->
+  <nav class="bg-gray-800 shadow-md px-6 py-4 flex justify-between items-center">
+    <h1 class="text-xl font-bold text-blue-400">AlphaMed Lab</h1>
+    <a href="admin-dashboard.html" class="text-gray-300 hover:text-blue-400">Dashboard</a>
+  </nav>
 
-      <label>Department:</label>
-      <select id="dept-select"></select>
+  <!-- Main Content -->
+  <div class="flex-1 container mx-auto p-6">
+    <div class="bg-gray-800 p-6 rounded-2xl shadow-lg">
+      <h2 class="text-2xl font-bold text-blue-400 mb-6">Add Test Results</h2>
 
-      <label>Test Name:</label>
-      <select id="test-select"></select>
+      <!-- Select Patient -->
+      <div class="mb-4">
+        <label class="block text-sm mb-2">Select Patient</label>
+        <select id="patientSelect" class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500">
+          <option value="">-- Choose Patient --</option>
+        </select>
+      </div>
 
-      <label>Result:</label>
-      <textarea id="result" placeholder="Enter test result here..."></textarea>
+      <!-- Department -->
+      <div class="mb-4">
+        <label class="block text-sm mb-2">Select Department</label>
+        <select id="departmentSelect" class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500">
+          <option value="">-- Choose Department --</option>
+        </select>
+      </div>
 
-      <button onclick="saveResult()">Save Result</button>
+      <!-- Test List -->
+      <div id="testList" class="mb-4 hidden">
+        <label class="block text-sm mb-2">Select Tests</label>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="testsContainer">
+          <!-- Dynamically added checkboxes -->
+        </div>
+      </div>
+
+      <!-- Result Entry -->
+      <div id="resultsSection" class="hidden mb-6">
+        <label class="block text-sm mb-2">Enter Results</label>
+        <div id="resultsContainer" class="space-y-4">
+          <!-- Dynamic result inputs -->
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <button onclick="saveResults()" class="w-full py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold transition">
+        Save Results
+      </button>
     </div>
   </div>
 
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-center py-4 text-sm text-gray-400">
+    © 2025 AlphaMed Lab
+  </footer>
+
   <script src="labSections.js"></script>
-  <script>
-    function logout() {
-      localStorage.removeItem("loggedInUser");
-      window.location.href = "login.html";
-    }
-
-    // Load departments & tests dynamically
-    function loadDepartmentsForResults() {
-      const deptSelect = document.getElementById("dept-select");
-      const testSelect = document.getElementById("test-select");
-
-      let labDepartments = JSON.parse(localStorage.getItem("labDepartments")) || {};
-      deptSelect.innerHTML = "";
-      testSelect.innerHTML = "";
-
-      for (let dept in labDepartments) {
-        let option = document.createElement("option");
-        option.value = dept;
-        option.textContent = dept;
-        deptSelect.appendChild(option);
-      }
-
-      deptSelect.addEventListener("change", function() {
-        testSelect.innerHTML = "";
-        let tests = labDepartments[this.value] || [];
-        tests.forEach(test => {
-          let opt = document.createElement("option");
-          opt.value = test;
-          opt.textContent = test;
-          testSelect.appendChild(opt);
-        });
-      });
-
-      // Trigger default load
-      if (deptSelect.value) deptSelect.dispatchEvent(new Event("change"));
-    }
-
-    // Save result into patient data
-    function saveResult() {
-      let pid = document.getElementById("patient-id").value.trim();
-      let dept = document.getElementById("dept-select").value;
-      let test = document.getElementById("test-select").value;
-      let result = document.getElementById("result").value.trim();
-
-      if (!pid || !dept || !test || !result) {
-        alert("Please fill all fields");
-        return;
-      }
-
-      let patients = JSON.parse(localStorage.getItem("patients")) || [];
-      let patient = patients.find(p => p.id == pid);
-
-      if (!patient) {
-        alert("Patient not found!");
-        return;
-      }
-
-      if (!patient.results) patient.results = [];
-      patient.results.push({
-        department: dept,
-        test: test,
-        result: result,
-        date: new Date().toLocaleString()
-      });
-
-      localStorage.setItem("patients", JSON.stringify(patients));
-      alert("Result saved successfully!");
-      document.getElementById("patient-id").value = "";
-      document.getElementById("result").value = "";
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      loadDepartmentsForResults();
-
-      // ✅ Access control (only lab technician allowed)
-      let user = JSON.parse(localStorage.getItem("loggedInUser"));
-      if (!user || user.role !== "lab") {
-        alert("Access denied!");
-        window.location.href = "login.html";
-      }
-    });
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
