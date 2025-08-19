@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AlphaMed | Login</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body class="bg">
+  <div class="watermark"></div>
+  <main class="container small">
+    <header class="center">
+      <img src="assets/logo.png" alt="AlphaMed" class="logo"/>
+      <h1>AlphaMed <span>Clinical Laboratory</span></h1>
+      <p class="muted">Quality Assurance Through Advance Technology</p>
+    </header>
+
+    <section class="card">
+      <h2>Sign in</h2>
+      <form id="loginForm">
+        <label>Username
+          <input type="text" id="username" required autofocus />
+        </label>
+        <label>Password
+          <input type="password" id="password" required />
+        </label>
+        <label class="row">
+          <input type="checkbox" id="isAdmin"/> <span>Login as Admin</span>
+        </label>
+        <button type="submit" class="primary">Login</button>
+      </form>
+      <p class="muted tiny">Default admin: <b>admin / 1234</b></p>
+    </section>
+  </main>
+
+  <script src="qr.min.js"></script>
+  <script src="app.js"></script>
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const u = document.getElementById('username').value.trim();
+      const p = document.getElementById('password').value;
+      const isAdmin = document.getElementById('isAdmin').checked;
+      const ok = window.App.login(u,p,isAdmin);
+      if(!ok){ alert('Invalid credentials'); return;}
+      location.href = isAdmin ? 'admin.html' : 'user.html';
+    });
+  </script>
+</body>
+</html>
