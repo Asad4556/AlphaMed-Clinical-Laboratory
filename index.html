@@ -3,23 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AlphaMed Clinical Laboratory - Login</title>
-  <link rel="stylesheet" href="style.css">
+  <title>AlphaMed Lab System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <div class="login-container">
-    <div class="logo">
-      <img src="logo.png" alt="AlphaMed Logo">
+<body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col items-center justify-center relative">
+
+  <!-- Watermark Logo -->
+  <img src="logo.png" alt="Lab Logo" 
+       class="absolute opacity-10 w-1/2 h-auto object-contain">
+
+  <!-- Main Container -->
+  <div class="z-10 w-full max-w-2xl text-center space-y-8">
+
+    <!-- Heading -->
+    <h1 class="text-4xl font-extrabold text-blue-400 drop-shadow-lg">
+      Welcome to AlphaMed Diagnostic Lab
+    </h1>
+    <p class="text-gray-400 text-lg">A Complete Laboratory Information System</p>
+
+    <!-- Buttons -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+      <a href="admin.html" 
+         class="bg-blue-600 hover:bg-blue-700 text-white py-4 px-6 rounded-xl font-semibold shadow-md transition">
+        🔑 Admin Login
+      </a>
+      <a href="reception.html" 
+         class="bg-green-600 hover:bg-green-700 text-white py-4 px-6 rounded-xl font-semibold shadow-md transition">
+        🧾 Reception Login
+      </a>
+      <a href="add_test_result.html" 
+         class="bg-purple-600 hover:bg-purple-700 text-white py-4 px-6 rounded-xl font-semibold shadow-md transition">
+        🧪 Lab Staff Login
+      </a>
+      <a href="report.html" 
+         class="bg-yellow-600 hover:bg-yellow-700 text-white py-4 px-6 rounded-xl font-semibold shadow-md transition">
+        📑 View Reports
+      </a>
     </div>
-    <h2>AlphaMed Clinical Laboratory</h2>
-    <form id="loginForm">
-      <input type="text" id="username" placeholder="Username" required>
-      <input type="password" id="password" placeholder="Password" required>
-      <button type="submit">Login</button>
-    </form>
-    <p id="loginError" class="error"></p>
   </div>
 
-  <script src="script.js"></script>
 </body>
 </html>
