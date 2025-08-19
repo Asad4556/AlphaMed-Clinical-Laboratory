@@ -1,171 +1,165 @@
-// ---------- Utility Functions ----------
-function getData(key) {
-  return JSON.parse(localStorage.getItem(key)) || [];
-}
+// ===================== LOGIN SYSTEM =====================
+document.addEventListener("DOMContentLoaded", () => {
+  const loginForm = document.getElementById("loginForm");
+  if (loginForm) {
+    loginForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
 
-function saveData(key, data) {
-  localStorage.setItem(key, JSON.stringify(data));
-}
-
-// ---------- Authentication ----------
-function loginUser() {
-  const username = document.getElementById("username").value.trim();
-  const password = document.getElementById("password").value.trim();
-
-  if (!username || !password) {
-    document.getElementById("error-msg").innerText = "Please fill in all fields.";
-    return;
-  }
-
-  // Check Admin Login
-  if (username === "admin" && password === "admin123") {
-    sessionStorage.setItem("role", "admin");
-    window.location.href = "admin.html";
-    return;
-  }
-
-  // Check Lab User Login
-  let users = getData("users");
-  let user = users.find(u => u.username === username && u.password === password);
-
-  if (user) {
-    sessionStorage.setItem("role", "user");
-    sessionStorage.setItem("username", username);
-    window.location.href = "reception_dashboard.html";
-  } else {
-    document.getElementById("error-msg").innerText = "Invalid credentials.";
-  }
-}
-
-// ---------- Register New User (Admin Only) ----------
-function registerUser() {
-  const username = document.getElementById("new-username").value.trim();
-  const password = document.getElementById("new-password").value.trim();
-
-  if (!username || !password) {
-    alert("All fields are required!");
-    return;
-  }
-
-  let users = getData("users");
-  if (users.find(u => u.username === username)) {
-    alert("User already exists!");
-    return;
-  }
-
-  users.push({ username, password });
-  saveData("users", users);
-  alert("User created successfully!");
-  document.getElementById("new-username").value = "";
-  document.getElementById("new-password").value = "";
-  loadUsers();
-}
-
-// ---------- Load Users in Admin Dashboard ----------
-function loadUsers() {
-  if (!document.getElementById("users-list")) return;
-  let users = getData("users");
-  let table = document.getElementById("users-list");
-  table.innerHTML = "";
-  users.forEach((u, i) => {
-    table.innerHTML += `<tr>
-      <td>${i + 1}</td>
-      <td>${u.username}</td>
-      <td>${u.password}</td>
-    </tr>`;
-  });
-}
-
-// ---------- Patient Registration ----------
-function registerPatient() {
-  const name = document.getElementById("p-name").value;
-  const age = document.getElementById("p-age").value;
-  const gender = document.getElementById("p-gender").value;
-
-  if (!name || !age || !gender) {
-    alert("All fields required!");
-    return;
-  }
-
-  let patients = getData("patients");
-  let mrn = "MRN" + (patients.length + 1).toString().padStart(4, "0");
-  let patient = { id: mrn, name, age, gender, tests: [] };
-
-  patients.push(patient);
-  saveData("patients", patients);
-
-  alert("Patient registered! MRN: " + mrn);
-  window.location.href = "registration-slip.html?mrn=" + mrn;
-}
-
-// ---------- Load Patients ----------
-function loadPatients() {
-  if (!document.getElementById("patients-list")) return;
-  let patients = getData("patients");
-  let table = document.getElementById("patients-list");
-  table.innerHTML = "";
-  patients.forEach((p, i) => {
-    table.innerHTML += `<tr>
-      <td>${i + 1}</td>
-      <td>${p.id}</td>
-      <td>${p.name}</td>
-      <td>${p.age}</td>
-      <td>${p.gender}</td>
-    </tr>`;
-  });
-}
-
-// ---------- Add Test Results ----------
-function addTestResult() {
-  const mrn = document.getElementById("r-mrn").value;
-  const department = document.getElementById("r-dept").value;
-  const testName = document.getElementById("r-test").value;
-  const result = document.getElementById("r-result").value;
-
-  let patients = getData("patients");
-  let patient = patients.find(p => p.id === mrn);
-
-  if (!patient) {
-    alert("Patient not found!");
-    return;
-  }
-
-  patient.tests.push({ department, testName, result, date: new Date().toLocaleString() });
-  saveData("patients", patients);
-
-  alert("Result Added!");
-  loadReports();
-}
-
-// ---------- Load Reports ----------
-function loadReports() {
-  if (!document.getElementById("reports-list")) return;
-  let patients = getData("patients");
-  let table = document.getElementById("reports-list");
-  table.innerHTML = "";
-
-  patients.forEach(p => {
-    p.tests.forEach((t, i) => {
-      table.innerHTML += `<tr>
-        <td>${p.id}</td>
-        <td>${p.name}</td>
-        <td>${t.department}</td>
-        <td>${t.testName}</td>
-        <td>${t.result}</td>
-        <td>${t.date}</td>
-      </tr>`;
+      if (username === "admin" && password === "admin123") {
+        localStorage.setItem("role", "admin");
+        window.location.href = "admin-dashboard.html";
+      } else if (username === "user" && password === "user123") {
+        localStorage.setItem("role", "user");
+        window.location.href = "reception.html";
+      } else {
+        alert("Invalid login credentials!");
+      }
     });
+  }
+});
+
+// ===================== PATIENT REGISTRATION =====================
+function registerPatient(e) {
+  e.preventDefault();
+
+  const name = document.getElementById("patientName").value;
+  const age = document.getElementById("patientAge").value;
+  const gender = document.getElementById("patientGender").value;
+  const date = new Date().toLocaleDateString();
+  const mrn = "MRN-" + Date.now();
+
+  let patients = JSON.parse(localStorage.getItem("patients")) || [];
+
+  const newPatient = { mrn, name, age, gender, date };
+  patients.push(newPatient);
+
+  localStorage.setItem("patients", JSON.stringify(patients));
+  localStorage.setItem("lastPatient", JSON.stringify(newPatient));
+
+  alert("Patient registered successfully!");
+  window.location.href = "registration-slip.html";
+}
+
+const registerForm = document.getElementById("registerForm");
+if (registerForm) {
+  registerForm.addEventListener("submit", registerPatient);
+}
+
+// ===================== SHOW REGISTRATION SLIP =====================
+if (window.location.pathname.includes("registration-slip.html")) {
+  const patient = JSON.parse(localStorage.getItem("lastPatient"));
+  if (patient) {
+    document.getElementById("slipMRN").textContent = patient.mrn;
+    document.getElementById("slipName").textContent = patient.name;
+    document.getElementById("slipAge").textContent = patient.age;
+    document.getElementById("slipGender").textContent = patient.gender;
+    document.getElementById("slipDate").textContent = patient.date;
+  }
+}
+
+// ===================== ADD TEST RESULT =====================
+function loadPatientsForTests() {
+  const select = document.getElementById("patientSelect");
+  if (select) {
+    let patients = JSON.parse(localStorage.getItem("patients")) || [];
+    patients.forEach(p => {
+      let option = document.createElement("option");
+      option.value = p.mrn;
+      option.textContent = `${p.name} (${p.mrn})`;
+      select.appendChild(option);
+    });
+  }
+}
+
+function addTestResult(e) {
+  e.preventDefault();
+
+  const patientMRN = document.getElementById("patientSelect").value;
+  const department = document.getElementById("departmentSelect").value;
+  const test = document.getElementById("testSelect").value;
+  const result = document.getElementById("testResult").value;
+  const normal = document.getElementById("normalRange").value;
+  const remarks = document.getElementById("remarks").value;
+
+  let reports = JSON.parse(localStorage.getItem("reports")) || [];
+  const newReport = {
+    id: "REP-" + Date.now(),
+    patientMRN,
+    department,
+    test,
+    result,
+    normal,
+    remarks,
+    date: new Date().toLocaleDateString()
+  };
+
+  reports.push(newReport);
+  localStorage.setItem("reports", JSON.stringify(reports));
+
+  alert("Test result added successfully!");
+}
+
+const testForm = document.getElementById("testForm");
+if (testForm) {
+  loadPatientsForTests();
+  testForm.addEventListener("submit", addTestResult);
+}
+
+// ===================== SHOW REPORT =====================
+if (window.location.pathname.includes("report.html")) {
+  const reports = JSON.parse(localStorage.getItem("reports")) || [];
+  const patients = JSON.parse(localStorage.getItem("patients")) || [];
+
+  if (reports.length > 0) {
+    const latest = reports[reports.length - 1];
+    const patient = patients.find(p => p.mrn === latest.patientMRN);
+
+    document.getElementById("reportMRN").textContent = patient.mrn;
+    document.getElementById("reportName").textContent = patient.name;
+    document.getElementById("reportAge").textContent = patient.age;
+    document.getElementById("reportGender").textContent = patient.gender;
+    document.getElementById("reportDate").textContent = latest.date;
+
+    const tbody = document.querySelector("#reportTests tbody");
+    let row = `<tr>
+                <td>${latest.department}</td>
+                <td>${latest.test}</td>
+                <td>${latest.result}</td>
+                <td>${latest.normal}</td>
+                <td>${latest.remarks}</td>
+              </tr>`;
+    tbody.innerHTML = row;
+  }
+}
+
+// ===================== RECEPTION DASHBOARD =====================
+if (window.location.pathname.includes("reception_dashboard.html")) {
+  const patients = JSON.parse(localStorage.getItem("patients")) || [];
+  const reports = JSON.parse(localStorage.getItem("reports")) || [];
+
+  const patTable = document.getElementById("recentPatients");
+  const repTable = document.getElementById("recentReports");
+
+  patients.slice(-5).forEach(p => {
+    let row = `<tr>
+                <td>${p.mrn}</td>
+                <td>${p.name}</td>
+                <td>${p.age}</td>
+                <td>${p.gender}</td>
+                <td>${p.date}</td>
+              </tr>`;
+    patTable.innerHTML += row;
+  });
+
+  reports.slice(-5).forEach(r => {
+    let row = `<tr>
+                <td>${r.id}</td>
+                <td>${r.patientMRN}</td>
+                <td>${r.department}</td>
+                <td>${r.date}</td>
+              </tr>`;
+    repTable.innerHTML += row;
   });
 }
-
-// ---------- Print Slip or Report ----------
-function printPage() {
-  window.print();
-}
-
-// ---------- Auto Load ----------
-window.onload = function() {
-  loadUsers();
-  loadPatients();
-  loadReports();
-};
