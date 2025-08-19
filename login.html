@@ -2,54 +2,31 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Lab Management - Login</title>
+  <title>Lab Login</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="script.js"></script>
 </head>
-<body>
-  <div class="login-container">
-    <div class="logo">
-      <img src="logo.png" alt="Lab Logo">
-    </div>
-    <h2>Lab Management Login</h2>
+<body class="login-page">
 
-    <input type="text" id="username" placeholder="Enter Username">
-    <input type="password" id="password" placeholder="Enter Password">
-    <button onclick="login()">Login</button>
-    <p id="error-msg" class="error"></p>
+  <div class="login-container">
+    <h2>Lab Management Login</h2>
+    <div id="login-error" class="error"></div>
+
+    <div class="input-group">
+      <label>Username</label>
+      <input type="text" id="username" placeholder="Enter Username">
+    </div>
+
+    <div class="input-group">
+      <label>Password</label>
+      <div class="password-box">
+        <input type="password" id="password" placeholder="Enter Password">
+        <span class="toggle-pass" onclick="togglePassword()">👁</span>
+      </div>
+    </div>
+
+    <button onclick="loginUser()">Login</button>
   </div>
 
-  <script>
-    // Default admin & reception user
-    const defaultUsers = [
-      { username: "admin", password: "admin123", role: "admin" },
-      { username: "reception", password: "user123", role: "user" }
-    ];
-
-    // Save default users if not in localStorage
-    if (!localStorage.getItem("users")) {
-      localStorage.setItem("users", JSON.stringify(defaultUsers));
-    }
-
-    function login() {
-      const username = document.getElementById("username").value.trim();
-      const password = document.getElementById("password").value.trim();
-      const errorMsg = document.getElementById("error-msg");
-
-      const users = JSON.parse(localStorage.getItem("users")) || [];
-      const foundUser = users.find(u => u.username === username && u.password === password);
-
-      if (foundUser) {
-        localStorage.setItem("loggedInUser", JSON.stringify(foundUser));
-
-        if (foundUser.role === "admin") {
-          window.location.href = "admin-dashboard.html";
-        } else {
-          window.location.href = "reception_dashboard.html";
-        }
-      } else {
-        errorMsg.textContent = "Invalid username or password!";
-      }
-    }
-  </script>
 </body>
 </html>
