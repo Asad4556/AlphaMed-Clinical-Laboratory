@@ -3,33 +3,76 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lab Login</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>AlphaMed Lab - Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="dark-mode">
-  <div class="login-wrapper">
-    <div class="login-box">
-      <div class="logo">
-        <img src="logo.png" alt="Lab Logo">
-      </div>
-      <h2>Admin Login</h2>
-      
-      <div class="input-group">
-        <label for="cnic">CNIC</label>
-        <input type="text" id="cnic" placeholder="34501-8971113-7">
-      </div>
+<body class="bg-gray-900 text-gray-100 flex items-center justify-center min-h-screen">
 
-      <div class="input-group password-container">
-        <label for="password">Password</label>
-        <input type="password" id="password" placeholder="Enter Password">
-        <span id="toggle-password">👁️</span>
-      </div>
+  <!-- Login Card -->
+  <div class="w-full max-w-md bg-gray-800 rounded-2xl shadow-lg p-8 relative">
 
-      <button onclick="login()" class="login-btn">Login</button>
-      <p id="error" class="error"></p>
+    <!-- Logo Top -->
+    <div class="absolute top-4 left-1/2 transform -translate-x-1/2">
+      <img src="logo.png" alt="AlphaMed Lab Logo" class="w-16 h-16 rounded-full border-2 border-blue-400 shadow-lg">
     </div>
+
+    <!-- Title -->
+    <h2 class="text-2xl font-bold text-center text-blue-400 mt-20 mb-6">Sign In to AlphaMed</h2>
+
+    <!-- Login Form -->
+    <form id="loginForm" class="space-y-6">
+      <!-- CNIC Field -->
+      <div>
+        <label for="cnic" class="block text-sm font-medium text-gray-300 mb-1">CNIC</label>
+        <input type="text" id="cnic" name="cnic" placeholder="Enter CNIC"
+          class="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 text-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+      </div>
+
+      <!-- Password Field -->
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-300 mb-1">Password</label>
+        <div class="relative">
+          <input type="password" id="password" name="password" placeholder="Enter Password"
+            class="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 text-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+          <button type="button" onclick="togglePassword()" 
+            class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-blue-400">
+            👁
+          </button>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit"
+        class="w-full py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold transition">
+        Sign In
+      </button>
+    </form>
+
+    <!-- Footer -->
+    <p class="text-center text-sm text-gray-400 mt-6">© 2025 AlphaMed Lab</p>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    function togglePassword() {
+      const passwordInput = document.getElementById("password");
+      passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+    }
+
+    // Login Script
+    document.getElementById("loginForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const cnic = document.getElementById("cnic").value;
+      const password = document.getElementById("password").value;
+
+      // Admin Credentials
+      if (cnic === "34501-8971113-7" && password === "Asad@2723") {
+        alert("Login Successful! Redirecting to Admin Dashboard...");
+        window.location.href = "admin-dashboard.html";
+      } else {
+        alert("Invalid CNIC or Password!");
+      }
+    });
+  </script>
+
 </body>
 </html>
