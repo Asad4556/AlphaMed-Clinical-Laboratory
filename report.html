@@ -2,112 +2,108 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Patient Report - AlphaMed Lab</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    .report-container {
-      width: 80%;
-      margin: 20px auto;
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      position: relative;
-    }
-    .watermark {
-      position: absolute;
-      top: 45%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      opacity: 0.1;
-      font-size: 70px;
-      font-weight: bold;
-      color: #333;
-      pointer-events: none;
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 15px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 10px;
-      text-align: center;
-    }
-    th {
-      background: #007bff;
-      color: white;
-    }
-    .print-btn {
-      margin-top: 20px;
-      text-align: center;
-    }
-    .print-btn button {
-      padding: 10px 20px;
-      font-size: 16px;
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-  </style>
+  <title>Patient Report</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="report-container">
-    <div class="watermark">AlphaMed Lab</div>
+  <div class="header">
     <h2>Patient Report</h2>
+    <button onclick="logout()">Logout</button>
+  </div>
 
-    <table>
-      <tr>
-        <td><b>MRN:</b></td>
-        <td id="reportMRN"></td>
-      </tr>
-      <tr>
-        <td><b>Name:</b></td>
-        <td id="reportName"></td>
-      </tr>
-      <tr>
-        <td><b>Age:</b></td>
-        <td id="reportAge"></td>
-      </tr>
-      <tr>
-        <td><b>Gender:</b></td>
-        <td id="reportGender"></td>
-      </tr>
-      <tr>
-        <td><b>Date:</b></td>
-        <td id="reportDate"></td>
-      </tr>
-    </table>
+  <div class="container">
+    <div class="card">
+      <h3>Search Patient Report</h3>
+      <label>Enter Patient ID:</label>
+      <input type="text" id="search-id" placeholder="Enter Patient ID">
+      <button onclick="loadReport()">Search</button>
+    </div>
 
-    <h3 style="margin-top:20px;">Test Results</h3>
-    <table id="reportTests">
-      <thead>
-        <tr>
-          <th>Department</th>
-          <th>Test</th>
-          <th>Result</th>
-          <th>Normal Range</th>
-          <th>Remarks</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Filled from script.js -->
-      </tbody>
-    </table>
+    <div id="report-container" class="card" style="display:none;">
+      <h3>Patient Information</h3>
+      <p><b>ID:</b> <span id="p-id"></span></p>
+      <p><b>Name:</b> <span id="p-name"></span></p>
+      <p><b>Age:</b> <span id="p-age"></span></p>
+      <p><b>Gender:</b> <span id="p-gender"></span></p>
+      <p><b>Contact:</b> <span id="p-contact"></span></p>
+      <p><b>Doctor:</b> <span id="p-doctor"></span></p>
 
-    <div class="print-btn">
-      <button onclick="window.print()">Print Report</button>
+      <h3>Test Results</h3>
+      <table id="results-table">
+        <thead>
+          <tr>
+            <th>Department</th>
+            <th>Test</th>
+            <th>Result</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <button class="print-btn" onclick="window.print()">Print Report</button>
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    function logout() {
+      localStorage.removeItem("loggedInUser");
+      window.location.href = "login.html";
+    }
+
+    function loadReport() {
+      let pid = document.getElementById("search-id").value.trim();
+      if (!pid) {
+        alert("Please enter Patient ID");
+        return;
+      }
+
+      let patients = JSON.parse(localStorage.getItem("patients")) || [];
+      let patient = patients.find(p => p.id == pid);
+
+      if (!patient) {
+        alert("Patient not found!");
+        return;
+      }
+
+      document.getElementById("report-container").style.display = "block";
+
+      document.getElementById("p-id").textContent = patient.id;
+      document.getElementById("p-name").textContent = patient.name;
+      document.getElementById("p-age").textContent = patient.age;
+      document.getElementById("p-gender").textContent = patient.gender;
+      document.getElementById("p-contact").textContent = patient.contact;
+      document.getElementById("p-doctor").textContent = patient.doctor;
+
+      let tbody = document.querySelector("#results-table tbody");
+      tbody.innerHTML = "";
+
+      if (patient.results && patient.results.length > 0) {
+        patient.results.forEach(r => {
+          let tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${r.department}</td>
+            <td>${r.test}</td>
+            <td>${r.result}</td>
+            <td>${r.date}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } else {
+        let tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="4">No results available</td>`;
+        tbody.appendChild(tr);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // ✅ Access control (doctor + patient dono dekh sakte hain)
+      let user = JSON.parse(localStorage.getItem("loggedInUser"));
+      if (!user || (user.role !== "doctor" && user.role !== "patient")) {
+        alert("Access denied!");
+        window.location.href = "login.html";
+      }
+    });
+  </script>
 </body>
 </html>
