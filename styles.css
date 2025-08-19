@@ -1,83 +1,98 @@
-/* Background with logo */
-body.login-page {
-  background: url("logo.png") no-repeat center center fixed;
-  background-size: 300px;
-  background-color: #f4f6f9;
-  font-family: Arial, sans-serif;
+/* Dark Mode Background */
+body.dark-mode {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* Login Box */
-.login-container {
-  background: rgba(255,255,255,0.95);
-  padding: 30px;
+.login-box {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
   border-radius: 15px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-  width: 320px;
+  padding: 40px;
+  width: 350px;
   text-align: center;
+  color: #fff;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
 }
 
-.login-container h2 {
+/* Logo */
+.logo img {
+  width: 80px;
   margin-bottom: 20px;
-  color: #2c3e50;
 }
 
+/* Title */
+.login-box h2 {
+  margin-bottom: 25px;
+  font-size: 22px;
+  color: #ffffff;
+  letter-spacing: 1px;
+}
+
+/* Input Fields */
 .input-group {
-  margin-bottom: 15px;
   text-align: left;
+  margin-bottom: 20px;
 }
 
 .input-group label {
-  display: block;
   font-size: 14px;
-  margin-bottom: 5px;
+  color: #ddd;
+  display: block;
+  margin-bottom: 6px;
 }
 
 .input-group input {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 14px;
-}
-
-/* Password with Eye Button */
-.password-box {
-  display: flex;
-  align-items: center;
-}
-
-.password-box input {
-  flex: 1;
-}
-
-.toggle-pass {
-  cursor: pointer;
-  margin-left: -30px;
-  font-size: 16px;
-  color: #555;
-}
-
-button {
-  width: 100%;
-  padding: 10px;
-  background: #3498db;
-  color: white;
+  padding: 12px;
   border: none;
   border-radius: 8px;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  font-size: 15px;
+  outline: none;
+}
+
+/* Password Eye Icon */
+.password-container {
+  position: relative;
+}
+
+#toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 38px;
+  cursor: pointer;
+  color: #bbb;
+}
+
+/* Button */
+.login-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #0066cc, #004c99);
+  color: #fff;
   font-size: 16px;
   cursor: pointer;
+  transition: 0.3s;
 }
 
-button:hover {
-  background: #2980b9;
+.login-btn:hover {
+  background: linear-gradient(135deg, #004c99, #002e66);
 }
 
+/* Error Message */
 .error {
-  color: red;
+  color: #ff6b6b;
+  margin-top: 15px;
   font-size: 14px;
-  margin-bottom: 10px;
 }
