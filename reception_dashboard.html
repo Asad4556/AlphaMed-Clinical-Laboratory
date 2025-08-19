@@ -2,78 +2,46 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Reception Summary - AlphaMed Lab</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    .summary-container {
-      margin: 20px auto;
-      width: 90%;
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0px 2px 10px rgba(0,0,0,0.2);
-    }
-    h2 {
-      margin-bottom: 15px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 15px;
-    }
-    th, td {
-      padding: 10px;
-      border: 1px solid #ddd;
-      text-align: center;
-    }
-    th {
-      background: #007bff;
-      color: white;
-    }
-  </style>
+  <title>Reception Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="navbar">
-    <h2>Reception Summary</h2>
-    <button onclick="window.location.href='reception.html'">Back</button>
+  <div class="header">
+    <h2>Reception Dashboard</h2>
+    <button onclick="logout()">Logout</button>
   </div>
 
-  <div class="summary-container">
-    <h2>Recent Registered Patients</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>MRN</th>
-          <th>Name</th>
-          <th>Age</th>
-          <th>Gender</th>
-          <th>Date</th>
-        </tr>
-      </thead>
-      <tbody id="recentPatients">
-        <!-- Patient Data -->
-      </tbody>
-    </table>
+  <div class="container">
+    <div class="card">
+      <h3>Welcome, Receptionist</h3>
+      <p>Use the options below to manage patients.</p>
+    </div>
+
+    <div class="card">
+      <h3>Options</h3>
+      <button onclick="goTo('register_patient.html')">Register New Patient</button>
+      <button onclick="goTo('registration-slip.html')">View / Print Slips</button>
+    </div>
   </div>
 
-  <div class="summary-container">
-    <h2>Recent Reports</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Report ID</th>
-          <th>Patient</th>
-          <th>Department</th>
-          <th>Date</th>
-        </tr>
-      </thead>
-      <tbody id="recentReports">
-        <!-- Reports Data -->
-      </tbody>
-    </table>
-  </div>
+  <script>
+    function logout() {
+      localStorage.removeItem("loggedInUser");
+      window.location.href = "login.html";
+    }
 
-  <script src="script.js"></script>
+    function goTo(page) {
+      window.location.href = page;
+    }
+
+    // ✅ Access control: only reception can access
+    document.addEventListener("DOMContentLoaded", () => {
+      let user = JSON.parse(localStorage.getItem("loggedInUser"));
+      if (!user || user.role !== "reception") {
+        alert("Access denied!");
+        window.location.href = "login.html";
+      }
+    });
+  </script>
 </body>
 </html>
