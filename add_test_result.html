@@ -2,53 +2,116 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Add Test Result - AlphaMed Lab</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Add Test Result</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="navbar">
+  <div class="header">
     <h2>Add Test Result</h2>
-    <button onclick="window.location.href='dashboard.html'">Back</button>
+    <button onclick="logout()">Logout</button>
   </div>
 
   <div class="container">
-    <label>Select Patient</label>
-    <select id="patientSelect"></select>
+    <div class="card">
+      <h3>Enter Test Result</h3>
+      <label>Patient ID:</label>
+      <input type="text" id="patient-id" placeholder="Enter Patient ID">
 
-    <label>Select Department</label>
-    <select id="deptSelect" onchange="loadTests()"></select>
+      <label>Department:</label>
+      <select id="dept-select"></select>
 
-    <label>Select Test</label>
-    <select id="testSelect"></select>
+      <label>Test Name:</label>
+      <select id="test-select"></select>
 
-    <label>Result</label>
-    <input type="text" id="testResult">
+      <label>Result:</label>
+      <textarea id="result" placeholder="Enter test result here..."></textarea>
 
-    <label>Normal Range</label>
-    <input type="text" id="normalRange" placeholder="e.g. 70 - 110 mg/dl">
-
-    <button onclick="saveTestResult()">Save Result</button>
+      <button onclick="saveResult()">Save Result</button>
+    </div>
   </div>
 
-  <div class="container">
-    <h3>Saved Results</h3>
-    <table border="1" width="100%">
-      <thead>
-        <tr>
-          <th>Patient</th>
-          <th>Department</th>
-          <th>Test</th>
-          <th>Result</th>
-          <th>Normal Range</th>
-          <th>Date</th>
-        </tr>
-      </thead>
-      <tbody id="resultsTable"></tbody>
-    </table>
-  </div>
-
-  <script src="script.js"></script>
   <script src="labSections.js"></script>
+  <script>
+    function logout() {
+      localStorage.removeItem("loggedInUser");
+      window.location.href = "login.html";
+    }
+
+    // Load departments & tests dynamically
+    function loadDepartmentsForResults() {
+      const deptSelect = document.getElementById("dept-select");
+      const testSelect = document.getElementById("test-select");
+
+      let labDepartments = JSON.parse(localStorage.getItem("labDepartments")) || {};
+      deptSelect.innerHTML = "";
+      testSelect.innerHTML = "";
+
+      for (let dept in labDepartments) {
+        let option = document.createElement("option");
+        option.value = dept;
+        option.textContent = dept;
+        deptSelect.appendChild(option);
+      }
+
+      deptSelect.addEventListener("change", function() {
+        testSelect.innerHTML = "";
+        let tests = labDepartments[this.value] || [];
+        tests.forEach(test => {
+          let opt = document.createElement("option");
+          opt.value = test;
+          opt.textContent = test;
+          testSelect.appendChild(opt);
+        });
+      });
+
+      // Trigger default load
+      if (deptSelect.value) deptSelect.dispatchEvent(new Event("change"));
+    }
+
+    // Save result into patient data
+    function saveResult() {
+      let pid = document.getElementById("patient-id").value.trim();
+      let dept = document.getElementById("dept-select").value;
+      let test = document.getElementById("test-select").value;
+      let result = document.getElementById("result").value.trim();
+
+      if (!pid || !dept || !test || !result) {
+        alert("Please fill all fields");
+        return;
+      }
+
+      let patients = JSON.parse(localStorage.getItem("patients")) || [];
+      let patient = patients.find(p => p.id == pid);
+
+      if (!patient) {
+        alert("Patient not found!");
+        return;
+      }
+
+      if (!patient.results) patient.results = [];
+      patient.results.push({
+        department: dept,
+        test: test,
+        result: result,
+        date: new Date().toLocaleString()
+      });
+
+      localStorage.setItem("patients", JSON.stringify(patients));
+      alert("Result saved successfully!");
+      document.getElementById("patient-id").value = "";
+      document.getElementById("result").value = "";
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadDepartmentsForResults();
+
+      // ✅ Access control (only lab technician allowed)
+      let user = JSON.parse(localStorage.getItem("loggedInUser"));
+      if (!user || user.role !== "lab") {
+        alert("Access denied!");
+        window.location.href = "login.html";
+      }
+    });
+  </script>
 </body>
 </html>
