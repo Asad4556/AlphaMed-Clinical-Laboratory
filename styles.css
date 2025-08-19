@@ -1,121 +1,83 @@
-/* General Reset */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: Arial, sans-serif;
-}
-
-body {
-  background: #f5f7fa url('logo.png') no-repeat center center fixed;
+/* Background with logo */
+body.login-page {
+  background: url("logo.png") no-repeat center center fixed;
   background-size: 300px;
-  opacity: 0.98;
-  min-height: 100vh;
+  background-color: #f4f6f9;
+  font-family: Arial, sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 100vh;
 }
 
-/* Login Page */
+/* Login Box */
 .login-container {
-  background: white;
+  background: rgba(255,255,255,0.95);
   padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  width: 350px;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  width: 320px;
   text-align: center;
-}
-
-.login-container .logo img {
-  width: 80px;
-  margin-bottom: 15px;
 }
 
 .login-container h2 {
   margin-bottom: 20px;
-  color: #003366;
+  color: #2c3e50;
 }
 
-.login-container input {
+.input-group {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+.input-group label {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.input-group input {
   width: 100%;
   padding: 10px;
-  margin: 10px 0;
   border: 1px solid #ccc;
-  border-radius: 6px;
-}
-
-.login-container button {
-  width: 100%;
-  padding: 12px;
-  background: #0066cc;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.login-container button:hover {
-  background: #004c99;
-}
-
-.error {
-  color: red;
-  margin-top: 10px;
+  border-radius: 8px;
   font-size: 14px;
 }
 
-/* Common Layout for other pages */
-.header {
-  background: #003366;
-  color: white;
-  padding: 15px;
-  text-align: center;
+/* Password with Eye Button */
+.password-box {
+  display: flex;
+  align-items: center;
 }
 
-.container {
-  padding: 20px;
+.password-box input {
+  flex: 1;
 }
 
-.card {
-  background: white;
-  padding: 20px;
-  margin: 15px 0;
-  border-radius: 10px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+.toggle-pass {
+  cursor: pointer;
+  margin-left: -30px;
+  font-size: 16px;
+  color: #555;
 }
 
 button {
-  background: #0066cc;
-  color: #fff;
-  padding: 10px 15px;
+  width: 100%;
+  padding: 10px;
+  background: #3498db;
+  color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
+  font-size: 16px;
   cursor: pointer;
 }
 
 button:hover {
-  background: #004c99;
+  background: #2980b9;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 15px;
-}
-
-table th, table td {
-  border: 1px solid #ddd;
-  padding: 8px;
-}
-
-table th {
-  background: #003366;
-  color: white;
-}
-
-.print-btn {
-  margin-top: 15px;
-  background: green;
+.error {
+  color: red;
+  font-size: 14px;
+  margin-bottom: 10px;
 }
