@@ -386,6 +386,3 @@ const testData = {
     { name: "Manganese", unit: "µg/L", range: "0.4 - 1.0" }
   ]
 };
-
-  
-};
